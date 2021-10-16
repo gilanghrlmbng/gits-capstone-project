@@ -30,21 +30,14 @@ jobs:
         id: gen_tags
         run: |
           if [[ $GITHUB_REF == 'refs/tags/'* ]]; then
-            TAGS='["user/image:latest","user/image:'${GITHUB_REF/refs\/tags\//}'"]'
+            TAGS='["alifnaufalyasin/gits-capstone-project:latest","user/image:'${GITHUB_REF/refs\/tags\//}'"]'
           else
-            TAGS='["user/image:latest"]'
+            TAGS='["alifnaufalyasin/gits-capstone-project:latest"]'
           fi
           echo '::set-output name=tags::'$TAGS
-
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
-        with:
-          images: alifnaufalyasin/gits-capstone-project
-          tag-custom: latest
       
       - name: Build and push Docker image
-        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        uses: docker/build-push-action@v2
         needs: gen_tags
         with:
           context: ./src
