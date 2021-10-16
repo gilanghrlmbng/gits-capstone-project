@@ -34,7 +34,7 @@ func Init(tableDelete bool) {
 	if tableDelete {
 		log.Info().Msg("menghapus tabel yang ada")
 		db.Exec(`DROP SCHEMA public CASCADE;
-		CREATE SCHEMA public; GRANT ALL ON SCHEMA public TO root;
+		CREATE SCHEMA public; GRANT ALL ON SCHEMA public TO postgres;
 		GRANT ALL ON SCHEMA public TO public;`)
 	}
 
