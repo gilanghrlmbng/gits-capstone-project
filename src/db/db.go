@@ -20,6 +20,7 @@ func Init(tableDelete bool) {
 	log.Info().Msg("menginisialisasikan database")
 
 	config := config.GetConfig()
+	log.Info().Msg(fmt.Sprintf("%v", config))
 
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		config.Database.Host,

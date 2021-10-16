@@ -1,0 +1,28 @@
+version: "3.8"
+services:
+  app:
+    image: alifnaufalyasin/gits-capstone-project:master
+    ports:
+      - "4132:4132"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=localhost
+      - DB_PORT=5432
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=postgres
+      - SECRET=gitscapstoneproject
+    restart: always
+
+  db:
+    image: postgres:13.4-alpine
+    ports:
+      - "5432:5432"
+    expose:
+      - "5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    restart: always
