@@ -3,7 +3,7 @@ services:
   app:
     image: alifnaufalyasin/gits-capstone-project
     ports:
-      - "4132:4132"
+      - "80:4132"
     depends_on:
       - db
     environment:
