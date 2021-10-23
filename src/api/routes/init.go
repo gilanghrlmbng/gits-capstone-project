@@ -14,7 +14,7 @@ func Init(e *echo.Echo) *echo.Echo {
 	log.Info().Msg("menginisialisasikan routes")
 
 	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello world")
+		return c.String(http.StatusOK, "Haii")
 	})
 
 	log.Info().Msg("routes terinisialisasi")
