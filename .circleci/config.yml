@@ -5,24 +5,9 @@ version: 2.1
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  build_and_test:
-    docker:
-      - image: cimg/base:2021.07
-    steps:
-      # For using docker commands.
-      - setup_remote_docker:
-          version: 19.03.13
-
-      # Build the docker image
-      - checkout
-      - run: docker build -t webapp .
-
-      # Run tests.
-      - run:
-          command: docker run webapp python3 tests.py
   build_and_deploy:
     docker:
-      - image: cimg/base:2021.07
+      - image: alifnaufalyasin/gits-capstone-project
     steps:
       # For using docker commands.
       - setup_remote_docker:
@@ -30,7 +15,7 @@ jobs:
 
       # Build the docker image
       - checkout
-      - run: docker build .
+      - run: docker build ./src
 
       # Deploy to Heroku
       - heroku/install
@@ -50,8 +35,4 @@ workflows:
   heroku_deploy: # This is the name of the workflow, feel free to change it to better match your workflow.
     # Inside the workflow, you define the jobs you want to run.
     jobs:
-      - build_and_test
-      - build_and_deploy:
-          requires:
-            # Deploy after testing.
-            - build_and_test
+      - build_and_deploy
