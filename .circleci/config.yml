@@ -28,7 +28,7 @@ jobs:
 
       # Build the docker image
       - checkout
-      - run: docker build .
+      - run: docker build ./src
 
       # Deploy to Heroku
       - heroku/install
