@@ -5,7 +5,7 @@ version: 2.1
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  build_and_deploy:
+  build_and_test:
     docker:
       - image: alifnaufalyasin/gits-capstone-project
     steps:
@@ -15,7 +15,20 @@ jobs:
 
       # Build the docker image
       - checkout
-      - run: docker build ./src
+      - run: docker build -t latest ./src
+
+  # Build the docker image and deploy it to Heroku.
+  build_and_deploy:
+    docker:
+      - image: cimg/base:2021.07
+    steps:
+      # For using docker commands.
+      - setup_remote_docker:
+          version: 19.03.13
+
+      # Build the docker image
+      - checkout
+      - run: docker build .
 
       # Deploy to Heroku
       - heroku/install
