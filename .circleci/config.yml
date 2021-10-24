@@ -15,7 +15,7 @@ jobs:
 
       # Build the docker image
       - checkout
-      - run: docker-compose up
+      - run: docker build .
 
       # Deploy to Heroku
       - heroku/install
