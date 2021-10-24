@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"net"
 	"os"
 	"src/api"
+	"src/config"
 	"src/db"
 	"src/utils/errlogger"
 
@@ -26,6 +28,7 @@ func main() {
 	e := api.Init()
 
 	// Server Listener
-	e.Logger.Fatal(e.Start(":0"))
+	port := config.GetConfig().Port
+	e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", port)))
 	e.Logger.Info("Port is:", e.Listener.Addr().(*net.TCPAddr).Port)
 }
