@@ -11,6 +11,7 @@ type Config struct {
 	ServicePort string
 	Database    DatabaseConfig
 	Secret      string
+	Port        string `env:"PORT,default=4132"`
 }
 
 type DatabaseConfig struct {
@@ -33,5 +34,6 @@ func GetConfig() Config {
 			Name:     os.Getenv("DB_NAME"),
 		},
 		Secret: os.Getenv("SECRET"),
+		Port:   os.Getenv("PORT"),
 	}
 }

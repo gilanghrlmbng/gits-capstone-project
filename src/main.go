@@ -1,6 +1,7 @@
 package main
 
 import (
+	"net"
 	"os"
 	"src/api"
 	"src/db"
@@ -25,5 +26,6 @@ func main() {
 	e := api.Init()
 
 	// Server Listener
-	e.Logger.Fatal((e.Start(":4132")))
+	e.Logger.Fatal(e.Start(":0"))
+	e.Logger.Info("Port is:", e.Listener.Addr().(*net.TCPAddr).Port)
 }
