@@ -1,6 +1,7 @@
 package migrations
 
 import (
+	"src/entity"
 	"src/utils/errlogger"
 
 	"github.com/rs/zerolog/log"
@@ -16,7 +17,7 @@ func Migration(db *gorm.DB) {
 
 	log.Info().Msg("memulai dengan automigrate")
 
-	err := db.AutoMigrate()
+	err := db.AutoMigrate(&entity.Keluarga{}, &entity.Warga{}, &entity.Tagihan{}, &entity.Produk{})
 
 	errlogger.ErrFatalPanic(err)
 }
