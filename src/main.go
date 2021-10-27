@@ -23,7 +23,7 @@ func main() {
 	errlogger.ErrFatalPanic(err)
 
 	// Inisialisasi DB
-	db.Init(true)
+	db.Init(true, true)
 	// Inisialisasi Server
 	e := api.Init()
 
