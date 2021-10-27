@@ -17,7 +17,7 @@ func Migration(db *gorm.DB) {
 
 	log.Info().Msg("memulai dengan automigrate")
 
-	err := db.AutoMigrate(&entity.Keluarga{}, &entity.Warga{}, &entity.Tagihan{}, &entity.Produk{})
+	err := db.AutoMigrate(&entity.Rt{}, &entity.PengurusRT{}, &entity.Keluarga{}, &entity.Warga{}, &entity.Tagihan{}, &entity.Produk{})
 
 	errlogger.ErrFatalPanic(err)
 }
