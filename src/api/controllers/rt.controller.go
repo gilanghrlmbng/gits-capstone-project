@@ -12,12 +12,12 @@ import (
 	"github.com/oklog/ulid/v2"
 )
 
-func CreateKeluarga(c echo.Context) error {
+func CreateRT(c echo.Context) error {
 	// Pertama inisiasi variable dulu
-	k := new(entity.Keluarga)
+	rt := new(entity.Rt)
 
 	// kemudian ini buat dapetin request body dari mobile
-	if err := c.Bind(k); err != nil {
+	if err := c.Bind(rt); err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -25,19 +25,19 @@ func CreateKeluarga(c echo.Context) error {
 	}
 
 	// terus ini ada validasi buat ngecek inputan dari reqeust body udah sesuai apa belum
-	if err := k.ValidateCreate(); err.Code > 0 {
+	if err := rt.ValidateCreate(); err.Code > 0 {
 		return utils.ResponseError(c, err)
 	}
 
 	//Ini buat generate ID
 	entropy := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
-	k.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
+	rt.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
 
 	// Ini buat masukin isi dari created_at nya
-	k.CreatedAt = time.Now()
+	rt.CreatedAt = time.Now()
 
 	// Ini fungsi dari models buat create data ke database
-	keluarga, err := models.CreateKeluarga(k)
+	Rt, err := models.CreateRT(rt)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -48,15 +48,13 @@ func CreateKeluarga(c echo.Context) error {
 	// Return datanya
 	return utils.ResponseData(c, utils.JSONResponseData{
 		Code:    http.StatusCreated,
-		Data:    keluarga,
+		Data:    Rt,
 		Message: "Berhasil",
 	})
 }
 
-func GetAllKeluarga(c echo.Context) error {
-	Search := c.QueryParam("search")
-
-	allKeluarga, err := models.GetAllKeluarga(Search)
+func GetAllRT(c echo.Context) error {
+	allRT, err := models.GetAllRT()
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -66,12 +64,12 @@ func GetAllKeluarga(c echo.Context) error {
 
 	return utils.ResponseData(c, utils.JSONResponseData{
 		Code:    http.StatusOK,
-		Data:    allKeluarga,
+		Data:    allRT,
 		Message: "Berhasil",
 	})
 }
 
-func GetKeluargaByID(c echo.Context) error {
+func GetRTByID(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
 		return utils.ResponseError(c, utils.Error{
@@ -80,7 +78,7 @@ func GetKeluargaByID(c echo.Context) error {
 		})
 	}
 
-	k, err := models.GetKeluargaByID(id)
+	rt, err := models.GetRTByID(id)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -89,12 +87,12 @@ func GetKeluargaByID(c echo.Context) error {
 	}
 	return utils.ResponseData(c, utils.JSONResponseData{
 		Code:    http.StatusOK,
-		Data:    k,
+		Data:    rt,
 		Message: "Berhasil",
 	})
 }
 
-func UpdateKeluargaById(c echo.Context) error {
+func UpdateRTById(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
 		return utils.ResponseError(c, utils.Error{
@@ -103,16 +101,16 @@ func UpdateKeluargaById(c echo.Context) error {
 		})
 	}
 
-	k := new(entity.Keluarga)
+	rt := new(entity.Rt)
 
-	if err := c.Bind(k); err != nil {
+	if err := c.Bind(rt); err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
 		})
 	}
 
-	_, err := models.GetKeluargaByID(id)
+	_, err := models.GetRTByID(id)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -120,8 +118,9 @@ func UpdateKeluargaById(c echo.Context) error {
 		})
 	}
 
-	k.UpdatedAt = time.Now()
-	_, err = models.UpdateKeluargaById(id, k)
+	rt.UpdatedAt = time.Now()
+
+	_, err = models.UpdateRTById(id, rt)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -134,7 +133,7 @@ func UpdateKeluargaById(c echo.Context) error {
 	})
 }
 
-func SoftDeleteKeluargaById(c echo.Context) error {
+func SoftDeleteRTById(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
 		return utils.ResponseError(c, utils.Error{
@@ -143,7 +142,7 @@ func SoftDeleteKeluargaById(c echo.Context) error {
 		})
 	}
 
-	_, err := models.GetKeluargaByID(id)
+	_, err := models.GetRTByID(id)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -151,7 +150,7 @@ func SoftDeleteKeluargaById(c echo.Context) error {
 		})
 	}
 
-	_, err = models.SoftDeleteKeluargaById(id)
+	_, err = models.SoftDeleteRTById(id)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,

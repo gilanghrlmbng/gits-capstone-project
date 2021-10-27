@@ -41,8 +41,8 @@ func Init(tableDelete, dataInitialization bool) {
 	migrations.Migration(db)
 
 	if dataInitialization {
-		// initData(db)
-		fmt.Print(" ")
+		initData(db)
+		// fmt.Print(" ")
 	}
 
 	log.Info().Msg("database terinisialisasi")
@@ -55,35 +55,38 @@ func GetDB() *gorm.DB {
 	return db
 }
 
-// func initData(db *gorm.DB) {
-// 	/*
-// 		Use this function to make a initial data.
-// 		You need to initialize your data first and the loop through the data.
-// 		To Create Record please refer reading this https://gorm.io/docs/create.html
-// 	*/
+func initData(db *gorm.DB) {
+	/*
+		Use this function to make a initial data.
+		You need to initialize your data first and the loop through the data.
+		To Create Record please refer reading this https://gorm.io/docs/create.html
+	*/
 
-// 	// RT
-// 	SeedRT(db)
+	// RT
+	listIdRt := SeedRT(db)
 
-// 	// // Tipe User
-// 	// data, err = os.ReadFile("db/dummy/tipe_user.sql")
-// 	// errlogger.ErrFatalPanic(err)
-// 	// db.Exec(string(data))
+	// Pengurus RT
+	_ = SeedPengurusRT(db, listIdRt)
 
-// 	// // User
-// 	// data, err = os.ReadFile("db/dummy/user.sql")
-// 	// errlogger.ErrFatalPanic(err)
-// 	// db.Exec(string(data))
+	// // Tipe User
+	// data, err = os.ReadFile("db/dummy/tipe_user.sql")
+	// errlogger.ErrFatalPanic(err)
+	// db.Exec(string(data))
 
-// 	// // Post
-// 	// data, err = os.ReadFile("db/dummy/post.sql")
-// 	// errlogger.ErrFatalPanic(err)
-// 	// db.Exec(string(data))
+	// // User
+	// data, err = os.ReadFile("db/dummy/user.sql")
+	// errlogger.ErrFatalPanic(err)
+	// db.Exec(string(data))
 
-// 	// // Komentar
-// 	// data, err = os.ReadFile("db/dummy/komentar.sql")
-// 	// errlogger.ErrFatalPanic(err)
-// 	// db.Exec(string(data))
+	// // Post
+	// data, err = os.ReadFile("db/dummy/post.sql")
+	// errlogger.ErrFatalPanic(err)
+	// db.Exec(string(data))
 
-// 	log.Info().Msg("dummy data terinisialisasi")
-// }
+	// // Komentar
+	// data, err = os.ReadFile("db/dummy/komentar.sql")
+	// errlogger.ErrFatalPanic(err)
+	// db.Exec(string(data))
+
+	log.Info().Msg("dummy data terinisialisasi")
+}

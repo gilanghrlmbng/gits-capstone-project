@@ -12,11 +12,11 @@ func CreateKeluarga(k *entity.Keluarga) (entity.Keluarga, error) {
 	db := db.GetDB()
 
 	err := db.Create(&k)
-	if err.RowsAffected == 0 {
-		return entity.Keluarga{}, errors.New("gagal membuat keluarga")
-	}
 	if err.Error != nil {
 		return entity.Keluarga{}, err.Error
+	}
+	if err.RowsAffected == 0 {
+		return entity.Keluarga{}, errors.New("gagal membuat keluarga")
 	}
 
 	return *k, nil

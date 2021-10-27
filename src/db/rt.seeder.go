@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func SeedRT(db *gorm.DB) {
+func SeedRT(db *gorm.DB) []string {
 	// Data 1
 	entropy1 := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
 	Id1 := ulid.MustNew(ulid.Timestamp(time.Now()), entropy1).String()
@@ -22,8 +22,9 @@ func SeedRT(db *gorm.DB) {
 		Kota:         "Bogor",
 		Provinsi:     "Jawa Barat",
 		BiayaBulanan: 50000,
+		CreatedAt:    time.Now(),
 	}
-	db.Create(data1)
+	db.Create(&data1)
 
 	// Data 2
 	entropy2 := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
@@ -37,8 +38,9 @@ func SeedRT(db *gorm.DB) {
 		Kota:         "Bandung",
 		Provinsi:     "Jawa Barat",
 		BiayaBulanan: 70000,
+		CreatedAt:    time.Now(),
 	}
-	db.Create(data2)
+	db.Create(&data2)
 
 	// Data 3
 	entropy3 := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
@@ -52,6 +54,8 @@ func SeedRT(db *gorm.DB) {
 		Kota:         "Ciamis",
 		Provinsi:     "Jawa Barat",
 		BiayaBulanan: 30000,
+		CreatedAt:    time.Now(),
 	}
-	db.Create(data3)
+	db.Create(&data3)
+	return []string{Id1, Id2, Id3}
 }
