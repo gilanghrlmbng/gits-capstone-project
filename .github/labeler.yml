@@ -23,8 +23,13 @@ utils:
 - src/utils/*
 
 source: 
-- any: ['src/*']
-- all: ['!src/utils/*','!src/migration/*','!src/entity/*','!src/db/*','!src/config/*','!src/api/*']
+- src/*
+- !src/utils/*
+- !src/migration/*
+- !src/entity/*
+- !src/db/*
+- !src/config/*
+- !src/api/*
 
 automation:
-- any: ['*.yml']
+- *.yml
