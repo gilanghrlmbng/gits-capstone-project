@@ -13,6 +13,7 @@ func Init(e *echo.Echo) *echo.Echo {
 	middleware.ErrJWTMissing.Message = "Unauthorized"
 	log.Info().Msg("menginisialisasikan routes")
 	e = Keluarga(e)
+	e = RT(e)
 
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello Worlds!!!")
