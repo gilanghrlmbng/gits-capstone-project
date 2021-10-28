@@ -33,9 +33,14 @@ func Init(tableDelete, dataInitialization bool) {
 
 	if tableDelete {
 		log.Info().Msg("menghapus tabel yang ada")
-		db.Exec(`DROP SCHEMA public CASCADE;
-		CREATE SCHEMA public; GRANT ALL ON SCHEMA public TO gits;
-		GRANT ALL ON SCHEMA public TO public;`)
+		db.Exec(`
+DO $$ DECLARE
+    r RECORD;
+BEGIN
+    FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = current_schema()) LOOP
+        EXECUTE 'DROP TABLE IF EXISTS ' || quote_ident(r.tablename) || ' CASCADE';
+    END LOOP;
+END $$;`)
 	}
 
 	migrations.Migration(db)
