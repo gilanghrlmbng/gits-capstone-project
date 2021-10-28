@@ -10,11 +10,11 @@ import (
 
 type Keluarga struct {
 	Id        string          `gorm:"type:varchar(50);primaryKey" json:"id" form:"id"`
-	IdRT      string          `gorm:"type:varchar(50);not null" json:"id_rt"`
+	IdRT      string          `gorm:"type:varchar(50);not null" json:"id_rt" form:"id_rt"`
 	Nama      string          `gorm:"type:varchar(50);not null" json:"nama" form:"nama"`
-	Warga     []Warga         `gorm:"foreignKey:id_keluarga;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"warga,omitempty"`
-	Tagihan   []Tagihan       `gorm:"foreignKey:id_keluarga;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"tagihan,omitempty"`
-	Produk    []Produk        `gorm:"foreignKey:id_keluarga;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"produk,omitempty"`
+	Warga     []Warga         `gorm:"foreignKey:id_keluarga;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"warga,omitempty" form:"warga"`
+	Tagihan   []Tagihan       `gorm:"foreignKey:id_keluarga;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"tagihan,omitempty" form:"tagihan"`
+	Produk    []Produk        `gorm:"foreignKey:id_keluarga;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"produk,omitempty" form:"produk"`
 	Alamat    string          `gorm:"type:varchar(50)" json:"alamat,omitempty" form:"alamat"`
 	CreatedAt time.Time       `gorm:"type:timestamptz;not null" json:"created_at"`
 	UpdatedAt time.Time       `gorm:"type:timestamptz" json:"updated_at"`

@@ -73,25 +73,8 @@ func initData(db *gorm.DB) {
 	// Pengurus RT
 	_ = SeedPengurusRT(db, listIdRt)
 
-	// // Tipe User
-	// data, err = os.ReadFile("db/dummy/tipe_user.sql")
-	// errlogger.ErrFatalPanic(err)
-	// db.Exec(string(data))
-
-	// // User
-	// data, err = os.ReadFile("db/dummy/user.sql")
-	// errlogger.ErrFatalPanic(err)
-	// db.Exec(string(data))
-
-	// // Post
-	// data, err = os.ReadFile("db/dummy/post.sql")
-	// errlogger.ErrFatalPanic(err)
-	// db.Exec(string(data))
-
-	// // Komentar
-	// data, err = os.ReadFile("db/dummy/komentar.sql")
-	// errlogger.ErrFatalPanic(err)
-	// db.Exec(string(data))
+	// Keluarga
+	_ = SeedKeluarga(db, listIdRt)
 
 	log.Info().Msg("dummy data terinisialisasi")
 }
