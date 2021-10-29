@@ -1,6 +1,8 @@
 package entity
 
 import (
+	"net/http"
+	"src/utils"
 	"time"
 
 	"gorm.io/gorm"
@@ -19,4 +21,26 @@ type PengurusRT struct {
 
 func (PengurusRT) TableName() string {
 	return "pengurus_rt"
+}
+
+func (prt PengurusRT) ValidateCreate() utils.Error {
+	if prt.Nama == "" {
+		return utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Nama tidak boleh kosong",
+		}
+	}
+	if prt.Email == "" {
+		return utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Email tidak boleh kosong",
+		}
+	}
+	if prt.Password == "" {
+		return utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Password tidak boleh kosong",
+		}
+	}
+	return utils.Error{}
 }
