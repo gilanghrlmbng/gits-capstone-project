@@ -31,7 +31,7 @@ func CreatePengurus(c echo.Context) error {
 
 	prt.CreatedAt = time.Now()
 
-	PengurusRT, err := models.CreatePengurusRT(prt)
+	PengurusRT, err := models.CreatePengurusRT(c, prt)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -39,15 +39,15 @@ func CreatePengurus(c echo.Context) error {
 		})
 	}
 
-	return utils.ResponseData(c, utils.JSONResponseData{
-		Code:    http.StatusCreated,
-		Data:    PengurusRT,
-		Message: "Berhasil",
+	return utils.ResponseDataPengurusRT(c, utils.JSONResponseDataPengurusRT{
+		Code:           http.StatusCreated,
+		CreatePengurus: PengurusRT,
+		Message:        "Berhasil",
 	})
 }
 
 func GetAllPengurusRT(c echo.Context) error {
-	allPengurusRT, err := models.GetAllPengurusRT()
+	allPengurusRT, err := models.GetAllPengurusRT(c)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -55,10 +55,10 @@ func GetAllPengurusRT(c echo.Context) error {
 		})
 	}
 
-	return utils.ResponseData(c, utils.JSONResponseData{
-		Code:    http.StatusOK,
-		Data:    allPengurusRT,
-		Message: "Berhasil",
+	return utils.ResponseDataPengurusRT(c, utils.JSONResponseDataPengurusRT{
+		Code:           http.StatusOK,
+		GetAllPengurus: allPengurusRT,
+		Message:        "Berhasil",
 	})
 }
 
@@ -71,17 +71,17 @@ func GetPengurusByID(c echo.Context) error {
 		})
 	}
 
-	prt, err := models.GetPengurusByID(id)
+	prt, err := models.GetPengurusByID(c, id)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		})
 	}
-	return utils.ResponseData(c, utils.JSONResponseData{
-		Code:    http.StatusOK,
-		Data:    prt,
-		Message: "Berhasil",
+	return utils.ResponseDataPengurusRT(c, utils.JSONResponseDataPengurusRT{
+		Code:            http.StatusOK,
+		GetPengurusByID: prt,
+		Message:         "Berhasil",
 	})
 }
 
@@ -103,7 +103,7 @@ func UpdatePengurusById(c echo.Context) error {
 		})
 	}
 
-	_, err := models.GetPengurusByID(id)
+	_, err := models.GetPengurusByID(c, id)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -113,7 +113,7 @@ func UpdatePengurusById(c echo.Context) error {
 
 	prt.UpdatedAt = time.Now()
 
-	_, err = models.UpdatePengurusById(id, prt)
+	_, err = models.UpdatePengurusById(c, id, prt)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -136,7 +136,7 @@ func SoftDeletePengurusById(c echo.Context) error {
 		})
 	}
 
-	_, err := models.GetPengurusByID(id)
+	_, err := models.GetPengurusByID(c, id)
 
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
@@ -145,7 +145,7 @@ func SoftDeletePengurusById(c echo.Context) error {
 		})
 	}
 
-	_, err = models.SoftDeletePengurusById(id)
+	_, err = models.SoftDeletePengurusById(c, id)
 
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{

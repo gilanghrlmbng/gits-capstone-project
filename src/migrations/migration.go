@@ -2,22 +2,33 @@ package migrations
 
 import (
 	"src/entity"
-	"src/utils/errlogger"
 
-	"github.com/rs/zerolog/log"
+	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
 
-func Migration(db *gorm.DB) {
+func Migration(e *echo.Echo, db *gorm.DB) {
 	/*
 		Please fill the params in AutoMigrate with your entity
 		so you will see
 		db.AutoMigrate(&Entity1{}, &Entity2{}, &Entity3{}, ...)
 	*/
 
-	log.Info().Msg("memulai dengan automigrate")
+	e.Logger.Info("Memulai dengan automigrate")
 
 	err := db.AutoMigrate(&entity.Rt{}, &entity.PengurusRT{}, &entity.Keluarga{}, &entity.Warga{}, &entity.Tagihan{}, &entity.Produk{})
 
-	errlogger.ErrFatalPanic(err)
+	if err != nil {
+		e.Logger.Error(err)
+
+	}
+}
+
+func DeleteAllTable(e *echo.Echo, db *gorm.DB) {
+	e.Logger.Info("Mereset Semua Tabel")
+	err := db.Migrator().DropTable(&entity.Rt{}, &entity.PengurusRT{}, &entity.Keluarga{}, &entity.Warga{}, &entity.Tagihan{}, &entity.Produk{})
+	if err != nil {
+		e.Logger.Error(err)
+
+	}
 }

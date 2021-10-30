@@ -4,23 +4,21 @@ import (
 	"fmt"
 	"src/config"
 	"src/migrations"
-	"src/utils/errlogger"
 
-	"github.com/rs/zerolog/log"
+	"github.com/labstack/echo/v4"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 )
 
 var db *gorm.DB = nil
 var err error
 
-func Init(tableDelete, dataInitialization bool) {
+func Init(e *echo.Echo, tableDelete, dataInitialization bool) {
 
-	log.Info().Msg("menginisialisasikan database")
+	e.Logger.Info("menginisialisasikan database")
 
-	config := config.GetConfig()
-	log.Info().Msg(fmt.Sprintf("%v", config))
+	config := config.GetConfig(e)
+	e.Logger.Info(config)
 
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		config.Database.Host,
@@ -28,39 +26,37 @@ func Init(tableDelete, dataInitialization bool) {
 		config.Database.Username,
 		config.Database.Password,
 		config.Database.Name)
-	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{SkipDefaultTransaction: true, Logger: logger.Default.LogMode(logger.Info)})
-	errlogger.ErrFatalPanic(err)
+	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
+		SkipDefaultTransaction: true,
+		// DisableForeignKeyConstraintWhenMigrating: true,
+	})
+	if err != nil {
+		e.Logger.Error(err)
 
-	if tableDelete {
-		log.Info().Msg("menghapus tabel yang ada")
-		db.Exec(`
-DO $$ DECLARE
-    r RECORD;
-BEGIN
-    FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = current_schema()) LOOP
-        EXECUTE 'DROP TABLE IF EXISTS ' || quote_ident(r.tablename) || ' CASCADE';
-    END LOOP;
-END $$;`)
 	}
 
-	migrations.Migration(db)
+	if tableDelete {
+		migrations.DeleteAllTable(e, db)
+	}
+
+	migrations.Migration(e, db)
 
 	if dataInitialization {
-		initData(db)
+		initData(e, db)
 		// fmt.Print(" ")
 	}
 
-	log.Info().Msg("database terinisialisasi")
+	e.Logger.Info("database terinisialisasi")
 }
 
-func GetDB() *gorm.DB {
+func GetDB(c echo.Context) *gorm.DB {
 	if db == nil {
-		errlogger.FatalPanicMessage("db belum terinisilisasi")
+		c.Logger().Error("db belum terinisilisasi")
 	}
 	return db
 }
 
-func initData(db *gorm.DB) {
+func initData(e *echo.Echo, db *gorm.DB) {
 	/*
 		Use this function to make a initial data.
 		You need to initialize your data first and the loop through the data.
@@ -74,7 +70,11 @@ func initData(db *gorm.DB) {
 	_ = SeedPengurusRT(db, listIdRt)
 
 	// Keluarga
-	_ = SeedKeluarga(db, listIdRt)
+	listIdKeluarga := SeedKeluarga(db, listIdRt)
 
-	log.Info().Msg("dummy data terinisialisasi")
+	//Warga
+
+	_ = SeedWarga(db, listIdKeluarga)
+
+	e.Logger.Info("dummy data terinisialisasi")
 }

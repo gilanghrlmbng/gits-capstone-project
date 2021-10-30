@@ -29,30 +29,30 @@ func SeedWarga(db *gorm.DB, listKeluarga []string) []string {
 	// Data 2
 	entropy2 := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
 	Id2 := ulid.MustNew(ulid.Timestamp(time.Now()), entropy2).String()
-	data2 := entity.PengurusRT{
-		Id:        Id2,
-		IdRT:      listKeluarga[0],
-		Nama:      "Ronals",
-		Email:     "warga2@gmail.com",
-		Password:  "PasswordWargaSaya",
-		CreatedAt: time.Now(),
+	data2 := entity.Warga{
+		Id:         Id2,
+		IdKeluarga: listKeluarga[0],
+		Nama:       "Ronals",
+		Email:      "warga2@gmail.com",
+		Password:   "PasswordWargaSaya",
+		CreatedAt:  time.Now(),
 	}
-	data1.Password = utils.HashPassword(data2.Password, data2.Email)
+	data2.Password = utils.HashPassword(data2.Password, data2.Email)
 
 	db.Create(&data2)
 
 	// Data 3
 	entropy3 := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
 	Id3 := ulid.MustNew(ulid.Timestamp(time.Now()), entropy3).String()
-	data3 := entity.PengurusRT{
-		Id:        Id3,
-		IdRT:      listKeluarga[1],
-		Nama:      "mamat",
-		Email:     "warga3@gmail.com",
-		Password:  "PasswordWargaSaya",
-		CreatedAt: time.Now(),
+	data3 := entity.Warga{
+		Id:         Id3,
+		IdKeluarga: listKeluarga[1],
+		Nama:       "mamat",
+		Email:      "warga3@gmail.com",
+		Password:   "PasswordWargaSaya",
+		CreatedAt:  time.Now(),
 	}
-	data1.Password = utils.HashPassword(data3.Password, data3.Email)
+	data3.Password = utils.HashPassword(data3.Password, data3.Email)
 
 	db.Create(&data3)
 

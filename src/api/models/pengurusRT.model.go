@@ -4,10 +4,12 @@ import (
 	"errors"
 	"src/db"
 	"src/entity"
+
+	"github.com/labstack/echo/v4"
 )
 
-func CreatePengurusRT(prt *entity.PengurusRT) (entity.PengurusRT, error) {
-	db := db.GetDB()
+func CreatePengurusRT(c echo.Context, prt *entity.PengurusRT) (entity.PengurusRT, error) {
+	db := db.GetDB(c)
 
 	err := db.Create(&prt)
 	if err.Error != nil {
@@ -20,9 +22,9 @@ func CreatePengurusRT(prt *entity.PengurusRT) (entity.PengurusRT, error) {
 	return *prt, nil
 }
 
-func GetAllPengurusRT() ([]entity.PengurusRT, error) {
+func GetAllPengurusRT(c echo.Context) ([]entity.PengurusRT, error) {
 	var pengurusRTs []entity.PengurusRT
-	db := db.GetDB()
+	db := db.GetDB(c)
 
 	err := db.Find(&pengurusRTs)
 	if err.Error != nil {
@@ -32,9 +34,9 @@ func GetAllPengurusRT() ([]entity.PengurusRT, error) {
 	return pengurusRTs, nil
 }
 
-func GetPengurusByID(id string) (entity.PengurusRT, error) {
+func GetPengurusByID(c echo.Context, id string) (entity.PengurusRT, error) {
 	var prt entity.PengurusRT
-	db := db.GetDB()
+	db := db.GetDB(c)
 
 	err := db.First(&prt, "id = ?", id)
 	if err.Error != nil {
@@ -43,8 +45,8 @@ func GetPengurusByID(id string) (entity.PengurusRT, error) {
 	return prt, nil
 }
 
-func UpdatePengurusById(id string, pengurusRT *entity.PengurusRT) (int64, error) {
-	db := db.GetDB()
+func UpdatePengurusById(c echo.Context, id string, pengurusRT *entity.PengurusRT) (int64, error) {
+	db := db.GetDB(c)
 
 	err := db.Model(&entity.PengurusRT{}).Where("id = ? ", id).Updates(pengurusRT)
 
@@ -54,8 +56,8 @@ func UpdatePengurusById(id string, pengurusRT *entity.PengurusRT) (int64, error)
 	return err.RowsAffected, nil
 }
 
-func SoftDeletePengurusById(id string) (int64, error) {
-	db := db.GetDB()
+func SoftDeletePengurusById(c echo.Context, id string) (int64, error) {
+	db := db.GetDB(c)
 
 	err := db.Where("id = ?", id).Delete(&entity.PengurusRT{})
 

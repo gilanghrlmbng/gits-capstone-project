@@ -12,12 +12,12 @@ import (
 	"github.com/oklog/ulid/v2"
 )
 
-func CreateRT(c echo.Context) error {
+func CreateWarga(c echo.Context) error {
 	// Pertama inisiasi variable dulu
-	rt := new(entity.Rt)
+	w := new(entity.Warga)
 
 	// kemudian ini buat dapetin request body dari mobile
-	if err := c.Bind(rt); err != nil {
+	if err := c.Bind(w); err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -25,19 +25,27 @@ func CreateRT(c echo.Context) error {
 	}
 
 	// terus ini ada validasi buat ngecek inputan dari reqeust body udah sesuai apa belum
-	if err := rt.ValidateCreate(); err.Code > 0 {
+	if err := w.ValidateCreate(); err.Code > 0 {
 		return utils.ResponseError(c, err)
+	}
+
+	_, err := models.GetWargaByEmail(c, w.Email)
+	if err.Error() != "email tidak ditemukan" {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
 	}
 
 	//Ini buat generate ID
 	entropy := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
-	rt.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
+	w.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
 
 	// Ini buat masukin isi dari created_at nya
-	rt.CreatedAt = time.Now()
+	w.CreatedAt = time.Now()
 
 	// Ini fungsi dari models buat create data ke database
-	Rt, err := models.CreateRT(c, rt)
+	W, err := models.CreateWarga(c, w)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -46,15 +54,15 @@ func CreateRT(c echo.Context) error {
 	}
 
 	// Return datanya
-	return utils.ResponseDataRT(c, utils.JSONResponseDataRT{
-		Code:     http.StatusCreated,
-		CreateRT: Rt,
-		Message:  "Berhasil",
+	return utils.ResponseDataWarga(c, utils.JSONResponseDataWarga{
+		Code:        http.StatusCreated,
+		CreateWarga: W,
+		Message:     "Berhasil",
 	})
 }
 
-func GetAllRT(c echo.Context) error {
-	allRT, err := models.GetAllRT(c)
+func GetAllWarga(c echo.Context) error {
+	allWarga, err := models.GetAllWarga(c)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -62,14 +70,14 @@ func GetAllRT(c echo.Context) error {
 		})
 	}
 
-	return utils.ResponseDataRT(c, utils.JSONResponseDataRT{
-		Code:     http.StatusOK,
-		GetAllRT: allRT,
-		Message:  "Berhasil",
+	return utils.ResponseDataWarga(c, utils.JSONResponseDataWarga{
+		Code:        http.StatusOK,
+		GetAllWarga: allWarga,
+		Message:     "Berhasil",
 	})
 }
 
-func GetRTByID(c echo.Context) error {
+func GetWargaByID(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
 		return utils.ResponseError(c, utils.Error{
@@ -78,21 +86,21 @@ func GetRTByID(c echo.Context) error {
 		})
 	}
 
-	rt, err := models.GetRTByID(c, id)
+	w, err := models.GetWargaByID(c, id)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		})
 	}
-	return utils.ResponseDataRT(c, utils.JSONResponseDataRT{
-		Code:      http.StatusOK,
-		GetRTByID: rt,
-		Message:   "Berhasil",
+	return utils.ResponseDataWarga(c, utils.JSONResponseDataWarga{
+		Code:         http.StatusOK,
+		GetWargaByID: w,
+		Message:      "Berhasil",
 	})
 }
 
-func UpdateRTById(c echo.Context) error {
+func UpdateWargaById(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
 		return utils.ResponseError(c, utils.Error{
@@ -101,16 +109,16 @@ func UpdateRTById(c echo.Context) error {
 		})
 	}
 
-	rt := new(entity.Rt)
+	w := new(entity.Warga)
 
-	if err := c.Bind(rt); err != nil {
+	if err := c.Bind(w); err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
 		})
 	}
 
-	_, err := models.GetRTByID(c, id)
+	_, err := models.GetWargaByID(c, id)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -118,9 +126,9 @@ func UpdateRTById(c echo.Context) error {
 		})
 	}
 
-	rt.UpdatedAt = time.Now()
+	w.UpdatedAt = time.Now()
 
-	_, err = models.UpdateRTById(c, id, rt)
+	_, err = models.UpdateWargaById(c, id, w)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -133,7 +141,7 @@ func UpdateRTById(c echo.Context) error {
 	})
 }
 
-func SoftDeleteRTById(c echo.Context) error {
+func SoftDeleteWargaById(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
 		return utils.ResponseError(c, utils.Error{
@@ -142,7 +150,7 @@ func SoftDeleteRTById(c echo.Context) error {
 		})
 	}
 
-	_, err := models.GetRTByID(c, id)
+	_, err := models.GetWargaByID(c, id)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -150,7 +158,7 @@ func SoftDeleteRTById(c echo.Context) error {
 		})
 	}
 
-	_, err = models.SoftDeleteRTById(c, id)
+	_, err = models.SoftDeleteWargaById(c, id)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
