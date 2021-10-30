@@ -9,6 +9,11 @@ type Error struct {
 	Message string `json:"message"`
 }
 
+type JSONResponseLogin struct {
+	Code    int64  `json:"code"`
+	Token   string `json:"token"`
+	Message string `json:"message"`
+}
 type JSONResponseData struct {
 	Code    int64       `json:"code"`
 	Data    interface{} `json:"data"`
@@ -57,6 +62,10 @@ func Response(c echo.Context, res JSONResponse) error {
 }
 
 func ResponseData(c echo.Context, res JSONResponseData) error {
+	return c.JSON(int(res.Code), res)
+}
+
+func ResponseLogin(c echo.Context, res JSONResponseLogin) error {
 	return c.JSON(int(res.Code), res)
 }
 

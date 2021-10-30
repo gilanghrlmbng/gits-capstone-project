@@ -4,15 +4,19 @@ import (
 	"src/api/controllers"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
-func Warga(e *echo.Echo) *echo.Echo {
+func Warga(e *echo.Echo, JWTconfig middleware.JWTConfig) *echo.Echo {
+	auth := e.Group("/warga")
+	auth.Use(middleware.JWTWithConfig(JWTconfig))
+	auth.GET("", controllers.GetAllWarga)
+	auth.GET("/:id", controllers.GetWargaByID)
+	auth.PUT("/:id", controllers.UpdateWargaById)
+	auth.DELETE("/:id", controllers.SoftDeleteWargaById)
 
 	e.POST("/warga", controllers.CreateWarga)
-	e.GET("/warga", controllers.GetAllWarga)
-	e.GET("/warga/:id", controllers.GetWargaByID)
-	e.PUT("/warga/:id", controllers.UpdateWargaById)
-	e.DELETE("/warga/:id", controllers.SoftDeleteWargaById)
+	e.POST("/warga/login", controllers.LoginWarga)
 
 	return e
 }

@@ -170,3 +170,44 @@ func SoftDeleteWargaById(c echo.Context) error {
 		Message: "Berhasil",
 	})
 }
+
+func LoginWarga(c echo.Context) error {
+	w := new(entity.Warga)
+
+	if err := c.Bind(w); err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+
+	warga, err := models.GetWargaByEmail(c, w.Email)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+
+	isValid := utils.CheckPassword(w.Password, w.Email, warga.Password)
+	if !isValid {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Password yang anda masukkan salah",
+		})
+	}
+	token, err := utils.GenerateTokenWarga(c, warga.Nama, warga.Email, warga.Id, warga.IdKeluarga, utils.JWTStandartClaims)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+
+	return utils.ResponseLogin(c, utils.JSONResponseLogin{
+		Code:    http.StatusOK,
+		Token:   token,
+		Message: "Berhasil",
+	})
+
+}
