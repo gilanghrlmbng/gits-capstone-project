@@ -13,5 +13,7 @@ func PengurusRT(e *echo.Echo) *echo.Echo {
 	e.PUT("/pengurus/:id", controllers.UpdatePengurusById)
 	e.DELETE("/pengurus/:id", controllers.SoftDeletePengurusById)
 
+	e.POST("/pengurus/login", controllers.LoginPengurus)
+
 	return e
 }

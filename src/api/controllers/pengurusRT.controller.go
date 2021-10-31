@@ -158,3 +158,45 @@ func SoftDeletePengurusById(c echo.Context) error {
 		Message: "Berhasil",
 	})
 }
+
+func LoginPengurus(c echo.Context) error {
+	prt := new(entity.PengurusRT)
+
+	if err := c.Bind(prt); err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+
+	pengurus, err := models.PengurusSearchEmail(c, prt.Email)
+
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+
+	passTrue := utils.CheckPassword(prt.Password, prt.Email, pengurus.Password)
+
+	if passTrue == false {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Password Salah",
+		})
+	}
+
+	token, err := utils.GenerateTokenPengurus(c, pengurus.Nama, pengurus.Email, pengurus.Id, pengurus.IdRT, utils.JWTStandartClaims)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+	return utils.ResponseData(c, utils.JSONResponseData{
+		Code:    http.StatusCreated,
+		Data:    map[string]string{"token": token, "nama": pengurus.Nama, "email": pengurus.Email},
+		Message: "Berhasil",
+	})
+}
