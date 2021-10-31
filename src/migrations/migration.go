@@ -16,7 +16,7 @@ func Migration(e *echo.Echo, db *gorm.DB) {
 
 	e.Logger.Info("Memulai dengan automigrate")
 
-	err := db.AutoMigrate(&entity.Rt{}, &entity.PengurusRT{}, &entity.Keluarga{}, &entity.Warga{}, &entity.Tagihan{}, &entity.Produk{})
+	err := db.AutoMigrate(&entity.Rt{}, &entity.PengurusRT{}, &entity.Keluarga{}, &entity.Warga{}, &entity.Tagihan{}, &entity.Produk{}, &entity.Informasi{}, &entity.DompetRT{})
 
 	if err != nil {
 		e.Logger.Error(err)
