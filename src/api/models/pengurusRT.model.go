@@ -13,6 +13,7 @@ func CreatePengurusRT(c echo.Context, prt *entity.PengurusRT) (entity.PengurusRT
 
 	err := db.Create(&prt)
 	if err.Error != nil {
+		c.Logger().Error(err)
 		return entity.PengurusRT{}, err.Error
 	}
 	if err.RowsAffected == 0 {
@@ -28,6 +29,7 @@ func GetAllPengurusRT(c echo.Context) ([]entity.PengurusRT, error) {
 
 	err := db.Find(&pengurusRTs)
 	if err.Error != nil {
+		c.Logger().Error(err)
 		return pengurusRTs, err.Error
 	}
 
@@ -40,6 +42,7 @@ func GetPengurusByID(c echo.Context, id string) (entity.PengurusRT, error) {
 
 	err := db.First(&prt, "id = ?", id)
 	if err.Error != nil {
+		c.Logger().Error(err)
 		return entity.PengurusRT{}, errors.New("id tidak ditemukan atau tidak valid")
 	}
 	return prt, nil
@@ -51,6 +54,7 @@ func UpdatePengurusById(c echo.Context, id string, pengurusRT *entity.PengurusRT
 	err := db.Model(&entity.PengurusRT{}).Where("id = ? ", id).Updates(pengurusRT)
 
 	if err.Error != nil {
+		c.Logger().Error(err)
 		return 0, err.Error
 	}
 	return err.RowsAffected, nil
@@ -62,6 +66,7 @@ func SoftDeletePengurusById(c echo.Context, id string) (int64, error) {
 	err := db.Where("id = ?", id).Delete(&entity.PengurusRT{})
 
 	if err.Error != nil || err.RowsAffected == 0 {
+		c.Logger().Error(err)
 		return 0, err.Error
 	}
 	return err.RowsAffected, nil

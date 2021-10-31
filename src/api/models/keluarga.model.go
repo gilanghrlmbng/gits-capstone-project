@@ -14,6 +14,7 @@ func CreateKeluarga(c echo.Context, k *entity.Keluarga) (entity.Keluarga, error)
 
 	err := db.Create(&k)
 	if err.Error != nil {
+		c.Logger().Error(err)
 		return entity.Keluarga{}, err.Error
 	}
 	if err.RowsAffected == 0 {
@@ -33,6 +34,24 @@ func GetAllKeluarga(c echo.Context, filter string) ([]entity.Keluarga, error) {
 		err = db.Find(&keluargas)
 	}
 	if err.Error != nil {
+		c.Logger().Error(err)
+		return keluargas, err.Error
+	}
+
+	return keluargas, nil
+}
+
+func GetAllKeluargaWithWarga(c echo.Context, filter string) ([]entity.Keluarga, error) {
+	var keluargas []entity.Keluarga
+	db := db.GetDB(c)
+	var err *gorm.DB
+	if filter != "" {
+		err = db.Preload("Warga").Where("nama = ?", filter).Find(&keluargas)
+	} else {
+		err = db.Preload("Warga").Find(&keluargas)
+	}
+	if err.Error != nil {
+		c.Logger().Error(err)
 		return keluargas, err.Error
 	}
 
@@ -45,6 +64,7 @@ func GetKeluargaByID(c echo.Context, id string) (entity.Keluarga, error) {
 
 	err := db.First(&k, "id = ?", id)
 	if err.Error != nil {
+		c.Logger().Error(err)
 		return entity.Keluarga{}, errors.New("id tidak ditemukan atau tidak valid")
 	}
 
@@ -56,6 +76,7 @@ func UpdateKeluargaById(c echo.Context, id string, k *entity.Keluarga) (int64, e
 
 	err := db.Model(&entity.Keluarga{}).Where("id = ?", id).Updates(k)
 	if err.Error != nil {
+		c.Logger().Error(err)
 		return 0, err.Error
 	}
 	return err.RowsAffected, nil
@@ -66,6 +87,7 @@ func SoftDeleteKeluargaById(c echo.Context, id string) (int64, error) {
 
 	err := db.Where("id = ?", id).Delete(&entity.Keluarga{})
 	if err.Error != nil || err.RowsAffected == 0 {
+		c.Logger().Error(err)
 		return 0, err.Error
 	}
 

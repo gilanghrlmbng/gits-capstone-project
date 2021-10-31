@@ -43,5 +43,11 @@ func (w Warga) ValidateCreate() utils.Error {
 			Message: "Password tidak boleh kosong",
 		}
 	}
+	if w.IdKeluarga == "" {
+		return utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "ID Keluarga tidak boleh kosong",
+		}
+	}
 	return utils.Error{}
 }

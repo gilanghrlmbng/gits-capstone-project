@@ -28,6 +28,13 @@ type JSONResponseDataRT struct {
 	Message   string      `json:"message"`
 }
 
+type JSONResponseDataProduk struct {
+	Code          int64       `json:"code"`
+	GetProdukByID interface{} `json:"get_produk_by_id,omitempty"`
+	GetAllProduk  interface{} `json:"get_all_produk,omitempty"`
+	CreateProduk  interface{} `json:"create_produk,omitempty"`
+	Message       string      `json:"message"`
+}
 type JSONResponseDataKeluarga struct {
 	Code            int64       `json:"code"`
 	GetKeluargaByID interface{} `json:"get_keluarga_by_id,omitempty"`
@@ -62,6 +69,10 @@ func Response(c echo.Context, res JSONResponse) error {
 }
 
 func ResponseData(c echo.Context, res JSONResponseData) error {
+	return c.JSON(int(res.Code), res)
+}
+
+func ResponseDataProduk(c echo.Context, res JSONResponseDataProduk) error {
 	return c.JSON(int(res.Code), res)
 }
 

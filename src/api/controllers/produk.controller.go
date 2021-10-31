@@ -12,32 +12,26 @@ import (
 	"github.com/oklog/ulid/v2"
 )
 
-func CreateKeluarga(c echo.Context) error {
-	// Pertama inisiasi variable dulu
-	k := new(entity.Keluarga)
+func CreateProduk(c echo.Context) error {
+	p := new(entity.Produk)
 
-	// kemudian ini buat dapetin request body dari mobile
-	if err := c.Bind(k); err != nil {
+	if err := c.Bind(p); err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
 		})
 	}
 
-	// terus ini ada validasi buat ngecek inputan dari reqeust body udah sesuai apa belum
-	if err := k.ValidateCreate(); err.Code > 0 {
+	if err := p.ValidateCreate(); err.Code > 0 {
 		return utils.ResponseError(c, err)
 	}
 
-	//Ini buat generate ID
 	entropy := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
-	k.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
+	p.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
 
-	// Ini buat masukin isi dari created_at nya
-	k.CreatedAt = time.Now()
+	p.CreatedAt = time.Now()
 
-	// Ini fungsi dari models buat create data ke database
-	keluarga, err := models.CreateKeluarga(c, k)
+	Produk, err := models.CreateProduk(c, p)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -45,16 +39,15 @@ func CreateKeluarga(c echo.Context) error {
 		})
 	}
 
-	// Return datanya
-	return utils.ResponseDataKeluarga(c, utils.JSONResponseDataKeluarga{
-		Code:           http.StatusCreated,
-		CreateKeluarga: keluarga,
-		Message:        "Berhasil",
+	return utils.ResponseDataProduk(c, utils.JSONResponseDataProduk{
+		Code:         http.StatusCreated,
+		CreateProduk: Produk,
+		Message:      "Berhasil",
 	})
 }
 
-func GetAllKeluarga(c echo.Context) error {
-	allKeluarga, err := models.GetAllKeluarga(c, c.QueryParam("nama"))
+func GetAllProduk(c echo.Context) error {
+	allProduk, err := models.GetAllProduk(c)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -62,30 +55,14 @@ func GetAllKeluarga(c echo.Context) error {
 		})
 	}
 
-	return utils.ResponseDataKeluarga(c, utils.JSONResponseDataKeluarga{
-		Code:           http.StatusOK,
-		GetAllKeluarga: allKeluarga,
-		Message:        "Berhasil",
+	return utils.ResponseDataProduk(c, utils.JSONResponseDataProduk{
+		Code:         http.StatusOK,
+		GetAllProduk: allProduk,
+		Message:      "Berhasil",
 	})
 }
 
-func GetAllKeluargaWithWarga(c echo.Context) error {
-	allKeluarga, err := models.GetAllKeluargaWithWarga(c, c.QueryParam("nama"))
-	if err != nil {
-		return utils.ResponseError(c, utils.Error{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error(),
-		})
-	}
-
-	return utils.ResponseDataKeluarga(c, utils.JSONResponseDataKeluarga{
-		Code:           http.StatusOK,
-		GetAllKeluarga: allKeluarga,
-		Message:        "Berhasil",
-	})
-}
-
-func GetKeluargaByID(c echo.Context) error {
+func GetProdukByID(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
 		return utils.ResponseError(c, utils.Error{
@@ -94,21 +71,21 @@ func GetKeluargaByID(c echo.Context) error {
 		})
 	}
 
-	k, err := models.GetKeluargaByID(c, id)
+	p, err := models.GetProdukByID(c, id)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		})
 	}
-	return utils.ResponseDataKeluarga(c, utils.JSONResponseDataKeluarga{
-		Code:            http.StatusOK,
-		GetKeluargaByID: k,
-		Message:         "Berhasil",
+	return utils.ResponseDataProduk(c, utils.JSONResponseDataProduk{
+		Code:          http.StatusOK,
+		GetProdukByID: p,
+		Message:       "Berhasil",
 	})
 }
 
-func UpdateKeluargaById(c echo.Context) error {
+func UpdateProdukById(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
 		return utils.ResponseError(c, utils.Error{
@@ -117,16 +94,16 @@ func UpdateKeluargaById(c echo.Context) error {
 		})
 	}
 
-	k := new(entity.Keluarga)
+	p := new(entity.Produk)
 
-	if err := c.Bind(k); err != nil {
+	if err := c.Bind(p); err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
 		})
 	}
 
-	_, err := models.GetKeluargaByID(c, id)
+	_, err := models.GetProdukByID(c, id)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -134,8 +111,9 @@ func UpdateKeluargaById(c echo.Context) error {
 		})
 	}
 
-	k.UpdatedAt = time.Now()
-	_, err = models.UpdateKeluargaById(c, id, k)
+	p.UpdatedAt = time.Now()
+
+	_, err = models.UpdateProdukById(c, id, p)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -148,16 +126,18 @@ func UpdateKeluargaById(c echo.Context) error {
 	})
 }
 
-func SoftDeleteKeluargaById(c echo.Context) error {
+func SoftDeleteProdukById(c echo.Context) error {
 	id := c.Param("id")
+
 	if id == "" {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
-			Message: "Id tidak valid",
+			Message: "Id todak valid",
 		})
 	}
 
-	_, err := models.GetKeluargaByID(c, id)
+	_, err := models.GetProdukByID(c, id)
+
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -165,7 +145,8 @@ func SoftDeleteKeluargaById(c echo.Context) error {
 		})
 	}
 
-	_, err = models.SoftDeleteKeluargaById(c, id)
+	_, err = models.SoftDeleteProdukById(c, id)
+
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,

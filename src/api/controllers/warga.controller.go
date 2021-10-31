@@ -62,7 +62,7 @@ func CreateWarga(c echo.Context) error {
 }
 
 func GetAllWarga(c echo.Context) error {
-	allWarga, err := models.GetAllWarga(c)
+	allWarga, err := models.GetAllWarga(c, c.QueryParam("id_keluarga"))
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,

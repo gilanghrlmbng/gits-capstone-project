@@ -10,8 +10,8 @@ import (
 
 type Rt struct {
 	Id           string          `gorm:"type:varchar(50);primaryKey" json:"id" form:"id"`
-	PengurusRT   []PengurusRT    `gorm:"foreignKey:id_rt;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"pengurus_rt" form:"pengurus_rt"`
-	Keluarga     []Keluarga      `gorm:"foreignKey:id_rt;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"keluarga" form:"keluarga"`
+	PengurusRT   []PengurusRT    `gorm:"foreignKey:id_rt;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"pengurus_rt,omitempty" form:"pengurus_rt"`
+	Keluarga     []Keluarga      `gorm:"foreignKey:id_rt;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"keluarga,omitempty" form:"keluarga"`
 	NamaRt       string          `gorm:"type:varchar(50);not null" json:"nama_rt" form:"nama_rt"`
 	NamaRw       string          `gorm:"type:varchar(50);not null" json:"nama_rw" form:"nama_rw"`
 	Kelurahan    string          `gorm:"type:varchar(50);not null" json:"kelurahan" form:"kelurahan"`

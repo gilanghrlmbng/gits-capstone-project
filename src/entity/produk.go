@@ -1,6 +1,8 @@
 package entity
 
 import (
+	"net/http"
+	"src/utils"
 	"time"
 
 	"gorm.io/gorm"
@@ -19,4 +21,26 @@ type Produk struct {
 
 func (Produk) TableName() string {
 	return "produk"
+}
+
+func (p Produk) ValidateCreate() utils.Error {
+	if p.Nama == "" {
+		return utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Nama tidak boleh kosong",
+		}
+	}
+	if p.Detail == "" {
+		return utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Detail produk tidak boleh kosong",
+		}
+	}
+	if p.Harga == 0 {
+		return utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Harga tidak boleh kosong",
+		}
+	}
+	return utils.Error{}
 }

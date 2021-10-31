@@ -69,6 +69,38 @@ func GetAllRT(c echo.Context) error {
 	})
 }
 
+func GetAllRTWithPengurus(c echo.Context) error {
+	allRT, err := models.GetAllRTWithPengurus(c)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	return utils.ResponseDataRT(c, utils.JSONResponseDataRT{
+		Code:     http.StatusOK,
+		GetAllRT: allRT,
+		Message:  "Berhasil",
+	})
+}
+
+func GetAllRTWithKeluarga(c echo.Context) error {
+	allRT, err := models.GetAllRTWithKeluarga(c)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	return utils.ResponseDataRT(c, utils.JSONResponseDataRT{
+		Code:     http.StatusOK,
+		GetAllRT: allRT,
+		Message:  "Berhasil",
+	})
+}
+
 func GetRTByID(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {

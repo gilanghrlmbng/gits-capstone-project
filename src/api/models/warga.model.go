@@ -6,6 +6,7 @@ import (
 	"src/entity"
 
 	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
 )
 
 func CreateWarga(c echo.Context, w *entity.Warga) (entity.Warga, error) {
@@ -13,6 +14,7 @@ func CreateWarga(c echo.Context, w *entity.Warga) (entity.Warga, error) {
 
 	err := db.Create(&w)
 	if err.Error != nil {
+		c.Logger().Error(err)
 		return entity.Warga{}, err.Error
 	}
 	if err.RowsAffected == 0 {
@@ -22,12 +24,19 @@ func CreateWarga(c echo.Context, w *entity.Warga) (entity.Warga, error) {
 	return *w, nil
 }
 
-func GetAllWarga(c echo.Context) ([]entity.Warga, error) {
+func GetAllWarga(c echo.Context, IdKeluarga string) ([]entity.Warga, error) {
 	var ws []entity.Warga
 	db := db.GetDB(c)
 
-	err := db.Find(&ws)
+	var err *gorm.DB
+	if IdKeluarga != "" {
+		err = db.Where("id_keluarga = ?", IdKeluarga).Find(&ws)
+	} else {
+		err = db.Find(&ws)
+	}
+
 	if err.Error != nil {
+		c.Logger().Error(err)
 		return ws, err.Error
 	}
 
@@ -40,6 +49,7 @@ func GetWargaByID(c echo.Context, id string) (entity.Warga, error) {
 
 	err := db.First(&w, "id = ?", id)
 	if err.Error != nil {
+		c.Logger().Error(err)
 		return entity.Warga{}, errors.New("id tidak ditemukan atau tidak valid")
 	}
 
@@ -52,6 +62,7 @@ func GetWargaByEmail(c echo.Context, email string) (entity.Warga, error) {
 
 	err := db.First(&w, "email = ?", email)
 	if err.Error != nil {
+		c.Logger().Error(err)
 		return entity.Warga{}, errors.New("email tidak ditemukan")
 	}
 
@@ -63,6 +74,7 @@ func UpdateWargaById(c echo.Context, id string, w *entity.Warga) (int64, error) 
 
 	err := db.Model(&entity.Warga{}).Where("id = ?", id).Updates(w)
 	if err.Error != nil {
+		c.Logger().Error(err)
 		return 0, err.Error
 	}
 	return err.RowsAffected, nil
@@ -73,6 +85,7 @@ func SoftDeleteWargaById(c echo.Context, id string) (int64, error) {
 
 	err := db.Where("id = ?", id).Delete(&entity.Warga{})
 	if err.Error != nil || err.RowsAffected == 0 {
+		c.Logger().Error(err)
 		return 0, err.Error
 	}
 
