@@ -79,9 +79,9 @@ func GetAllRTWithPengurus(c echo.Context) error {
 	}
 
 	return utils.ResponseDataRT(c, utils.JSONResponseDataRT{
-		Code:     http.StatusOK,
-		GetAllRT: allRT,
-		Message:  "Berhasil",
+		Code:             http.StatusOK,
+		GetAllRTPengurus: allRT,
+		Message:          "Berhasil",
 	})
 }
 
@@ -95,9 +95,9 @@ func GetAllRTWithKeluarga(c echo.Context) error {
 	}
 
 	return utils.ResponseDataRT(c, utils.JSONResponseDataRT{
-		Code:     http.StatusOK,
-		GetAllRT: allRT,
-		Message:  "Berhasil",
+		Code:             http.StatusOK,
+		GetAllRTKeluarga: allRT,
+		Message:          "Berhasil",
 	})
 }
 

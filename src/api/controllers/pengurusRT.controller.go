@@ -180,7 +180,7 @@ func LoginPengurus(c echo.Context) error {
 
 	passTrue := utils.CheckPassword(prt.Password, prt.Email, pengurus.Password)
 
-	if passTrue == false {
+	if !passTrue {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: "Password Salah",

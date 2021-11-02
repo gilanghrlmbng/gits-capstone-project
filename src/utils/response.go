@@ -21,11 +21,13 @@ type JSONResponseData struct {
 }
 
 type JSONResponseDataRT struct {
-	Code      int64       `json:"code"`
-	GetRTByID interface{} `json:"get_rt_by_id,omitempty"`
-	GetAllRT  interface{} `json:"get_all_rt,omitempty"`
-	CreateRT  interface{} `json:"create_rt,omitempty"`
-	Message   string      `json:"message"`
+	Code             int64       `json:"code"`
+	GetRTByID        interface{} `json:"get_rt_by_id,omitempty"`
+	GetAllRT         interface{} `json:"get_all_rt,omitempty"`
+	GetAllRTPengurus interface{} `json:"get_all_rt_pengurus,omitempty"`
+	GetAllRTKeluarga interface{} `json:"get_all_rt_keluarga,omitempty"`
+	CreateRT         interface{} `json:"create_rt,omitempty"`
+	Message          string      `json:"message"`
 }
 
 type JSONResponseDataProduk struct {
@@ -36,11 +38,12 @@ type JSONResponseDataProduk struct {
 	Message       string      `json:"message"`
 }
 type JSONResponseDataKeluarga struct {
-	Code            int64       `json:"code"`
-	GetKeluargaByID interface{} `json:"get_keluarga_by_id,omitempty"`
-	GetAllKeluarga  interface{} `json:"get_all_keluarga,omitempty"`
-	CreateKeluarga  interface{} `json:"create_keluarga,omitempty"`
-	Message         string      `json:"message"`
+	Code                int64       `json:"code"`
+	GetKeluargaByID     interface{} `json:"get_keluarga_by_id,omitempty"`
+	GetAllKeluarga      interface{} `json:"get_all_keluarga,omitempty"`
+	GetAllKeluargaWarga interface{} `json:"get_all_keluarga_warga,omitempty"`
+	CreateKeluarga      interface{} `json:"create_keluarga,omitempty"`
+	Message             string      `json:"message"`
 }
 
 type JSONResponseDataPengurusRT struct {

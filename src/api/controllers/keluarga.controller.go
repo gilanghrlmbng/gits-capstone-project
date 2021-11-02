@@ -79,9 +79,9 @@ func GetAllKeluargaWithWarga(c echo.Context) error {
 	}
 
 	return utils.ResponseDataKeluarga(c, utils.JSONResponseDataKeluarga{
-		Code:           http.StatusOK,
-		GetAllKeluarga: allKeluarga,
-		Message:        "Berhasil",
+		Code:                http.StatusOK,
+		GetAllKeluargaWarga: allKeluarga,
+		Message:             "Berhasil",
 	})
 }
 
