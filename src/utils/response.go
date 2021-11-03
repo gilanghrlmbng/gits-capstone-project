@@ -40,6 +40,7 @@ type JSONResponseDataProduk struct {
 type JSONResponseDataKeluarga struct {
 	Code                int64       `json:"code"`
 	GetKeluargaByID     interface{} `json:"get_keluarga_by_id,omitempty"`
+	GetKeluargaSaya     interface{} `json:"get_keluarga_saya,omitempty"`
 	GetAllKeluarga      interface{} `json:"get_all_keluarga,omitempty"`
 	GetAllKeluargaWarga interface{} `json:"get_all_keluarga_warga,omitempty"`
 	CreateKeluarga      interface{} `json:"create_keluarga,omitempty"`

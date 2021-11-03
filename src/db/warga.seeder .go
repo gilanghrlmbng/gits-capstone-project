@@ -22,7 +22,7 @@ func SeedWarga(db *gorm.DB, listKeluarga []string) []string {
 		Password:   "PasswordWargaSaya",
 		CreatedAt:  time.Now(),
 	}
-	data1.Password = utils.HashPassword(data1.Password, data1.Email)
+	data1.Password = utils.HashPassword(data1.Password, data1.Id)
 
 	db.Create(&data1)
 
@@ -37,7 +37,7 @@ func SeedWarga(db *gorm.DB, listKeluarga []string) []string {
 		Password:   "PasswordWargaSaya",
 		CreatedAt:  time.Now(),
 	}
-	data2.Password = utils.HashPassword(data2.Password, data2.Email)
+	data2.Password = utils.HashPassword(data2.Password, data2.Id)
 
 	db.Create(&data2)
 
@@ -52,7 +52,7 @@ func SeedWarga(db *gorm.DB, listKeluarga []string) []string {
 		Password:   "PasswordWargaSaya",
 		CreatedAt:  time.Now(),
 	}
-	data3.Password = utils.HashPassword(data3.Password, data3.Email)
+	data3.Password = utils.HashPassword(data3.Password, data3.Id)
 
 	db.Create(&data3)
 

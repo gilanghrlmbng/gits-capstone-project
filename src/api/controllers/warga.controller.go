@@ -29,11 +29,11 @@ func CreateWarga(c echo.Context) error {
 		return utils.ResponseError(c, err)
 	}
 
-	_, err := models.GetWargaByEmail(c, w.Email)
-	if err.Error() != "email tidak ditemukan" {
+	cek, _ := models.GetWargaByEmail(c, w.Email)
+	if cek.Id != "" {
 		return utils.ResponseError(c, utils.Error{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error(),
+			Code:    http.StatusBadRequest,
+			Message: "Email sudah terdaftar",
 		})
 	}
 
@@ -41,11 +41,13 @@ func CreateWarga(c echo.Context) error {
 	entropy := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
 	w.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
 
+	pass := w.Password
 	// Ini buat masukin isi dari created_at nya
 	w.CreatedAt = time.Now()
+	w.Password = utils.HashPassword(w.Password, w.Id)
 
 	// Ini fungsi dari models buat create data ke database
-	W, err := models.CreateWarga(c, w)
+	_, err := models.CreateWarga(c, w)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -54,11 +56,7 @@ func CreateWarga(c echo.Context) error {
 	}
 
 	// Return datanya
-	return utils.ResponseDataWarga(c, utils.JSONResponseDataWarga{
-		Code:        http.StatusCreated,
-		CreateWarga: W,
-		Message:     "Berhasil",
-	})
+	return loginWarga(c, pass, w)
 }
 
 func GetAllWarga(c echo.Context) error {
@@ -125,7 +123,9 @@ func UpdateWargaById(c echo.Context) error {
 			Message: err.Error(),
 		})
 	}
-
+	if w.Password != "" {
+		w.Password = utils.HashPassword(w.Password, w.Email)
+	}
 	w.UpdatedAt = time.Now()
 
 	_, err = models.UpdateWargaById(c, id, w)
@@ -189,7 +189,7 @@ func LoginWarga(c echo.Context) error {
 		})
 	}
 
-	isValid := utils.CheckPassword(w.Password, w.Email, warga.Password)
+	isValid := utils.CheckPassword(w.Password, warga.Id, warga.Password)
 	if !isValid {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
@@ -197,6 +197,31 @@ func LoginWarga(c echo.Context) error {
 		})
 	}
 	token, err := utils.GenerateTokenWarga(c, warga.Nama, warga.Email, warga.Id, warga.IdKeluarga, utils.JWTStandartClaims)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+
+	return utils.ResponseLogin(c, utils.JSONResponseLogin{
+		Code:    http.StatusOK,
+		Token:   token,
+		Message: "Berhasil",
+	})
+
+}
+
+func loginWarga(c echo.Context, pass string, w *entity.Warga) error {
+
+	isValid := utils.CheckPassword(pass, w.Id, w.Password)
+	if !isValid {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Password yang anda masukkan salah",
+		})
+	}
+	token, err := utils.GenerateTokenWarga(c, w.Nama, w.Email, w.Id, w.IdKeluarga, utils.JWTStandartClaims)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,

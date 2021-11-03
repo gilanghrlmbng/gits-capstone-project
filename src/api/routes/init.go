@@ -26,12 +26,11 @@ func Init(e *echo.Echo) *echo.Echo {
 		Message: "Token Invalid",
 	}
 	e.Logger.Info("menginisialisasikan routes")
-	e = Keluarga(e)
+	e = Keluarga(e, JWTconfig)
 	e = RT(e)
 	e = PengurusRT(e)
 	e = Warga(e, JWTconfig)
 	e = Produk(e)
-
 
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello Worlds!!!")

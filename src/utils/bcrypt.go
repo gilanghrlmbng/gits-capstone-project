@@ -6,8 +6,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func HashPassword(password, email string) string {
-	pass := []byte(fmt.Sprintf("%s:%s", password, email))
+func HashPassword(password, id string) string {
+	pass := []byte(fmt.Sprintf("%s:%s", password, id))
 
 	// Hashing the password with the default cost of 10
 	hashedPassword, err := bcrypt.GenerateFromPassword(pass, bcrypt.DefaultCost)
@@ -17,7 +17,7 @@ func HashPassword(password, email string) string {
 	return string(hashedPassword)
 }
 
-func CheckPassword(password, email, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(fmt.Sprintf("%s:%s", password, email)))
+func CheckPassword(password, id, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(fmt.Sprintf("%s:%s", password, id)))
 	return err == nil
 }

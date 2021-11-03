@@ -26,12 +26,20 @@ func CreatePengurus(c echo.Context) error {
 		return utils.ResponseError(c, err)
 	}
 
+	cek, _ := models.PengurusSearchEmail(c, prt.Email)
+	if cek.Id != "" {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Email sudah terdaftar",
+		})
+	}
+
 	entropy := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
 	prt.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
-
+	pass := prt.Password
 	prt.CreatedAt = time.Now()
-
-	PengurusRT, err := models.CreatePengurusRT(c, prt)
+	prt.Password = utils.HashPassword(prt.Password, prt.Id)
+	_, err := models.CreatePengurusRT(c, prt)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -39,11 +47,7 @@ func CreatePengurus(c echo.Context) error {
 		})
 	}
 
-	return utils.ResponseDataPengurusRT(c, utils.JSONResponseDataPengurusRT{
-		Code:           http.StatusCreated,
-		CreatePengurus: PengurusRT,
-		Message:        "Berhasil",
-	})
+	return loginPengurus(c, pass, prt)
 }
 
 func GetAllPengurusRT(c echo.Context) error {
@@ -111,6 +115,9 @@ func UpdatePengurusById(c echo.Context) error {
 		})
 	}
 
+	if prt.Password != "" {
+		prt.Password = utils.HashPassword(prt.Password, prt.Email)
+	}
 	prt.UpdatedAt = time.Now()
 
 	_, err = models.UpdatePengurusById(c, id, prt)
@@ -163,6 +170,7 @@ func LoginPengurus(c echo.Context) error {
 	prt := new(entity.PengurusRT)
 
 	if err := c.Bind(prt); err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -178,7 +186,7 @@ func LoginPengurus(c echo.Context) error {
 		})
 	}
 
-	passTrue := utils.CheckPassword(prt.Password, prt.Email, pengurus.Password)
+	passTrue := utils.CheckPassword(prt.Password, pengurus.Id, pengurus.Password)
 
 	if !passTrue {
 		return utils.ResponseError(c, utils.Error{
@@ -194,9 +202,36 @@ func LoginPengurus(c echo.Context) error {
 			Message: err.Error(),
 		})
 	}
-	return utils.ResponseData(c, utils.JSONResponseData{
-		Code:    http.StatusCreated,
-		Data:    map[string]string{"token": token, "nama": pengurus.Nama, "email": pengurus.Email},
+
+	return utils.ResponseLogin(c, utils.JSONResponseLogin{
+		Code:    http.StatusOK,
+		Token:   token,
+		Message: "Berhasil",
+	})
+}
+
+func loginPengurus(c echo.Context, pass string, prt *entity.PengurusRT) error {
+
+	passTrue := utils.CheckPassword(pass, prt.Id, prt.Password)
+
+	if !passTrue {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Password Salah",
+		})
+	}
+
+	token, err := utils.GenerateTokenPengurus(c, prt.Nama, prt.Email, prt.Id, prt.IdRT, utils.JWTStandartClaims)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+
+	return utils.ResponseLogin(c, utils.JSONResponseLogin{
+		Code:    http.StatusOK,
+		Token:   token,
 		Message: "Berhasil",
 	})
 }

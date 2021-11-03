@@ -41,14 +41,14 @@ func GetAllKeluarga(c echo.Context, filter string) ([]entity.Keluarga, error) {
 	return keluargas, nil
 }
 
-func GetAllKeluargaWithWarga(c echo.Context, filter string) ([]entity.Keluarga, error) {
+func GetAllKeluargaWithEntity(c echo.Context, filter string, entitas string) ([]entity.Keluarga, error) {
 	var keluargas []entity.Keluarga
 	db := db.GetDB(c)
 	var err *gorm.DB
 	if filter != "" {
-		err = db.Preload("Warga").Where("nama = ?", filter).Find(&keluargas)
+		err = db.Preload(entitas).Where("nama = ?", filter).Find(&keluargas)
 	} else {
-		err = db.Preload("Warga").Find(&keluargas)
+		err = db.Preload(entitas).Find(&keluargas)
 	}
 	if err.Error != nil {
 		c.Logger().Error(err)
