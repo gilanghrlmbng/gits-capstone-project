@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"math/rand"
 	"src/db"
 	"src/entity"
 
@@ -92,4 +93,26 @@ func SoftDeleteKeluargaById(c echo.Context, id string) (int64, error) {
 	}
 
 	return err.RowsAffected, nil
+}
+
+func GenerateKodeKeluarga(c echo.Context, n int16) string {
+	const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = letterBytes[rand.Intn(len(letterBytes))]
+	}
+	kode := string(b)
+	db := db.GetDB(c)
+
+	err := db.Where("kode_keluarga = ?", kode).First(&entity.Keluarga{})
+	for err.Error == nil {
+		b = make([]byte, n)
+		for i := range b {
+			b[i] = letterBytes[rand.Intn(len(letterBytes))]
+		}
+		kode = string(b)
+		err = db.Where("kode_keluarga = ?", kode).First(&entity.Keluarga{})
+	}
+	return kode
 }

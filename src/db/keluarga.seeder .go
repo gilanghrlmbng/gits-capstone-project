@@ -14,11 +14,12 @@ func SeedKeluarga(db *gorm.DB, listRT []string) []string {
 	entropy1 := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
 	Id1 := ulid.MustNew(ulid.Timestamp(time.Now()), entropy1).String()
 	data1 := entity.Keluarga{
-		Id:        Id1,
-		IdRT:      listRT[0],
-		Nama:      "Keluarga Pak Agus",
-		Alamat:    "Rumah No 7",
-		CreatedAt: time.Now(),
+		Id:           Id1,
+		IdRT:         listRT[0],
+		Nama:         "Keluarga Pak Agus",
+		Alamat:       "Rumah No 7",
+		KodeKeluarga: "As3ZGx",
+		CreatedAt:    time.Now(),
 	}
 
 	db.Create(&data1)
@@ -27,11 +28,12 @@ func SeedKeluarga(db *gorm.DB, listRT []string) []string {
 	entropy2 := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
 	Id2 := ulid.MustNew(ulid.Timestamp(time.Now()), entropy2).String()
 	data2 := entity.Keluarga{
-		Id:        Id2,
-		IdRT:      listRT[0],
-		Nama:      "Keluarga Pak Aleks",
-		Alamat:    "No 8, Tetanggaan sama Pak Agus",
-		CreatedAt: time.Now(),
+		Id:           Id2,
+		IdRT:         listRT[0],
+		Nama:         "Keluarga Pak Aleks",
+		Alamat:       "No 8, Tetanggaan sama Pak Agus",
+		KodeKeluarga: "0MK2Rr",
+		CreatedAt:    time.Now(),
 	}
 
 	db.Create(&data2)

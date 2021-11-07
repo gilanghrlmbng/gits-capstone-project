@@ -37,6 +37,8 @@ func CreateKeluarga(c echo.Context) error {
 	// Ini buat masukin isi dari created_at nya
 	k.CreatedAt = time.Now()
 
+	k.KodeKeluarga = models.GenerateKodeKeluarga(c, 6)
+
 	// Ini fungsi dari models buat create data ke database
 	keluarga, err := models.CreateKeluarga(c, k)
 	if err != nil {
