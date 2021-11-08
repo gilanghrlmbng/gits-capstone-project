@@ -16,7 +16,15 @@ import (
 func CreateKeluarga(c echo.Context) error {
 	// Pertama inisiasi variable dulu
 	k := new(entity.Keluarga)
-
+	userData := c.Get("user").(*jwt.Token)
+	claims := userData.Claims.(*utils.JWTCustomClaims)
+	if claims.IdRT == "" {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Maaf anda tidak memiliki akses ini",
+		})
+	}
+	k.IdRT = claims.IdRT
 	// kemudian ini buat dapetin request body dari mobile
 	if err := c.Bind(k); err != nil {
 		return utils.ResponseError(c, utils.Error{

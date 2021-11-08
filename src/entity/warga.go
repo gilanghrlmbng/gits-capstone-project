@@ -54,10 +54,10 @@ func (w Warga) ValidateCreate() utils.Error {
 			Message: "Password tidak boleh kosong",
 		}
 	}
-	if w.IdKeluarga == "" {
+	if w.KodeKeluarga == "" {
 		return utils.Error{
 			Code:    http.StatusBadRequest,
-			Message: "ID Keluarga tidak boleh kosong",
+			Message: "Kode Keluarga tidak boleh kosong",
 		}
 	}
 	if len(w.NoHandphone) < 10 && len(w.NoHandphone) > 13 {

@@ -40,6 +40,12 @@ func (prt PengurusRT) ValidateCreate() utils.Error {
 			Message: "Email tidak valid",
 		}
 	}
+	if prt.KodeRT == "" {
+		return utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Kode RT tidak boleh kosong",
+		}
+	}
 	if prt.Password == "" {
 		return utils.Error{
 			Code:    http.StatusBadRequest,
