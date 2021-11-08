@@ -29,6 +29,15 @@ func CreateWarga(c echo.Context) error {
 		return utils.ResponseError(c, err)
 	}
 
+	k, err := models.GetKeluargaByKode(c, w.KodeKeluarga)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+	w.IdKeluarga = k.Id
+
 	cek, _ := models.GetWargaByEmail(c, w.Email)
 	if cek.Id != "" {
 		return utils.ResponseError(c, utils.Error{
@@ -47,7 +56,7 @@ func CreateWarga(c echo.Context) error {
 	w.Password = utils.HashPassword(w.Password, w.Id)
 
 	// Ini fungsi dari models buat create data ke database
-	_, err := models.CreateWarga(c, w)
+	_, err = models.CreateWarga(c, w)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,

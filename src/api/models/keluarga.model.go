@@ -95,6 +95,20 @@ func SoftDeleteKeluargaById(c echo.Context, id string) (int64, error) {
 	return err.RowsAffected, nil
 }
 
+
+func GetKeluargaByKode(c echo.Context, kode string) (entity.Keluarga, error) {
+	var k entity.Keluarga
+	db := db.GetDB(c)
+
+	err := db.First(&k, "kode_keluarga = ?", kode)
+	if err.Error != nil {
+		c.Logger().Error(err)
+		return entity.Keluarga{}, errors.New("kode tidak ditemukan atau tidak valid")
+	}
+
+	return k, nil
+}
+
 func GenerateKodeKeluarga(c echo.Context, n int16) string {
 	const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 

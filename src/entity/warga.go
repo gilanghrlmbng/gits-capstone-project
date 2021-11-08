@@ -12,16 +12,17 @@ import (
 )
 
 type Warga struct {
-	Id          string          `gorm:"type:varchar(50);primaryKey" json:"id" form:"id"`
-	IdKeluarga  string          `gorm:"type:varchar(50);not null" json:"id_keluarga" form:"id_keluarga"`
-	Nama        string          `gorm:"type:varchar(100);not null" json:"nama" form:"nama"`
-	NoHandphone string          `gorm:"type:varchar(20);not null" json:"no_hp" form:"no_hp"`
-	Gender      string          `gorm:"type:varchar(20);not null" json:"gender" form:"gender"`
-	Email       string          `gorm:"type:varchar(120);not null" json:"email" form:"email"`
-	Password    string          `gorm:"type:varchar(100);not null" json:"password" form:"password"`
-	CreatedAt   time.Time       `gorm:"type:timestamptz;not null" json:"created_at"`
-	UpdatedAt   time.Time       `gorm:"type:timestamptz;" json:"updated_at"`
-	DeletedAt   *gorm.DeletedAt `json:"deleted_at,omitempty"`
+	Id           string          `gorm:"type:varchar(50);primaryKey" json:"id" form:"id"`
+	IdKeluarga   string          `gorm:"type:varchar(50);not null" json:"id_keluarga" form:"id_keluarga"`
+	KodeKeluarga string          `gorm:"type:varchar(100); not null" json:"kode_keluarga,omitempty" form:"kode_keluarga"`
+	Nama         string          `gorm:"type:varchar(100);not null" json:"nama" form:"nama"`
+	NoHandphone  string          `gorm:"type:varchar(20);not null" json:"no_hp" form:"no_hp"`
+	Gender       string          `gorm:"type:varchar(20);not null" json:"gender" form:"gender"`
+	Email        string          `gorm:"type:varchar(120);not null" json:"email" form:"email"`
+	Password     string          `gorm:"type:varchar(100);not null" json:"password" form:"password"`
+	CreatedAt    time.Time       `gorm:"type:timestamptz;not null" json:"created_at"`
+	UpdatedAt    time.Time       `gorm:"type:timestamptz;" json:"updated_at"`
+	DeletedAt    *gorm.DeletedAt `json:"deleted_at,omitempty"`
 }
 
 func (Warga) TableName() string {

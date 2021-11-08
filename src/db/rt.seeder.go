@@ -22,6 +22,7 @@ func SeedRT(db *gorm.DB) []string {
 		Kota:         "Bogor",
 		Provinsi:     "Jawa Barat",
 		BiayaBulanan: 50000,
+		KodeRT:       "0MK2Rr",
 		CreatedAt:    time.Now(),
 	}
 	db.Create(&data1)
@@ -38,6 +39,7 @@ func SeedRT(db *gorm.DB) []string {
 		Kota:         "Bandung",
 		Provinsi:     "Jawa Barat",
 		BiayaBulanan: 70000,
+		KodeRT:       "93KrsT",
 		CreatedAt:    time.Now(),
 	}
 	db.Create(&data2)
@@ -54,6 +56,7 @@ func SeedRT(db *gorm.DB) []string {
 		Kota:         "Ciamis",
 		Provinsi:     "Jawa Barat",
 		BiayaBulanan: 30000,
+		KodeRT:       "02KsiT",
 		CreatedAt:    time.Now(),
 	}
 	db.Create(&data3)

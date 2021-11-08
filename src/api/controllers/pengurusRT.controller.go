@@ -26,6 +26,15 @@ func CreatePengurus(c echo.Context) error {
 		return utils.ResponseError(c, err)
 	}
 
+	rt, err := models.GetRTByKode(c, prt.KodeRT)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+	prt.IdRT = rt.Id
+
 	cek, _ := models.PengurusSearchEmail(c, prt.Email)
 	if cek.Id != "" {
 		return utils.ResponseError(c, utils.Error{
@@ -39,7 +48,7 @@ func CreatePengurus(c echo.Context) error {
 	pass := prt.Password
 	prt.CreatedAt = time.Now()
 	prt.Password = utils.HashPassword(prt.Password, prt.Id)
-	_, err := models.CreatePengurusRT(c, prt)
+	_, err = models.CreatePengurusRT(c, prt)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,

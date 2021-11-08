@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"math/rand"
 	"src/db"
 	"src/entity"
 
@@ -96,4 +97,40 @@ func SoftDeleteRTById(c echo.Context, id string) (int64, error) {
 	}
 
 	return err.RowsAffected, nil
+}
+
+func GetRTByKode(c echo.Context, kode string) (entity.Rt, error) {
+	var rt entity.Rt
+
+	db := db.GetDB(c)
+
+	err := db.First(&rt, "kode_rt = ?", kode)
+	if err.Error != nil {
+		c.Logger().Error(err)
+		return entity.Rt{}, errors.New("kode tidak ditemukan atau tidak valid")
+	}
+
+	return rt, nil
+}
+
+func GenerateKodeRT(c echo.Context, n int16) string {
+	const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = letterBytes[rand.Intn(len(letterBytes))]
+	}
+	kode := string(b)
+	db := db.GetDB(c)
+
+	err := db.Where("kode_rt = ?", kode).First(&entity.Rt{})
+	for err.Error == nil {
+		b = make([]byte, n)
+		for i := range b {
+			b[i] = letterBytes[rand.Intn(len(letterBytes))]
+		}
+		kode = string(b)
+		err = db.Where("kode_rt = ?", kode).First(&entity.Rt{})
+	}
+	return kode
 }

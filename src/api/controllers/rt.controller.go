@@ -35,6 +35,7 @@ func CreateRT(c echo.Context) error {
 
 	// Ini buat masukin isi dari created_at nya
 	rt.CreatedAt = time.Now()
+	rt.KodeRT = models.GenerateKodeRT(c, 6)
 
 	// Ini fungsi dari models buat create data ke database
 	Rt, err := models.CreateRT(c, rt)

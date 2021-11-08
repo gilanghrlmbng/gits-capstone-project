@@ -13,6 +13,7 @@ type PengurusRT struct {
 	Id          string          `gorm:"type:varchar(50);primaryKey" json:"id" form:"id"`
 	IdRT        string          `gorm:"type:varchar(50);not null" json:"id_rt" form:"id_rt"`
 	NoHandphone string          `gorm:"type:varchar(20);not null" json:"no_hp" form:"no_hp"`
+	KodeRT      string          `gorm:"type:varchar(100); not null" json:"kode_rt,omitempty" form:"kode_rt"`
 	Gender      string          `gorm:"type:varchar(20);not null" json:"gender" form:"gender"`
 	Nama        string          `gorm:"type:varchar(50);not null" json:"nama" form:"nama"`
 	Email       string          `gorm:"type:varchar(120);not null" json:"email" form:"email"`
