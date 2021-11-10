@@ -31,6 +31,7 @@ func Init(e *echo.Echo) *echo.Echo {
 	e = PengurusRT(e)
 	e = Warga(e, JWTconfig)
 	e = Produk(e)
+	e = DompetRT(e)
 
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello Worlds!!!")

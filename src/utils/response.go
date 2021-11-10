@@ -63,6 +63,14 @@ type JSONResponseDataWarga struct {
 	Message      string      `json:"message"`
 }
 
+type JSONResponseDataDompetRT struct {
+	Code          int64       `json:"code"`
+	GetDompetByID interface{} `json:"get_dompet_by_id,omitempty"`
+	GetAllDompet  interface{} `json:"get_all_dompet,omitempty"`
+	CreateDompet  interface{} `json:"create_dompet,omitempty"`
+	Message       string      `json:"message"`
+}
+
 type JSONResponse struct {
 	Code    int64  `json:"code"`
 	Message string `json:"message"`
@@ -97,6 +105,10 @@ func ResponseDataPengurusRT(c echo.Context, res JSONResponseDataPengurusRT) erro
 }
 
 func ResponseDataWarga(c echo.Context, res JSONResponseDataWarga) error {
+	return c.JSON(int(res.Code), res)
+}
+
+func ResponseDataDompet(c echo.Context, res JSONResponseDataDompetRT) error {
 	return c.JSON(int(res.Code), res)
 }
 
