@@ -4,9 +4,10 @@ import (
 	"src/api/controllers"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
-func RT(e *echo.Echo) *echo.Echo {
+func RT(e *echo.Echo, JWTconfig middleware.JWTConfig) *echo.Echo {
 
 	e.POST("/rt", controllers.CreateRT)
 	e.GET("/rt", controllers.GetAllRT)

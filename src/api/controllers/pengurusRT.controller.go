@@ -8,6 +8,7 @@ import (
 	"src/utils"
 	"time"
 
+	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"github.com/oklog/ulid/v2"
 )
@@ -76,8 +77,15 @@ func GetAllPengurusRT(c echo.Context) error {
 }
 
 func GetPengurusByID(c echo.Context) error {
-	id := c.Param("id")
-	if id == "" {
+	var id string
+	paramid := c.Param("id")
+	userData := c.Get("user").(*jwt.Token)
+	claims := userData.Claims.(*utils.JWTCustomClaims)
+	if paramid != "" {
+		id = paramid
+	} else if claims.UserId != "" {
+		id = claims.UserId
+	} else {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: "Id tidak valid",

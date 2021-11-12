@@ -8,6 +8,7 @@ import (
 	"src/utils"
 	"time"
 
+	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"github.com/oklog/ulid/v2"
 )
@@ -85,8 +86,16 @@ func GetAllWarga(c echo.Context) error {
 }
 
 func GetWargaByID(c echo.Context) error {
-	id := c.Param("id")
-	if id == "" {
+	var id string
+	paramid := c.Param("id")
+	userData := c.Get("user").(*jwt.Token)
+	claims := userData.Claims.(*utils.JWTCustomClaims)
+	c.Logger().Info(claims)
+	if paramid != "" {
+		id = paramid
+	} else if claims.UserId != "" {
+		id = claims.UserId
+	} else {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: "Id tidak valid",

@@ -27,8 +27,8 @@ func Init(e *echo.Echo) *echo.Echo {
 	}
 	e.Logger.Info("menginisialisasikan routes")
 	e = Keluarga(e, JWTconfig)
-	e = RT(e)
-	e = PengurusRT(e)
+	e = RT(e, JWTconfig)
+	e = PengurusRT(e, JWTconfig)
 	e = Warga(e, JWTconfig)
 	e = Produk(e)
 	e = DompetRT(e)

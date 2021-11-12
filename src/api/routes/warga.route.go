@@ -11,7 +11,8 @@ func Warga(e *echo.Echo, JWTconfig middleware.JWTConfig) *echo.Echo {
 	auth := e.Group("/warga")
 	auth.Use(middleware.JWTWithConfig(JWTconfig))
 	auth.GET("", controllers.GetAllWarga)
-	auth.GET("/:id", controllers.GetWargaByID)
+	auth.GET("/me", controllers.GetWargaByID)
+	auth.GET("/detail/:id", controllers.GetWargaByID)
 	auth.PUT("/:id", controllers.UpdateWargaById)
 	auth.DELETE("/:id", controllers.SoftDeleteWargaById)
 
