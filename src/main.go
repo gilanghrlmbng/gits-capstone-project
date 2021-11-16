@@ -16,6 +16,7 @@ func main() {
 	e := echo.New()
 	e.Logger.SetLevel(log.Lvl(1))
 	e.Logger.SetHeader("${time_rfc3339} ${level} ${short_file}:${line} message:${message}")
+
 	// Inisialisasi Env
 	err := godotenv.Load()
 	if err != nil {

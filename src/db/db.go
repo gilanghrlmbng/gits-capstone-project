@@ -73,8 +73,10 @@ func initData(e *echo.Echo, db *gorm.DB) {
 	listIdKeluarga := SeedKeluarga(db, listIdRt)
 
 	//Warga
-
 	_ = SeedWarga(db, listIdKeluarga)
+
+	// Produk
+	_ = SeedProduk(db, listIdKeluarga)
 
 	e.Logger.Info("dummy data terinisialisasi")
 }

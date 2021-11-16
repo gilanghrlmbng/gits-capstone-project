@@ -31,11 +31,12 @@ type JSONResponseDataRT struct {
 }
 
 type JSONResponseDataProduk struct {
-	Code          int64       `json:"code"`
-	GetProdukByID interface{} `json:"get_produk_by_id,omitempty"`
-	GetAllProduk  interface{} `json:"get_all_produk,omitempty"`
-	CreateProduk  interface{} `json:"create_produk,omitempty"`
-	Message       string      `json:"message"`
+	Code                 int64       `json:"code"`
+	GetProdukByID        interface{} `json:"get_produk_by_id,omitempty"`
+	GetAllProduk         interface{} `json:"get_all_produk,omitempty"`
+	GetAllProdukKeluarga interface{} `json:"get_all_produk_keluarga,omitempty"`
+	CreateProduk         interface{} `json:"create_produk,omitempty"`
+	Message              string      `json:"message"`
 }
 type JSONResponseDataKeluarga struct {
 	Code                int64       `json:"code"`

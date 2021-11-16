@@ -8,6 +8,7 @@ import (
 	"src/utils"
 	"time"
 
+	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"github.com/oklog/ulid/v2"
 )
@@ -21,6 +22,15 @@ func CreateProduk(c echo.Context) error {
 			Message: err.Error(),
 		})
 	}
+	userData := c.Get("user").(*jwt.Token)
+	claims := userData.Claims.(*utils.JWTCustomClaims)
+	if claims.IdKeluarga == "" {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Maaf anda tidak memiliki akses ini",
+		})
+	}
+	p.IdKeluarga = claims.IdKeluarga
 
 	if err := p.ValidateCreate(); err.Code > 0 {
 		return utils.ResponseError(c, err)
@@ -47,7 +57,8 @@ func CreateProduk(c echo.Context) error {
 }
 
 func GetAllProduk(c echo.Context) error {
-	allProduk, err := models.GetAllProduk(c)
+
+	allProduk, err := models.GetAllProduk(c, "")
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -59,6 +70,31 @@ func GetAllProduk(c echo.Context) error {
 		Code:         http.StatusOK,
 		GetAllProduk: allProduk,
 		Message:      "Berhasil",
+	})
+}
+
+func GetAllProdukByKeluarga(c echo.Context) error {
+	userData := c.Get("user").(*jwt.Token)
+	claims := userData.Claims.(*utils.JWTCustomClaims)
+	if claims.IdKeluarga == "" {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Maaf anda tidak memiliki akses ini",
+		})
+	}
+
+	allProduk, err := models.GetAllProduk(c, claims.IdKeluarga)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	return utils.ResponseDataProduk(c, utils.JSONResponseDataProduk{
+		Code:                 http.StatusOK,
+		GetAllProdukKeluarga: allProduk,
+		Message:              "Berhasil",
 	})
 }
 

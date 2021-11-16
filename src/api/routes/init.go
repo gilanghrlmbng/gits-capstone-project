@@ -25,12 +25,17 @@ func Init(e *echo.Echo) *echo.Echo {
 		Code:    http.StatusUnauthorized,
 		Message: "Token Invalid",
 	}
+
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+	}))
+
 	e.Logger.Info("menginisialisasikan routes")
 	e = Keluarga(e, JWTconfig)
 	e = RT(e, JWTconfig)
 	e = PengurusRT(e, JWTconfig)
 	e = Warga(e, JWTconfig)
-	e = Produk(e)
+	e = Produk(e, JWTconfig)
 	e = DompetRT(e)
 
 	e.GET("/", func(c echo.Context) error {

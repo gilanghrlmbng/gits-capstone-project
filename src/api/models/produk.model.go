@@ -6,6 +6,7 @@ import (
 	"src/entity"
 
 	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
 )
 
 func CreateProduk(c echo.Context, p *entity.Produk) (entity.Produk, error) {
@@ -23,14 +24,20 @@ func CreateProduk(c echo.Context, p *entity.Produk) (entity.Produk, error) {
 	return *p, nil
 }
 
-func GetAllProduk(c echo.Context) ([]entity.Produk, error) {
+func GetAllProduk(c echo.Context, idKeluarga string) (p []entity.Produk, err error) {
 	var produks []entity.Produk
 	db := db.GetDB(c)
+	var errs *gorm.DB
+	if idKeluarga == "" {
+		errs = db.Find(&produks)
+	} else {
+		errs = db.Where("id_keluarga = ?", idKeluarga).Find(&produks)
+	}
 
-	err := db.Find(&produks)
-	if err.Error != nil {
+	if errs.Error != nil {
 		c.Logger().Error(err)
-		return produks, err.Error
+		err = errs.Error
+		return
 	}
 
 	return produks, nil
