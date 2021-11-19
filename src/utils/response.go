@@ -77,6 +77,14 @@ type JSONResponse struct {
 	Message string `json:"message"`
 }
 
+type JSONResponseDataOrder struct {
+	Code         int64       `json:"code"`
+	GetOrderByID interface{} `json:"get_order_by_id,omitempty"`
+	GetAllOrder  interface{} `json:"get_all_order,omitempty"`
+	CreateOrder  interface{} `json:"create_order,omitempty"`
+	Message      string      `json:"message"`
+}
+
 func Response(c echo.Context, res JSONResponse) error {
 	return c.JSON(int(res.Code), res)
 }
@@ -115,4 +123,8 @@ func ResponseDataDompet(c echo.Context, res JSONResponseDataDompetRT) error {
 
 func ResponseError(c echo.Context, err Error) error {
 	return c.JSON(int(err.Code), err)
+}
+
+func ResponseDataOrder(c echo.Context, res JSONResponseDataOrder) error {
+	return c.JSON(int(res.Code), res)
 }

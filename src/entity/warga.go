@@ -13,6 +13,7 @@ import (
 
 type Warga struct {
 	Id           string          `gorm:"type:varchar(50);primaryKey" json:"id" form:"id"`
+	Order        []Order         `gorm:"foreignKey:id_pembayaran;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"id_order,omitempty" form:"id_order"`
 	IdKeluarga   string          `gorm:"type:varchar(50);not null" json:"id_keluarga" form:"id_keluarga"`
 	KodeKeluarga string          `gorm:"type:varchar(100); not null" json:"kode_keluarga,omitempty" form:"kode_keluarga"`
 	Nama         string          `gorm:"type:varchar(100);not null" json:"nama" form:"nama"`

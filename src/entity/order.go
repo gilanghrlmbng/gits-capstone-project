@@ -1,6 +1,8 @@
 package entity
 
 import (
+	"net/http"
+	"src/utils"
 	"time"
 
 	"gorm.io/gorm"
@@ -19,5 +21,15 @@ type Order struct {
 }
 
 func (Order) TableName() string {
-	return "order"
+	return "orders"
+}
+
+func (ord Order) ValidateCreate() utils.Error {
+	if ord.Harga_total == 0 {
+		return utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Harga Total tidak boleh 0",
+		}
+	}
+	return utils.Error{}
 }
