@@ -4,25 +4,25 @@ services:
     image: alifnaufalyasin/gits-capstone-project
     ports:
       - "80:4132"
-    depends_on:
-      - db
+    # depends_on:
+    #   - db
     environment:
-      - DB_HOST=db
+      - DB_HOST=aliven.my.id
       - DB_PORT=5432
-      - DB_USERNAME=postgres
-      - DB_PASSWORD=postgres
-      - DB_NAME=postgres
+      - DB_USERNAME=gits
+      - DB_PASSWORD=gits-capstone
+      - DB_NAME=gits-capstone
       - SECRET=gitscapstoneproject
     restart: "unless-stopped"
 
-  db:
-    image: postgres:13.4-alpine
-    ports:
-      - "5432:5432"
-    expose:
-      - "5432"
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=postgres
-    restart: "unless-stopped"
+  # db:
+  #   image: postgres:13.4-alpine
+  #   ports:
+  #     - "5432:5432"
+  #   expose:
+  #     - "5432"
+  #   environment:
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=postgres
+  #     - POSTGRES_DB=postgres
+  #   restart: "unless-stopped"

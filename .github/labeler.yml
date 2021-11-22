@@ -1,0 +1,35 @@
+controllers:
+- 'src/api/controllers/*'
+
+models:
+- 'src/api/models/*'
+
+routes:
+- 'src/api/routes/*'
+
+config:
+- 'src/config/*'
+
+database:
+- 'src/db/*'
+
+entity:
+- 'src/entity/*'
+
+migration:
+- 'src/migration/*'
+
+utils:
+- 'src/utils/*'
+
+source: 
+- 'src/*'
+- '!src/utils/*'
+- '!src/migration/*'
+- '!src/entity/*'
+- '!src/db/*'
+- '!src/config/*'
+- '!src/api/*'
+
+automation:
+- '*.yml'

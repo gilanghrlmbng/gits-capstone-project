@@ -9,49 +9,66 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt"
-	"github.com/labstack/echo/v4/middleware"
+	"github.com/labstack/echo/v4"
 )
 
 type JWTCustomClaims struct {
-	Nama  string `json:"nama"`
-	Email string `json:"email"`
-	Id    string `json:"id"`
+	Nama       string `json:"nama"`
+	Email      string `json:"email"`
+	IdKeluarga string `json:"id_keluarga"`
+	IdRT       string `json:"id_rt"`
+	UserId     string `json:"id"`
 	jwt.StandardClaims
 }
 
 var (
-	configs   config.Config        = config.GetConfig()
-	JWTconfig middleware.JWTConfig = middleware.JWTConfig{
-		TokenLookup: "header:Authorization",
-		Claims:      &JWTCustomClaims{},
-		SigningKey:  []byte(configs.Secret),
+	JWTStandartClaims jwt.StandardClaims = jwt.StandardClaims{
+		ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
 	}
 )
 
-func GenerateToken(nama, email, id string) (string, error) {
+func GenerateTokenWarga(c echo.Context, nama, email, id, id_keluarga string, claim jwt.StandardClaims) (string, error) {
 	// Set custom claims
 	claims := &JWTCustomClaims{
-		nama,
-		email,
-		id,
-		jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
-		},
+		Nama:           nama,
+		Email:          email,
+		UserId:         id,
+		IdKeluarga:     id_keluarga,
+		StandardClaims: JWTStandartClaims,
 	}
 
 	// Create token with claims
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	// Generate encoded token and send it as response.
-	t, err := token.SignedString([]byte(configs.Secret))
+	t, err := token.SignedString([]byte(config.GetConfigs(c).Secret))
 	if err != nil {
 		return "", err
 	}
 	return t, nil
 }
 
-func GetJWTData(header http.Header) (jwt.MapClaims, error) {
+func GenerateTokenPengurus(c echo.Context, nama, email, id, id_rt string, claim jwt.StandardClaims) (string, error) {
+	// Set custom claims
+	claims := &JWTCustomClaims{
+		Nama:           nama,
+		Email:          email,
+		UserId:         id,
+		IdRT:           id_rt,
+		StandardClaims: JWTStandartClaims,
+	}
+
+	// Create token with claims
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	// Generate encoded token and send it as response.
+	t, err := token.SignedString([]byte(config.GetConfigs(c).Secret))
+	if err != nil {
+		return "", err
+	}
+	return t, nil
+}
+
+func GetJWTData(c echo.Context, header http.Header) (jwt.MapClaims, error) {
 	// var data jwtCustomClaims
-	var configs config.Config = config.GetConfig()
 	var authData string = header["Authorization"][0]
 	var token string = strings.TrimPrefix(authData, "bearer ")
 
@@ -59,7 +76,7 @@ func GetJWTData(header http.Header) (jwt.MapClaims, error) {
 		if jwt.GetSigningMethod("HS256") != token.Method {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(configs.Secret), nil
+		return []byte(config.GetConfigs(c).Secret), nil
 	})
 	if err != nil {
 		return nil, errors.New("unexpected error on getting jwt data")
