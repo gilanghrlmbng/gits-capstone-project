@@ -25,15 +25,15 @@ func CreateOrder(c echo.Context, ord *entity.Order) (entity.Order, error) {
 }
 
 func GetAllOrder(c echo.Context) ([]entity.Order, error) {
-	var ords []entity.Order
+	var ord []entity.Order
 	db := db.GetDB(c)
 
-	err := db.Find(&ords)
+	err := db.Find(&ord)
 	if err.Error != nil {
 		c.Logger().Error(err)
-		return ords, err.Error
+		return ord, err.Error
 	}
-	return ords, nil
+	return ord, nil
 }
 
 func GetOrderByID(c echo.Context, id string) (entity.Order, error) {

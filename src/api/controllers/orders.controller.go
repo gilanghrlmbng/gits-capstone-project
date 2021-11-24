@@ -1,13 +1,16 @@
 package controllers
 
 import (
+	"math/rand"
 	"net/http"
 	"src/api/models"
 	"src/entity"
 	"src/utils"
 	"time"
 
+	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
+	"github.com/oklog/ulid/v2"
 )
 
 func CreateOrder(c echo.Context) error {
@@ -20,9 +23,32 @@ func CreateOrder(c echo.Context) error {
 		})
 	}
 
+	userData := c.Get("user").(*jwt.Token)
+	claims := userData.Claims.(*utils.JWTCustomClaims)
+	if claims.IdWarga == "" {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Maaf anda tidak memiliki akses ini",
+		})
+	}
+
+	ord.IdWarga = claims.IdWarga
+
+	// if claims.IdPembayaran == "" {
+	// 	return utils.ResponseError(c, utils.Error{
+	// 		Code:    http.StatusBadRequest,
+	// 		Message: "idPembayaran gaadaa",
+	// 	})
+	// }
+
+	ord.IdPembayaran = claims.IdPembayaran
+
 	if err := ord.ValidateCreate(); err.Code > 0 {
 		return utils.ResponseError(c, err)
 	}
+
+	entropy := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
+	ord.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
 
 	ord.CreatedAt = time.Now()
 	order, err := models.CreateOrder(c, ord)
@@ -35,7 +61,7 @@ func CreateOrder(c echo.Context) error {
 	}
 
 	return utils.ResponseDataOrder(c, utils.JSONResponseDataOrder{
-		Code:        http.StatusCreated,
+		Code:        http.StatusOK,
 		CreateOrder: order,
 		Message:     "Berhasil",
 	})
@@ -136,7 +162,15 @@ func SoftDeleteOrderById(c echo.Context) error {
 		})
 	}
 
-	_, err := models.SoftDeleteOrderById(c, id)
+	_, err := models.GetOrderByID(c, id)
+
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+	_, err = models.SoftDeleteOrderById(c, id)
 
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{

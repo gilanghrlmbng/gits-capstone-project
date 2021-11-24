@@ -31,7 +31,7 @@ func Init(e *echo.Echo) *echo.Echo {
 	e = PengurusRT(e, JWTconfig)
 	e = Warga(e, JWTconfig)
 	e = Produk(e, JWTconfig)
-	e = DompetRT(e)
+	e = DompetRT(e, JWTconfig)
 	e = Order(e, JWTconfig)
 
 	e.GET("/", func(c echo.Context) error {
