@@ -193,7 +193,7 @@ func LoginWarga(c echo.Context) error {
 	w := new(entity.Warga)
 
 	if err := c.Bind(w); err != nil {
-		return utils.ResponseError(c, utils.Error{
+		return utils.ResponseErrorLogin(c, utils.ErrorLogin{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
 		})
@@ -201,7 +201,7 @@ func LoginWarga(c echo.Context) error {
 
 	warga, err := models.GetWargaByEmail(c, w.Email)
 	if err != nil {
-		return utils.ResponseError(c, utils.Error{
+		return utils.ResponseErrorLogin(c, utils.ErrorLogin{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
 		})
@@ -209,14 +209,14 @@ func LoginWarga(c echo.Context) error {
 
 	isValid := utils.CheckPassword(w.Password, warga.Id, warga.Password)
 	if !isValid {
-		return utils.ResponseError(c, utils.Error{
+		return utils.ResponseErrorLogin(c, utils.ErrorLogin{
 			Code:    http.StatusBadRequest,
 			Message: "Password yang anda masukkan salah",
 		})
 	}
 	token, err := utils.GenerateTokenWarga(c, warga.Nama, warga.Email, warga.Id, warga.IdKeluarga, utils.JWTStandartClaims)
 	if err != nil {
-		return utils.ResponseError(c, utils.Error{
+		return utils.ResponseErrorLogin(c, utils.ErrorLogin{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
 		})
@@ -234,8 +234,9 @@ func loginWarga(c echo.Context, pass string, w *entity.Warga) error {
 
 	isValid := utils.CheckPassword(pass, w.Id, w.Password)
 	if !isValid {
-		return utils.ResponseError(c, utils.Error{
+		return utils.ResponseErrorLogin(c, utils.ErrorLogin{
 			Code:    http.StatusBadRequest,
+			Token:   "",
 			Message: "Password yang anda masukkan salah",
 		})
 	}

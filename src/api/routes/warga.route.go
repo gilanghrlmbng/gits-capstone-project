@@ -10,6 +10,7 @@ import (
 func Warga(e *echo.Echo, JWTconfig middleware.JWTConfig) *echo.Echo {
 	auth := e.Group("/warga")
 	auth.Use(middleware.JWTWithConfig(JWTconfig))
+	
 	auth.GET("", controllers.GetAllWarga)
 	auth.GET("/me", controllers.GetWargaByID)
 	auth.GET("/detail/:id", controllers.GetWargaByID)
