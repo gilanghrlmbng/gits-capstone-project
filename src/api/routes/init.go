@@ -11,6 +11,9 @@ import (
 
 func Init(e *echo.Echo) *echo.Echo {
 	JWTconfig := middleware.JWTConfig{
+		BeforeFunc: func(c echo.Context) {
+			c.Logger().Info("Token: ", c.Request().Header.Get("Authorization"))
+		},
 		TokenLookup: "header:Authorization",
 		Claims:      &utils.JWTCustomClaims{},
 		SigningKey:  []byte(config.GetConfig(e).Secret),
