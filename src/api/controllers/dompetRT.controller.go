@@ -8,6 +8,7 @@ import (
 	"src/utils"
 	"time"
 
+	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"github.com/oklog/ulid/v2"
 )
@@ -21,6 +22,17 @@ func CreateDompet(c echo.Context) error {
 			Message: err.Error(),
 		})
 	}
+
+	userData := c.Get("user").(*jwt.Token)
+	claims := userData.Claims.(*utils.JWTCustomClaims)
+	if claims.IdRT == "" {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Maaf anda tidak memiliki akses ini",
+		})
+	}
+
+	d.IdRT = claims.IdRT
 
 	if err := d.ValidateCreate(); err.Code > 0 {
 		return utils.ResponseError(c, err)
@@ -40,7 +52,7 @@ func CreateDompet(c echo.Context) error {
 	}
 
 	return utils.ResponseDataDompet(c, utils.JSONResponseDataDompetRT{
-		Code:         http.StatusOK,
+		Code:         http.StatusCreated,
 		CreateDompet: DompetRT,
 		Message:      "Berhasil",
 	})

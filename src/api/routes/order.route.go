@@ -8,7 +8,8 @@ import (
 )
 
 func Order(e *echo.Echo, JWTconfig middleware.JWTConfig) *echo.Echo {
-	auth := e.Group("/order")
+	auth := e.Group("")
+	auth.Use(middleware.JWTWithConfig(JWTconfig))
 	auth.POST("/order", controllers.CreateOrder)
 	auth.GET("/order", controllers.GetAllOrder)
 	auth.GET("/order/:id", controllers.GetOrderByID)
