@@ -13,6 +13,8 @@ type Informasi struct {
 	IdRT      string          `gorm:"type:varchar(50);not null" json:"id_rt" form:"id_rt"`
 	Gambar    string          `gorm:"type:varchar(60);not null" json:"gambar" form:"gambar"`
 	Detail    string          `gorm:"type:varchar(60); not null" json:"detail" form:"detail"`
+	Kategori  string          `gorm:"type:varchar(60); not null" json:"kategori" form:"kategori"`
+	Lokasi    string          `gorm:"type:varchar(60); not null" json:"lokasi" form:"lokasi"`
 	CreatedBy string          `gorm:"type:varchar(50);not null" json:"created_by" form:"created_by"`
 	CreatedAt time.Time       `gorm:"type:timestamptz;not null" json:"created_at"`
 	UpdatedAt time.Time       `gorm:"type:timestamptz" json:"updated_at"`
@@ -42,6 +44,20 @@ func (i Informasi) ValidateCreate() utils.Error {
 		return utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: "Author tidak boleh kosong",
+		}
+	}
+
+	if i.Lokasi == "" {
+		return utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Lokasi tidak boleh kosong",
+		}
+	}
+
+	if i.Kategori == "" {
+		return utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Kategori tidak boleh kosong",
 		}
 	}
 	return utils.Error{}
