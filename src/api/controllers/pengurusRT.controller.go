@@ -240,8 +240,9 @@ func loginPengurus(c echo.Context, pass string, prt *entity.PengurusRT) error {
 
 	token, err := utils.GenerateTokenPengurus(c, prt.Nama, prt.Email, prt.Id, prt.IdRT, utils.JWTStandartClaims)
 	if err != nil {
-		return utils.ResponseError(c, utils.Error{
+		return utils.ResponseErrorLogin(c, utils.ErrorLogin{
 			Code:    http.StatusBadRequest,
+			Token:   "",
 			Message: err.Error(),
 		})
 	}
