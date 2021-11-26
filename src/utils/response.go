@@ -9,6 +9,12 @@ type Error struct {
 	Message string `json:"message"`
 }
 
+type ErrorLogin struct {
+	Code    int64  `json:"code"`
+	Token   string `json:"token"`
+	Message string `json:"message"`
+}
+
 type JSONResponseLogin struct {
 	Code    int64  `json:"code"`
 	Token   string `json:"token"`
@@ -122,6 +128,10 @@ func ResponseDataDompet(c echo.Context, res JSONResponseDataDompetRT) error {
 }
 
 func ResponseError(c echo.Context, err Error) error {
+	return c.JSON(int(err.Code), err)
+}
+
+func ResponseErrorLogin(c echo.Context, err ErrorLogin) error {
 	return c.JSON(int(err.Code), err)
 }
 

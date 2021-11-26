@@ -241,8 +241,9 @@ func loginWarga(c echo.Context, pass string, w *entity.Warga) error {
 	}
 	token, err := utils.GenerateTokenWarga(c, w.Nama, w.Email, w.Id, w.IdKeluarga, utils.JWTStandartClaims)
 	if err != nil {
-		return utils.ResponseError(c, utils.Error{
+		return utils.ResponseErrorLogin(c, utils.ErrorLogin{
 			Code:    http.StatusBadRequest,
+			Token:   "",
 			Message: err.Error(),
 		})
 	}
