@@ -18,6 +18,7 @@ func SeedProduk(db *gorm.DB, listKeluarga []string) []string {
 		IdKeluarga: listKeluarga[0],
 		Nama:       "Mie Goreng",
 		Detail:     "Mie Goreng Mantap Pake Telor",
+		Gambar:     "https://dummyimage.com/500x500/eee/fff&text=MG",
 		Harga:      20000,
 		CreatedAt:  time.Now(),
 	}
@@ -32,6 +33,7 @@ func SeedProduk(db *gorm.DB, listKeluarga []string) []string {
 		IdKeluarga: listKeluarga[0],
 		Nama:       "Mie Rebus",
 		Detail:     "Mie Rebus Mantap Pake Telor",
+		Gambar:     "https://dummyimage.com/500x500/eee/fff&text=MR",
 		Harga:      20000,
 		CreatedAt:  time.Now(),
 	}
@@ -46,6 +48,7 @@ func SeedProduk(db *gorm.DB, listKeluarga []string) []string {
 		IdKeluarga: listKeluarga[0],
 		Nama:       "Kentang Mustofa",
 		Detail:     "Kering kentang mantap 200gr",
+		Gambar:     "https://dummyimage.com/500x500/eee/fff&text=KM",
 		Harga:      25000,
 		CreatedAt:  time.Now(),
 	}
@@ -60,6 +63,7 @@ func SeedProduk(db *gorm.DB, listKeluarga []string) []string {
 		IdKeluarga: listKeluarga[1],
 		Nama:       "Kue Donat",
 		Detail:     "Donat manis aneka topping",
+		Gambar:     "https://dummyimage.com/500x500/eee/fff&text=KD",
 		Harga:      3000,
 		CreatedAt:  time.Now(),
 	}
