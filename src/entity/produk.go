@@ -13,6 +13,7 @@ type Produk struct {
 	IdKeluarga string          `gorm:"type:varchar(50);not null" json:"id_keluarga" form:"id_keluarga"`
 	Nama       string          `gorm:"type:varchar(50);not null" json:"nama" form:"nama"`
 	Detail     string          `gorm:"not null" json:"detail" form:"detail"`
+	Gambar     string          `gorm:"not null" json:"gambar" form:"gambar"`
 	Harga      int64           `gorm:"not null" json:"harga" form:"harga"`
 	CreatedAt  time.Time       `gorm:"type:timestamptz;not null" json:"created_at"`
 	UpdatedAt  time.Time       `gorm:"type:timestamptz;" json:"updated_at"`
@@ -34,6 +35,12 @@ func (p Produk) ValidateCreate() utils.Error {
 		return utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: "Detail produk tidak boleh kosong",
+		}
+	}
+	if p.Gambar == "" {
+		return utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Gambar produk tidak boleh kosong",
 		}
 	}
 	if p.Harga == 0 {
