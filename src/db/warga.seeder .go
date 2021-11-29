@@ -21,7 +21,8 @@ func SeedWarga(db *gorm.DB, listKeluarga []string) []string {
 		Email:       "warga1@gmail.com",
 		Gender:      "perempuan",
 		NoHandphone: "08123123123123",
-		Password:    "PasswordWargaSaya",
+		Gambar: "https://dummyimage.com/500x500/eee/fff&text=A",
+		Password:    "aaaaaa",
 		CreatedAt:   time.Now(),
 	}
 	data1.Password = utils.HashPassword(data1.Password, data1.Id)
@@ -38,6 +39,7 @@ func SeedWarga(db *gorm.DB, listKeluarga []string) []string {
 		Email:       "warga2@gmail.com",
 		Gender:      "laki-laki",
 		NoHandphone: "08123123123123",
+		Gambar: "https://dummyimage.com/500x500/eee/fff&text=A",
 		Password:    "PasswordWargaSaya",
 		CreatedAt:   time.Now(),
 	}
@@ -55,6 +57,7 @@ func SeedWarga(db *gorm.DB, listKeluarga []string) []string {
 		Email:       "warga3@gmail.com",
 		Gender:      "laki-laki",
 		NoHandphone: "08123123123123",
+		Gambar: "https://dummyimage.com/500x500/eee/fff&text=M",
 		Password:    "PasswordWargaSaya",
 		CreatedAt:   time.Now(),
 	}

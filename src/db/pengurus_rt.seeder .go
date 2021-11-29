@@ -18,10 +18,11 @@ func SeedPengurusRT(db *gorm.DB, listRT []string) []string {
 		Id:          Id1,
 		IdRT:        listRT[0],
 		Nama:        "John Doe 1",
-		Email:       "john1@gmail.com",
+		Email:       "pengurus1@gmail.com",
 		Gender:      "laki-laki",
 		NoHandphone: "08123123123123",
-		Password:    "IniPunyaPakRT",
+		Gambar:      "https://dummyimage.com/500x500/eee/fff&text=J",
+		Password:    "aaaaaa",
 		CreatedAt:   time.Now(),
 	}
 	data1.Password = utils.HashPassword(data1.Password, data1.Id)
@@ -38,6 +39,7 @@ func SeedPengurusRT(db *gorm.DB, listRT []string) []string {
 		Email:       "john2@gmail.com",
 		Gender:      "laki-laki",
 		NoHandphone: "08123123123123",
+		Gambar:      "https://dummyimage.com/500x500/eee/fff&text=J",
 		Password:    "IniPunyaPakRT",
 		CreatedAt:   time.Now(),
 	}
@@ -55,6 +57,7 @@ func SeedPengurusRT(db *gorm.DB, listRT []string) []string {
 		Email:       "john3@gmail.com",
 		Gender:      "laki-laki",
 		NoHandphone: "08123123123123",
+		Gambar:      "https://dummyimage.com/500x500/eee/fff&text=J",
 		Password:    "IniPunyaPakRT",
 		CreatedAt:   time.Now(),
 	}
