@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fmt"
 	"src/db"
 	"src/entity"
 
@@ -11,7 +12,9 @@ import (
 
 func CreateWarga(c echo.Context, w *entity.Warga) (entity.Warga, error) {
 	db := db.GetDB(c)
-
+	if w.Gambar == "" {
+		w.Gambar = fmt.Sprintf("https://dummyimage.com/500x500/eee/fff&text=%c", w.Nama[0])
+	}
 	err := db.Create(&w)
 	if err.Error != nil {
 		c.Logger().Error(err)

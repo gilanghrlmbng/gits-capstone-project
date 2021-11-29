@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"math/rand"
 	"net/http"
 	"src/api/models"
@@ -24,7 +25,7 @@ func CreateWarga(c echo.Context) error {
 			Message: err.Error(),
 		})
 	}
-
+	w.Gambar = fmt.Sprintf("https://dummyimage.com/500x500/eee/fff&text=%c",w.Nama[0])
 	// terus ini ada validasi buat ngecek inputan dari reqeust body udah sesuai apa belum
 	if err := w.ValidateCreate(); err.Code > 0 {
 		return utils.ResponseError(c, err)
