@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fmt"
 	"src/db"
 	"src/entity"
 
@@ -10,7 +11,9 @@ import (
 
 func CreatePengurusRT(c echo.Context, prt *entity.PengurusRT) (entity.PengurusRT, error) {
 	db := db.GetDB(c)
-
+	if prt.Gambar == "" {
+		prt.Gambar = fmt.Sprintf("https://dummyimage.com/500x500/eee/fff&text=%c", prt.Nama[0])
+	}
 	err := db.Create(&prt)
 	if err.Error != nil {
 		c.Logger().Error(err)

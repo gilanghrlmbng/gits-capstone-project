@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"math/rand"
 	"net/http"
 	"src/api/models"
@@ -22,6 +23,8 @@ func CreatePengurus(c echo.Context) error {
 			Message: err.Error(),
 		})
 	}
+
+	prt.Gambar = fmt.Sprintf("https://dummyimage.com/500x500/eee/fff&text=%c", prt.Nama[0])
 
 	if err := prt.ValidateCreate(); err.Code > 0 {
 		return utils.ResponseError(c, err)
