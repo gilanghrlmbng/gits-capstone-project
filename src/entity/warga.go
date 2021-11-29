@@ -19,7 +19,7 @@ type Warga struct {
 	Nama         string          `gorm:"type:varchar(100);not null" json:"nama" form:"nama"`
 	NoHandphone  string          `gorm:"type:varchar(20);not null" json:"no_hp" form:"no_hp"`
 	Gender       string          `gorm:"type:varchar(20);not null" json:"gender" form:"gender"`
-	Gambar       string          `gorm:"type:varchar(20);not null" json:"gambar" form:"gambar"`
+	Gambar       string          `gorm:"not null" json:"gambar" form:"gambar"`
 	Email        string          `gorm:"type:varchar(120);not null" json:"email" form:"email"`
 	Password     string          `gorm:"type:varchar(100);not null" json:"password" form:"password"`
 	CreatedAt    time.Time       `gorm:"type:timestamptz;not null" json:"created_at"`
