@@ -13,49 +13,36 @@ import (
 	"github.com/oklog/ulid/v2"
 )
 
-func CreateOrder(c echo.Context) error {
-	ord := new(entity.Order)
+func CreatePersuratan(c echo.Context) error {
+	s := new(entity.Persuratan)
 
-	if err := c.Bind(ord); err != nil {
+	if err := c.Bind(s); err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
 		})
 	}
-
 	userData := c.Get("user").(*jwt.Token)
 	claims := userData.Claims.(*utils.JWTCustomClaims)
-
-	if claims.UserId == "" {
+	if claims.IdRT == "" {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: "Maaf anda tidak memiliki akses ini",
 		})
 	}
 
-	w, err := models.GetWargaByEmail(c, claims.Email)
-	if err != nil {
-		return utils.ResponseError(c, utils.Error{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error(),
-		})
-	}
+	s.IdRT = claims.IdRT
 
-	ord.IdWarga = w.Id
-
-	// id pembayaran belum.
-	// ord.IdPembayaran =
-
-	if err := ord.ValidateCreate(); err.Code > 0 {
+	if err := s.ValidateCreate(); err.Code > 0 {
 		return utils.ResponseError(c, err)
 	}
 
 	entropy := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
-	ord.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
+	s.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
 
-	ord.CreatedAt = time.Now()
-	Order, err := models.CreateOrder(c, ord)
+	s.CreatedAt = time.Now()
 
+	Persuratan, err := models.CreatePersuratan(c, s)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -63,16 +50,16 @@ func CreateOrder(c echo.Context) error {
 		})
 	}
 
-	return utils.ResponseDataOrder(c, utils.JSONResponseDataOrder{
-		Code:        http.StatusCreated,
-		CreateOrder: Order,
-		Message:     "Berhasil",
+	return utils.ResponseDataPersuratan(c, utils.JSONResponseDataPersuratan{
+		Code:             http.StatusCreated,
+		CreatePersuratan: Persuratan,
+		Message:          "Berhasil",
 	})
 }
 
-func GetAllOrder(c echo.Context) error {
-	allOrder, err := models.GetAllOrder(c)
+func GetAllPersuratan(c echo.Context) error {
 
+	allPersuratan, err := models.GetAllPersuratan(c, "")
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -80,14 +67,14 @@ func GetAllOrder(c echo.Context) error {
 		})
 	}
 
-	return utils.ResponseDataOrder(c, utils.JSONResponseDataOrder{
-		Code:        http.StatusOK,
-		GetAllOrder: allOrder,
-		Message:     "Berhasil",
+	return utils.ResponseDataPersuratan(c, utils.JSONResponseDataPersuratan{
+		Code:             http.StatusOK,
+		GetAllPersuratan: allPersuratan,
+		Message:          "Berhasil",
 	})
 }
 
-func GetOrderByID(c echo.Context) error {
+func GetPersuratanByID(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
 		return utils.ResponseError(c, utils.Error{
@@ -96,41 +83,39 @@ func GetOrderByID(c echo.Context) error {
 		})
 	}
 
-	ord, err := models.GetOrderByID(c, id)
+	s, err := models.GetPersuratanByID(c, id)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		})
 	}
-	return utils.ResponseDataOrder(c, utils.JSONResponseDataOrder{
-		Code:         http.StatusOK,
-		GetOrderByID: ord,
-		Message:      "Berhasil",
+	return utils.ResponseDataPersuratan(c, utils.JSONResponseDataPersuratan{
+		Code:              http.StatusOK,
+		GetPersuratanByID: s,
+		Message:           "Berhasil",
 	})
 }
 
-func UpdateOrderById(c echo.Context) error {
+func UpdatePersuratanById(c echo.Context) error {
 	id := c.Param("id")
-
 	if id == "" {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
-			Message: "ID tidak valid",
+			Message: "Id tidak valid",
 		})
 	}
 
-	ord := new(entity.Order)
+	s := new(entity.Persuratan)
 
-	if err := c.Bind(ord); err != nil {
+	if err := c.Bind(s); err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
 		})
 	}
 
-	_, err := models.GetOrderByID(c, id)
-
+	_, err := models.GetPersuratanByID(c, id)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -138,34 +123,32 @@ func UpdateOrderById(c echo.Context) error {
 		})
 	}
 
-	ord.UpdatedAt = time.Now()
+	s.UpdatedAt = time.Now()
 
-	_, err = models.UpdateOrderById(c, id, ord)
-
+	_, err = models.UpdatePersuratanById(c, id, s)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		})
 	}
-
 	return utils.Response(c, utils.JSONResponse{
 		Code:    http.StatusOK,
 		Message: "Berhasil",
 	})
 }
 
-func SoftDeleteOrderById(c echo.Context) error {
+func SoftDeletePersuratanById(c echo.Context) error {
 	id := c.Param("id")
 
 	if id == "" {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
-			Message: "Id tidak valid",
+			Message: "Id todak valid",
 		})
 	}
 
-	_, err := models.GetOrderByID(c, id)
+	_, err := models.GetPersuratanByID(c, id)
 
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
@@ -173,7 +156,8 @@ func SoftDeleteOrderById(c echo.Context) error {
 			Message: err.Error(),
 		})
 	}
-	_, err = models.SoftDeleteOrderById(c, id)
+
+	_, err = models.SoftDeletePersuratanById(c, id)
 
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
@@ -182,7 +166,7 @@ func SoftDeleteOrderById(c echo.Context) error {
 		})
 	}
 	return utils.Response(c, utils.JSONResponse{
-		Code:    http.StatusBadRequest,
+		Code:    http.StatusOK,
 		Message: "Berhasil",
 	})
 }

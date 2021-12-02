@@ -16,7 +16,7 @@ func Migration(e *echo.Echo, db *gorm.DB) {
 
 	e.Logger.Info("Memulai dengan automigrate")
 
-	err := db.AutoMigrate(&entity.Rt{}, &entity.PengurusRT{}, &entity.Keluarga{}, &entity.Warga{}, &entity.Tagihan{}, &entity.Produk{}, &entity.Informasi{}, &entity.DompetRT{}, &entity.ItemOrder{})
+	err := db.AutoMigrate(&entity.Rt{}, &entity.PengurusRT{}, &entity.Keluarga{}, &entity.Warga{}, &entity.Tagihan{}, &entity.Produk{}, &entity.Order{}, &entity.ItemOrder{}, &entity.Pembayaran{}, &entity.Informasi{}, &entity.DompetRT{}, &entity.Persuratan{})
 
 	if err != nil {
 		e.Logger.Error(err)
@@ -26,7 +26,7 @@ func Migration(e *echo.Echo, db *gorm.DB) {
 
 func DeleteAllTable(e *echo.Echo, db *gorm.DB) {
 	e.Logger.Info("Mereset Semua Tabel")
-	err := db.Migrator().DropTable(&entity.Rt{}, &entity.PengurusRT{}, &entity.Keluarga{}, &entity.Warga{}, &entity.Tagihan{}, &entity.Produk{}, &entity.Order{}, &entity.ItemOrder{}, &entity.Pembayaran{})
+	err := db.Migrator().DropTable(&entity.Rt{}, &entity.PengurusRT{}, &entity.Keluarga{}, &entity.Warga{}, &entity.Tagihan{}, &entity.Produk{}, &entity.Order{}, &entity.ItemOrder{}, &entity.Pembayaran{}, &entity.Informasi{}, &entity.DompetRT{}, &entity.Persuratan{})
 	if err != nil {
 		e.Logger.Error(err)
 

@@ -13,13 +13,11 @@ import (
 )
 
 type JWTCustomClaims struct {
-	Nama         string `json:"nama"`
-	Email        string `json:"email"`
-	IdKeluarga   string `json:"id_keluarga"`
-	IdRT         string `json:"id_rt"`
-	IdWarga      string `json:"id_warga"`
-	IdPembayaran string `json:"id_pembayaran"`
-	UserId       string `json:"id"`
+	Nama       string `json:"nama"`
+	Email      string `json:"email"`
+	IdKeluarga string `json:"id_keluarga"`
+	IdRT       string `json:"id_rt"`
+	UserId     string `json:"id"`
 	jwt.StandardClaims
 }
 

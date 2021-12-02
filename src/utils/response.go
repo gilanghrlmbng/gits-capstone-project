@@ -78,6 +78,14 @@ type JSONResponseDataDompetRT struct {
 	Message       string      `json:"message"`
 }
 
+type JSONResponseDataPersuratan struct {
+	Code              int64       `json:"code"`
+	GetPersuratanByID interface{} `json:"get_persuratan_by_id,omitempty"`
+	GetAllPersuratan  interface{} `json:"get_all_persuratan,omitempty"`
+	CreatePersuratan  interface{} `json:"create_persuratan,omitempty"`
+	Message           string      `json:"message"`
+}
+
 type JSONResponse struct {
 	Code    int64  `json:"code"`
 	Message string `json:"message"`
@@ -124,6 +132,10 @@ func ResponseDataWarga(c echo.Context, res JSONResponseDataWarga) error {
 }
 
 func ResponseDataDompet(c echo.Context, res JSONResponseDataDompetRT) error {
+	return c.JSON(int(res.Code), res)
+}
+
+func ResponseDataPersuratan(c echo.Context, res JSONResponseDataPersuratan) error {
 	return c.JSON(int(res.Code), res)
 }
 

@@ -32,4 +32,7 @@ require (
 	golang.org/x/sys v0.0.0-20210910150752-751e447fb3d0 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324 // indirect
+	google.golang.org/genproto v0.0.0-20211118181313-81c1377c94b1
 )
+
+require google.golang.org/protobuf v1.27.1 // indirect
