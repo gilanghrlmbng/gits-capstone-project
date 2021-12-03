@@ -13,8 +13,8 @@ type Rt struct {
 	PengurusRT   []PengurusRT    `gorm:"foreignKey:id_rt;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"pengurus_rt,omitempty" form:"pengurus_rt"`
 	Keluarga     []Keluarga      `gorm:"foreignKey:id_rt;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"keluarga,omitempty" form:"keluarga"`
 	Informasi    []Informasi     `gorm:"foreignKey:id_rt;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"informasi,omitempty" form:"informasi"`
-	DompetRT     []DompetRT      `gorm:"foreignKey:id_rt;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"dompet_rt,omitempty" form:"dompet_rt"`
 	Persuratan   []Persuratan    `gorm:"foreignKey:id_rt;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"persuratan,omitempty" form:"persuratan"`
+	DompetRT     DompetRT        `gorm:"foreignKey:id_rt;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"dompet_rt,omitempty" form:"dompet_rt"`
 	KodeRT       string          `gorm:"type:varchar(100); not null" json:"kode_rt,omitempty" form:"kode_rt"`
 	NamaRt       string          `gorm:"type:varchar(50);not null" json:"nama_rt" form:"nama_rt"`
 	NamaRw       string          `gorm:"type:varchar(50);not null" json:"nama_rw" form:"nama_rw"`

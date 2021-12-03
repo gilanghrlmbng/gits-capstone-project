@@ -46,6 +46,12 @@ func CreateRT(c echo.Context) error {
 		})
 	}
 
+	eror := CreateDompet(c, rt.Id)
+	if eror.Code != http.StatusCreated {
+		c.Logger().Error("Failed to Create Dompet RT")
+		return utils.ResponseError(c, eror)
+	}
+
 	// Return datanya
 	return utils.ResponseDataRT(c, utils.JSONResponseDataRT{
 		Code:     http.StatusCreated,

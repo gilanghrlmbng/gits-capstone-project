@@ -78,6 +78,14 @@ type JSONResponseDataDompetRT struct {
 	Message       string      `json:"message"`
 }
 
+type JSONResponseDataDompetKeluarga struct {
+	Code                  int64       `json:"code"`
+	GetDompetKeluargaByID interface{} `json:"get_dompet_keluarga_by_id,omitempty"`
+	GetAllDompetKeluarga  interface{} `json:"get_all_dompet_keluarga,omitempty"`
+	CreateDompetKeluarga  interface{} `json:"create_dompet_keluarga,omitempty"`
+	Message               string      `json:"message"`
+}
+
 type JSONResponseDataPersuratan struct {
 	Code              int64       `json:"code"`
 	GetPersuratanByID interface{} `json:"get_persuratan_by_id,omitempty"`
@@ -135,7 +143,15 @@ func ResponseDataDompet(c echo.Context, res JSONResponseDataDompetRT) error {
 	return c.JSON(int(res.Code), res)
 }
 
+func ResponseDataDompetKeluarga(c echo.Context, res JSONResponseDataDompetKeluarga) error {
+	return c.JSON(int(res.Code), res)
+}
+
 func ResponseDataPersuratan(c echo.Context, res JSONResponseDataPersuratan) error {
+	return c.JSON(int(res.Code), res)
+}
+
+func ResponseDataOrder(c echo.Context, res JSONResponseDataOrder) error {
 	return c.JSON(int(res.Code), res)
 }
 
@@ -145,8 +161,4 @@ func ResponseError(c echo.Context, err Error) error {
 
 func ResponseErrorLogin(c echo.Context, err ErrorLogin) error {
 	return c.JSON(int(err.Code), err)
-}
-
-func ResponseDataOrder(c echo.Context, res JSONResponseDataOrder) error {
-	return c.JSON(int(res.Code), res)
 }

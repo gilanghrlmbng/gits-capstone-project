@@ -13,8 +13,9 @@ type Persuratan struct {
 	IdRT      string          `gorm:"type:varchar(50);not null" json:"id_rt" form:"id_rt"`
 	Judul     string          `gorm:"type:varchar(50);not null" json:"judul" form:"judul"`
 	Penerima  string          `gorm:"type:varchar(50);not null" json:"penerima" form:"penerima"`
-	Tanggal   string          `gorm:"type:varchar(50); not null" json:"tanggal" form:"tanggal"`
-	Keperluan string          `gorm:"type:varchar(120); not null" json:"keperluan" form:"keperluan"`
+	Tanggal   string          `gorm:"type:varchar(50);not null" json:"tanggal" form:"tanggal"`
+	Keperluan string          `gorm:"not null" json:"keperluan" form:"keperluan"`
+	Link      string          `gorm:"not null" json:"link" form:"link"`
 	Status    string          `gorm:"type:varchar(50); not null" json:"status" form:"status"`
 	CreatedAt time.Time       `gorm:"type:timestamptz; not null" json:"created_at"`
 	UpdatedAt time.Time       `gorm:"type:timestamptz;" json:"updated_at"`

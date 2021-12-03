@@ -10,11 +10,11 @@ import (
 func DompetRT(e *echo.Echo, JWTconfig middleware.JWTConfig) *echo.Echo {
 	auth := e.Group("")
 	auth.Use(middleware.JWTWithConfig(JWTconfig))
-	auth.POST("/dompet", controllers.CreateDompet)
-	auth.GET("/dompet", controllers.GetAllDompet)
-	auth.GET("/dompet/:id", controllers.GetDompetByID)
-	auth.PUT("/dompet/:id", controllers.UpdateDompetById)
-	auth.DELETE("/dompet/:id", controllers.SoftDeleteDompetById)
+	auth.GET("/dompetrt", controllers.GetAllDompet)
+	auth.GET("/dompetrt/me", controllers.GetDompetByID)
+	auth.GET("/dompetrt/:id", controllers.GetDompetByID)
+	auth.PUT("/dompetrt/:id", controllers.UpdateDompetById)
+	auth.DELETE("/dompetrt/:id", controllers.SoftDeleteDompetById)
 
 	return e
 }

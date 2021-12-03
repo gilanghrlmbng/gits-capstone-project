@@ -25,7 +25,7 @@ func CreateWarga(c echo.Context) error {
 			Message: err.Error(),
 		})
 	}
-	w.Gambar = fmt.Sprintf("https://dummyimage.com/500x500/eee/fff&text=%c",w.Nama[0])
+	w.Gambar = fmt.Sprintf("https://dummyimage.com/500x500/29493B/fff&text=%c", w.Nama[0])
 	// terus ini ada validasi buat ngecek inputan dari reqeust body udah sesuai apa belum
 	if err := w.ValidateCreate(); err.Code > 0 {
 		return utils.ResponseError(c, err)
@@ -67,7 +67,7 @@ func CreateWarga(c echo.Context) error {
 	}
 
 	// Return datanya
-	return loginWarga(c, pass, w)
+	return loginWarga(c, pass, k.IdRT, w)
 }
 
 func GetAllWarga(c echo.Context) error {
@@ -91,7 +91,7 @@ func GetWargaByID(c echo.Context) error {
 	paramid := c.Param("id")
 	userData := c.Get("user").(*jwt.Token)
 	claims := userData.Claims.(*utils.JWTCustomClaims)
-	c.Logger().Info(claims)
+
 	if paramid != "" {
 		id = paramid
 	} else if claims.UserId != "" {
@@ -200,7 +200,9 @@ func LoginWarga(c echo.Context) error {
 		})
 	}
 
-	warga, err := models.GetWargaByEmail(c, w.Email)
+	keluarga, err := models.GetWargaByEmail(c, w.Email)
+	warga := keluarga.Warga[0]
+
 	if err != nil {
 		return utils.ResponseErrorLogin(c, utils.ErrorLogin{
 			Code:    http.StatusBadRequest,
@@ -215,7 +217,7 @@ func LoginWarga(c echo.Context) error {
 			Message: "Password yang anda masukkan salah",
 		})
 	}
-	token, err := utils.GenerateTokenWarga(c, warga.Nama, warga.Email, warga.Id, warga.IdKeluarga, utils.JWTStandartClaims)
+	token, err := utils.GenerateTokenWarga(c, warga.Nama, warga.Email, warga.Id, warga.IdKeluarga, keluarga.IdRT, utils.JWTStandartClaims)
 	if err != nil {
 		return utils.ResponseErrorLogin(c, utils.ErrorLogin{
 			Code:    http.StatusBadRequest,
@@ -231,7 +233,7 @@ func LoginWarga(c echo.Context) error {
 
 }
 
-func loginWarga(c echo.Context, pass string, w *entity.Warga) error {
+func loginWarga(c echo.Context, pass, id_rt string, w *entity.Warga) error {
 
 	isValid := utils.CheckPassword(pass, w.Id, w.Password)
 	if !isValid {
@@ -241,7 +243,7 @@ func loginWarga(c echo.Context, pass string, w *entity.Warga) error {
 			Message: "Password yang anda masukkan salah",
 		})
 	}
-	token, err := utils.GenerateTokenWarga(c, w.Nama, w.Email, w.Id, w.IdKeluarga, utils.JWTStandartClaims)
+	token, err := utils.GenerateTokenWarga(c, w.Nama, w.Email, w.Id, w.IdKeluarga, id_rt, utils.JWTStandartClaims)
 	if err != nil {
 		return utils.ResponseErrorLogin(c, utils.ErrorLogin{
 			Code:    http.StatusBadRequest,

@@ -58,7 +58,7 @@ func CreateProduk(c echo.Context) error {
 
 func GetAllProduk(c echo.Context) error {
 
-	allProduk, err := models.GetAllProduk(c, "")
+	allProduk, err := models.GetAllProduk(c, c.QueryParam("id_keluarga"))
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,

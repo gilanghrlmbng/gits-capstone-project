@@ -42,6 +42,9 @@ func CreateKeluarga(c echo.Context) error {
 	entropy := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
 	k.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
 
+	k.NamaToko = k.Nama
+	k.Gambar = "https://dummyimage.com/500x500/29493B/fff&text=Warung"
+
 	// Ini buat masukin isi dari created_at nya
 	k.CreatedAt = time.Now()
 
@@ -54,6 +57,12 @@ func CreateKeluarga(c echo.Context) error {
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		})
+	}
+
+	eror := CreateDompetKeluarga(c, k.Id)
+	if eror.Code != http.StatusCreated {
+		c.Logger().Error("Failed to Create Dompet Keluarga")
+		return utils.ResponseError(c, eror)
 	}
 
 	// Return datanya

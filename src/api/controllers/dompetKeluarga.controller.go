@@ -13,12 +13,12 @@ import (
 	"github.com/oklog/ulid/v2"
 )
 
-func CreateDompet(c echo.Context, id_rt string) utils.Error {
-	d := entity.DompetRT{
+func CreateDompetKeluarga(c echo.Context, id_keluarga string) utils.Error {
+	d := entity.DompetKeluarga{
 		Jumlah: 0,
 	}
 
-	d.IdRT = id_rt
+	d.IdKeluarga = id_keluarga
 
 	if err := d.ValidateCreate(); err.Code > 0 {
 		return err
@@ -29,7 +29,7 @@ func CreateDompet(c echo.Context, id_rt string) utils.Error {
 
 	d.CreatedAt = time.Now()
 
-	_, err := models.CreateDompet(c, &d)
+	_, err := models.CreateDompetKeluarga(c, &d)
 	if err != nil {
 		return utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -43,28 +43,29 @@ func CreateDompet(c echo.Context, id_rt string) utils.Error {
 	}
 }
 
-func GetAllDompet(c echo.Context) error {
-	allDompet, err := models.GetAllDompet(c)
+func GetAllDompetKeluarga(c echo.Context) error {
+	allDompet, err := models.GetAllDompetKeluarga(c)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		})
 	}
-	return utils.ResponseDataDompet(c, utils.JSONResponseDataDompetRT{
-		Code:         http.StatusOK,
-		GetAllDompet: allDompet,
-		Message:      "Berhasil",
+	return utils.ResponseDataDompetKeluarga(c, utils.JSONResponseDataDompetKeluarga{
+		Code:                 http.StatusOK,
+		GetAllDompetKeluarga: allDompet,
+		Message:              "Berhasil",
 	})
 }
 
-func GetDompetByID(c echo.Context) error {
-	var id_rt string
+func GetDompetKeluargaByID(c echo.Context) error {
+	var id_keluarga string
 	id := c.Param("id")
 	userData := c.Get("user").(*jwt.Token)
 	claims := userData.Claims.(*utils.JWTCustomClaims)
-	if claims.IdRT != "" && claims.User == "pengurus" {
-		id_rt = claims.IdRT
+	c.Logger().Info(claims)
+	if claims.IdKeluarga != "" && claims.User == "warga" {
+		id_keluarga = claims.IdKeluarga
 	} else if id == "" {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
@@ -72,21 +73,21 @@ func GetDompetByID(c echo.Context) error {
 		})
 	}
 
-	d, err := models.GetDompetByID(c, id, id_rt)
+	d, err := models.GetDompetKeluargaByID(c, id, id_keluarga)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		})
 	}
-	return utils.ResponseDataDompet(c, utils.JSONResponseDataDompetRT{
-		Code:          http.StatusOK,
-		GetDompetByID: d,
-		Message:       "Berhasil",
+	return utils.ResponseDataDompetKeluarga(c, utils.JSONResponseDataDompetKeluarga{
+		Code:                  http.StatusOK,
+		GetDompetKeluargaByID: d,
+		Message:               "Berhasil",
 	})
 }
 
-func UpdateDompetById(c echo.Context) error {
+func UpdateDompetKeluargaById(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
 		return utils.ResponseError(c, utils.Error{
@@ -95,7 +96,7 @@ func UpdateDompetById(c echo.Context) error {
 		})
 	}
 
-	d := new(entity.DompetRT)
+	d := new(entity.DompetKeluarga)
 
 	if err := c.Bind(d); err != nil {
 		return utils.ResponseError(c, utils.Error{
@@ -104,7 +105,7 @@ func UpdateDompetById(c echo.Context) error {
 		})
 	}
 
-	_, err := models.GetDompetByID(c, id, "")
+	_, err := models.GetDompetKeluargaByID(c, id, "")
 
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
@@ -115,7 +116,7 @@ func UpdateDompetById(c echo.Context) error {
 
 	d.UpdatedAt = time.Now()
 
-	_, err = models.UpdateDompetById(c, id, d)
+	_, err = models.UpdateDompetKeluargaById(c, id, d)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -128,7 +129,7 @@ func UpdateDompetById(c echo.Context) error {
 	})
 }
 
-func SoftDeleteDompetById(c echo.Context) error {
+func SoftDeleteDompetKeluargaById(c echo.Context) error {
 	id := c.Param("id")
 
 	if id == "" {
@@ -138,7 +139,7 @@ func SoftDeleteDompetById(c echo.Context) error {
 		})
 	}
 
-	_, err := models.GetDompetByID(c, id, "")
+	_, err := models.GetDompetKeluargaByID(c, id, "")
 
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
@@ -147,7 +148,7 @@ func SoftDeleteDompetById(c echo.Context) error {
 		})
 	}
 
-	_, err = models.SoftDeleteDompetById(c, id)
+	_, err = models.SoftDeleteDompetKeluargaById(c, id)
 
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{

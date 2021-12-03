@@ -115,7 +115,7 @@ func GetRTByKode(c echo.Context, kode string) (entity.Rt, error) {
 
 func GenerateKodeRT(c echo.Context, n int16) string {
 	const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
-
+	var rt entity.Rt
 	b := make([]byte, n)
 	for i := range b {
 		b[i] = letterBytes[rand.Intn(len(letterBytes))]
@@ -123,14 +123,17 @@ func GenerateKodeRT(c echo.Context, n int16) string {
 	kode := string(b)
 	db := db.GetDB(c)
 
-	err := db.Where("kode_rt = ?", kode).First(&entity.Rt{})
-	for err.Error == nil {
-		b = make([]byte, n)
-		for i := range b {
-			b[i] = letterBytes[rand.Intn(len(letterBytes))]
+	err := db.First(&rt, "kode_rt = ?", kode).Error
+	if err == nil {
+		for err == nil {
+			b = make([]byte, n)
+			for i := range b {
+				b[i] = letterBytes[rand.Intn(len(letterBytes))]
+			}
+			kode = string(b)
+			err = db.Where("kode_rt = ?", kode).First(&entity.Rt{}).Error
 		}
-		kode = string(b)
-		err = db.Where("kode_rt = ?", kode).First(&entity.Rt{})
 	}
+
 	return kode
 }

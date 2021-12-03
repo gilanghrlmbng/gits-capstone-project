@@ -28,10 +28,10 @@ func GetAllProduk(c echo.Context, idKeluarga string) (p []entity.Produk, err err
 	var produks []entity.Produk
 	db := db.GetDB(c)
 	var errs *gorm.DB
-	if idKeluarga == "" {
-		errs = db.Find(&produks)
-	} else {
+	if idKeluarga != "" {
 		errs = db.Where("id_keluarga = ?", idKeluarga).Find(&produks)
+	} else {
+		errs = db.Find(&produks)
 	}
 
 	if errs.Error != nil {

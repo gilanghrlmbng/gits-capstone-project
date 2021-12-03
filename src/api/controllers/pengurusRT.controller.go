@@ -24,7 +24,7 @@ func CreatePengurus(c echo.Context) error {
 		})
 	}
 
-	prt.Gambar = fmt.Sprintf("https://dummyimage.com/500x500/eee/fff&text=%c", prt.Nama[0])
+	prt.Gambar = fmt.Sprintf("https://dummyimage.com/500x500/29493B/fff&text=%c", prt.Nama[0])
 
 	if err := prt.ValidateCreate(); err.Code > 0 {
 		return utils.ResponseError(c, err)

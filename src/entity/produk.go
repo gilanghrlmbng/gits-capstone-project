@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"database/sql"
 	"net/http"
 	"src/utils"
 	"time"
@@ -14,6 +15,7 @@ type Produk struct {
 	Nama       string          `gorm:"type:varchar(50);not null" json:"nama" form:"nama"`
 	Detail     string          `gorm:"not null" json:"detail" form:"detail"`
 	Gambar     string          `gorm:"not null" json:"gambar" form:"gambar"`
+	Tersedia   sql.NullBool    `gorm:"default:true" json:"tersedia" form:"tersedia"`
 	Harga      int64           `gorm:"not null" json:"harga" form:"harga"`
 	CreatedAt  time.Time       `gorm:"type:timestamptz;not null" json:"created_at"`
 	UpdatedAt  time.Time       `gorm:"type:timestamptz;" json:"updated_at"`

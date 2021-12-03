@@ -6,6 +6,7 @@ import (
 	"src/entity"
 
 	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
 )
 
 func CreateDompet(c echo.Context, d *entity.DompetRT) (entity.DompetRT, error) {
@@ -37,11 +38,15 @@ func GetAllDompet(c echo.Context) ([]entity.DompetRT, error) {
 	return dompet, nil
 }
 
-func GetDompetByID(c echo.Context, id string) (entity.DompetRT, error) {
+func GetDompetByID(c echo.Context, id, id_rt string) (entity.DompetRT, error) {
 	var d entity.DompetRT
+	var err *gorm.DB
 	db := db.GetDB(c)
-
-	err := db.First(&d, "id = ?", id)
+	if id_rt != "" {
+		err = db.First(&d, "id_rt = ?", id_rt)
+	} else {
+		err = db.First(&d, "id = ?", id)
+	}
 	if err.Error != nil {
 		c.Logger().Error(err)
 		return entity.DompetRT{}, errors.New("id tidak ditemukan atau tidak valid")

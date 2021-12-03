@@ -59,17 +59,17 @@ func GetWargaByID(c echo.Context, id string) (entity.Warga, error) {
 	return w, nil
 }
 
-func GetWargaByEmail(c echo.Context, email string) (entity.Warga, error) {
-	var w entity.Warga
+func GetWargaByEmail(c echo.Context, email string) (entity.Keluarga, error) {
+	// var w entity.Warga
+	var k entity.Keluarga
 	db := db.GetDB(c)
-
-	err := db.First(&w, "email = ?", email)
+	err := db.Preload("Warga", "email = ?", email).First(&k)
 	if err.Error != nil {
 		c.Logger().Error(err)
-		return entity.Warga{}, errors.New("email tidak ditemukan")
+		return entity.Keluarga{}, errors.New("email tidak ditemukan")
 	}
 
-	return w, nil
+	return k, nil
 }
 
 func UpdateWargaById(c echo.Context, id string, w *entity.Warga) (int64, error) {

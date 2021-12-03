@@ -18,6 +18,7 @@ type JWTCustomClaims struct {
 	IdKeluarga string `json:"id_keluarga"`
 	IdRT       string `json:"id_rt"`
 	UserId     string `json:"id"`
+	User       string `json:"user"`
 	jwt.StandardClaims
 }
 
@@ -27,13 +28,15 @@ var (
 	}
 )
 
-func GenerateTokenWarga(c echo.Context, nama, email, id, id_keluarga string, claim jwt.StandardClaims) (string, error) {
+func GenerateTokenWarga(c echo.Context, nama, email, id, id_keluarga, id_rt string, claim jwt.StandardClaims) (string, error) {
 	// Set custom claims
 	claims := &JWTCustomClaims{
 		Nama:           nama,
 		Email:          email,
 		UserId:         id,
 		IdKeluarga:     id_keluarga,
+		IdRT:           id_rt,
+		User:           "warga",
 		StandardClaims: JWTStandartClaims,
 	}
 
@@ -54,6 +57,7 @@ func GenerateTokenPengurus(c echo.Context, nama, email, id, id_rt string, claim 
 		Email:          email,
 		UserId:         id,
 		IdRT:           id_rt,
+		User:           "pengurus",
 		StandardClaims: JWTStandartClaims,
 	}
 
