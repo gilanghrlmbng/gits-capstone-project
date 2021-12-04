@@ -84,5 +84,8 @@ func initData(e *echo.Echo, db *gorm.DB) {
 	// Dompet Keluarga
 	_ = SeedDompetKeluarga(db, listIdKeluarga)
 
+	// Informasi
+	_ = SeedInformasi(db, listIdRt)
+
 	e.Logger.Info("dummy data terinisialisasi")
 }
