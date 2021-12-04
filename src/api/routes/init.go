@@ -38,6 +38,7 @@ func Init(e *echo.Echo) *echo.Echo {
 	e = Order(e, JWTconfig)
 	e = Persuratan(e, JWTconfig)
 	e = DompetKeluarga(e, JWTconfig)
+	e = Informasi(e, JWTconfig)
 
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello Worlds!!!")
