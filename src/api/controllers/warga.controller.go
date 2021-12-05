@@ -40,7 +40,15 @@ func CreateWarga(c echo.Context) error {
 	}
 	w.IdKeluarga = k.Id
 
-	cek, _ := models.GetWargaByEmail(c, w.Email)
+	keluarga, err := models.GetWargaByEmail(c, w.Email)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+	cek := keluarga.Warga[0]
+
 	if cek.Id != "" {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
@@ -201,14 +209,14 @@ func LoginWarga(c echo.Context) error {
 	}
 
 	keluarga, err := models.GetWargaByEmail(c, w.Email)
-	warga := keluarga.Warga[0]
-
 	if err != nil {
 		return utils.ResponseErrorLogin(c, utils.ErrorLogin{
-			Code:    http.StatusBadRequest,
+			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		})
 	}
+	warga := keluarga.Warga[0]
+
 
 	isValid := utils.CheckPassword(w.Password, warga.Id, warga.Password)
 	if !isValid {

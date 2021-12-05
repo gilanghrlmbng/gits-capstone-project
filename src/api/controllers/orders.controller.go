@@ -32,14 +32,14 @@ func CreateOrder(c echo.Context) error {
 			Message: "Maaf anda tidak memiliki akses ini",
 		})
 	}
-
-	w, err := models.GetWargaByEmail(c, claims.Email)
+	keluarga, err := models.GetWargaByEmail(c, claims.Email)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		})
 	}
+	w := keluarga.Warga[0]
 
 	ord.IdWarga = w.Id
 
