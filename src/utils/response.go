@@ -53,6 +53,14 @@ type JSONResponseDataInformasi struct {
 	Message          string      `json:"message"`
 }
 
+type JSONResponseDataAduan struct {
+	Code         int64       `json:"code"`
+	CreateAduan  interface{} `json:"create_aduan,omitempty"`
+	GetAllAduan  interface{} `json:"get_all_aduan,omitempty"`
+	GetAduanByID interface{} `json:"get_aduan_by_id,omitempty"`
+	Message      string      `json:"message"`
+}
+
 type JSONResponseDataKeluarga struct {
 	Code                int64       `json:"code"`
 	GetKeluargaByID     interface{} `json:"get_keluarga_by_id,omitempty"`
@@ -129,6 +137,10 @@ func ResponseDataProduk(c echo.Context, res JSONResponseDataProduk) error {
 }
 
 func ResponseDataInformasi(c echo.Context, res JSONResponseDataInformasi) error {
+	return c.JSON(int(res.Code), res)
+}
+
+func ResponseDataAduan(c echo.Context, res JSONResponseDataAduan) error {
 	return c.JSON(int(res.Code), res)
 }
 

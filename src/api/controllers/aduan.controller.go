@@ -13,10 +13,10 @@ import (
 	"github.com/oklog/ulid/v2"
 )
 
-func CreateOrder(c echo.Context) error {
-	ord := new(entity.Order)
+func CreateAduan(c echo.Context) error {
+	a := new(entity.Aduan)
 
-	if err := c.Bind(ord); err != nil {
+	if err := c.Bind(a); err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -26,12 +26,6 @@ func CreateOrder(c echo.Context) error {
 	userData := c.Get("user").(*jwt.Token)
 	claims := userData.Claims.(*utils.JWTCustomClaims)
 
-	if claims.UserId == "" {
-		return utils.ResponseError(c, utils.Error{
-			Code:    http.StatusBadRequest,
-			Message: "Maaf anda tidak memiliki akses ini",
-		})
-	}
 	warga, err := models.GetWargaByEmail(c, claims.Email)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
@@ -39,37 +33,30 @@ func CreateOrder(c echo.Context) error {
 			Message: err.Error(),
 		})
 	}
-	ord.IdWarga = warga.Id
-
-	// id pembayaran belum.
-	// ord.IdPembayaran =
-
-	if err := ord.ValidateCreate(); err.Code > 0 {
-		return utils.ResponseError(c, err)
-	}
 
 	entropy := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
-	ord.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
+	a.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
+	a.IdWarga = warga.Id
+	a.CreatedBy = claims.Nama
+	a.CreatedAt = time.Now()
 
-	ord.CreatedAt = time.Now()
-	Order, err := models.CreateOrder(c, ord)
-
+	Aduan, err := models.CreateAduan(c, a)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
-			Code:    http.StatusInternalServerError,
+			Code:    http.StatusCreated,
 			Message: err.Error(),
 		})
 	}
 
-	return utils.ResponseDataOrder(c, utils.JSONResponseDataOrder{
+	return utils.ResponseDataAduan(c, utils.JSONResponseDataAduan{
 		Code:        http.StatusCreated,
-		CreateOrder: Order,
+		CreateAduan: Aduan,
 		Message:     "Berhasil",
 	})
 }
 
-func GetAllOrder(c echo.Context) error {
-	allOrder, err := models.GetAllOrder(c)
+func GetAllAduan(c echo.Context) error {
+	allAduan, err := models.GetAllAduan(c)
 
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
@@ -78,14 +65,14 @@ func GetAllOrder(c echo.Context) error {
 		})
 	}
 
-	return utils.ResponseDataOrder(c, utils.JSONResponseDataOrder{
+	return utils.ResponseDataAduan(c, utils.JSONResponseDataAduan{
 		Code:        http.StatusOK,
-		GetAllOrder: allOrder,
+		GetAllAduan: allAduan,
 		Message:     "Berhasil",
 	})
 }
 
-func GetOrderByID(c echo.Context) error {
+func GetAduanByID(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
 		return utils.ResponseError(c, utils.Error{
@@ -94,41 +81,39 @@ func GetOrderByID(c echo.Context) error {
 		})
 	}
 
-	ord, err := models.GetOrderByID(c, id)
+	Aduan, err := models.GetAduanByID(c, id)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		})
 	}
-	return utils.ResponseDataOrder(c, utils.JSONResponseDataOrder{
+	return utils.ResponseDataAduan(c, utils.JSONResponseDataAduan{
 		Code:         http.StatusOK,
-		GetOrderByID: ord,
+		GetAduanByID: Aduan,
 		Message:      "Berhasil",
 	})
 }
 
-func UpdateOrderById(c echo.Context) error {
+func UpdateAduanById(c echo.Context) error {
 	id := c.Param("id")
-
 	if id == "" {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
-			Message: "ID tidak valid",
+			Message: "Id tidak valid",
 		})
 	}
 
-	ord := new(entity.Order)
+	a := new(entity.Aduan)
 
-	if err := c.Bind(ord); err != nil {
+	if err := c.Bind(a); err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
 		})
 	}
 
-	_, err := models.GetOrderByID(c, id)
-
+	_, err := models.GetAduanByID(c, id)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -136,24 +121,22 @@ func UpdateOrderById(c echo.Context) error {
 		})
 	}
 
-	ord.UpdatedAt = time.Now()
+	a.UpdatedAt = time.Now()
 
-	_, err = models.UpdateOrderById(c, id, ord)
-
+	_, err = models.UpdateAduanById(c, id, a)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		})
 	}
-
 	return utils.Response(c, utils.JSONResponse{
 		Code:    http.StatusOK,
 		Message: "Berhasil",
 	})
 }
 
-func SoftDeleteOrderById(c echo.Context) error {
+func SoftDeleteAduanById(c echo.Context) error {
 	id := c.Param("id")
 
 	if id == "" {
@@ -163,7 +146,7 @@ func SoftDeleteOrderById(c echo.Context) error {
 		})
 	}
 
-	_, err := models.GetOrderByID(c, id)
+	_, err := models.GetAduanByID(c, id)
 
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
@@ -171,7 +154,8 @@ func SoftDeleteOrderById(c echo.Context) error {
 			Message: err.Error(),
 		})
 	}
-	_, err = models.SoftDeleteOrderById(c, id)
+
+	_, err = models.SoftDeleteAduanById(c, id)
 
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
@@ -180,7 +164,7 @@ func SoftDeleteOrderById(c echo.Context) error {
 		})
 	}
 	return utils.Response(c, utils.JSONResponse{
-		Code:    http.StatusBadRequest,
+		Code:    http.StatusOK,
 		Message: "Berhasil",
 	})
 }
