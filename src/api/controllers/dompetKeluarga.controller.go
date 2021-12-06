@@ -87,6 +87,92 @@ func GetDompetKeluargaByID(c echo.Context) error {
 	})
 }
 
+func TopUpDompetKeluarga(c echo.Context) error {
+	d := new(entity.DompetKeluarga)
+
+	if err := c.Bind(d); err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+
+	userData := c.Get("user").(*jwt.Token)
+	claims := userData.Claims.(*utils.JWTCustomClaims)
+	if claims.IdKeluarga == "" && claims.User == "warga" {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Maaf anda tidak memiliki akses ini",
+		})
+	}
+
+	dompet, err := models.GetDompetKeluargaByID(c, "", claims.IdKeluarga)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	dompet.Jumlah = dompet.Jumlah + d.Jumlah
+
+	_, err = models.UpdateDompetKeluargaById(c, dompet.Id, &dompet)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	return utils.Response(c, utils.JSONResponse{
+		Code:    http.StatusOK,
+		Message: "Berhasil",
+	})
+}
+
+func WithdrawDompetKeluarga(c echo.Context) error {
+	d := new(entity.DompetKeluarga)
+
+	if err := c.Bind(d); err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+
+	userData := c.Get("user").(*jwt.Token)
+	claims := userData.Claims.(*utils.JWTCustomClaims)
+	if claims.IdKeluarga == "" && claims.User == "warga" {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Maaf anda tidak memiliki akses ini",
+		})
+	}
+
+	dompet, err := models.GetDompetKeluargaByID(c, "", claims.IdKeluarga)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	dompet.Jumlah = dompet.Jumlah - d.Jumlah
+
+	_, err = models.UpdateDompetKeluargaById(c, dompet.Id, &dompet)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	return utils.Response(c, utils.JSONResponse{
+		Code:    http.StatusOK,
+		Message: "Berhasil",
+	})
+}
+
 func UpdateDompetKeluargaById(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {

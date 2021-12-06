@@ -86,6 +86,92 @@ func GetDompetByID(c echo.Context) error {
 	})
 }
 
+func TopUpDompetRT(c echo.Context) error {
+	d := new(entity.DompetRT)
+
+	if err := c.Bind(d); err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+
+	userData := c.Get("user").(*jwt.Token)
+	claims := userData.Claims.(*utils.JWTCustomClaims)
+	if claims.IdRT == "" && claims.User == "pengurus" {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Maaf anda tidak memiliki akses ini",
+		})
+	}
+
+	dompet, err := models.GetDompetByID(c, "", claims.IdRT)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	dompet.Jumlah = dompet.Jumlah + d.Jumlah
+
+	_, err = models.UpdateDompetById(c, dompet.Id, &dompet)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	return utils.Response(c, utils.JSONResponse{
+		Code:    http.StatusOK,
+		Message: "Berhasil",
+	})
+}
+
+func WithdrawDompetRT(c echo.Context) error {
+	d := new(entity.DompetRT)
+
+	if err := c.Bind(d); err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+
+	userData := c.Get("user").(*jwt.Token)
+	claims := userData.Claims.(*utils.JWTCustomClaims)
+	if claims.IdRT == "" && claims.User == "pengurus" {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Maaf anda tidak memiliki akses ini",
+		})
+	}
+
+	dompet, err := models.GetDompetByID(c, "", claims.IdRT)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	dompet.Jumlah = dompet.Jumlah - d.Jumlah
+
+	_, err = models.UpdateDompetById(c, dompet.Id, &dompet)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	return utils.Response(c, utils.JSONResponse{
+		Code:    http.StatusOK,
+		Message: "Berhasil",
+	})
+}
+
 func UpdateDompetById(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {

@@ -12,6 +12,8 @@ func DompetRT(e *echo.Echo, JWTconfig middleware.JWTConfig) *echo.Echo {
 	auth.Use(middleware.JWTWithConfig(JWTconfig))
 	auth.GET("/dompetrt", controllers.GetAllDompet)
 	auth.GET("/dompetrt/me", controllers.GetDompetByID)
+	auth.PUT("/dompetrt/topup", controllers.TopUpDompetRT)
+	auth.PUT("/dompetrt/withdraw", controllers.WithdrawDompetRT)
 	auth.GET("/dompetrt/:id", controllers.GetDompetByID)
 	auth.PUT("/dompetrt/:id", controllers.UpdateDompetById)
 	auth.DELETE("/dompetrt/:id", controllers.SoftDeleteDompetById)
