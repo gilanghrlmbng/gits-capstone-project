@@ -39,7 +39,16 @@ func CreateOrder(c echo.Context) error {
 			Message: err.Error(),
 		})
 	}
-	w := keluarga.Warga[0]
+	var w entity.Warga
+	if len(keluarga.Warga) == 0 {
+		return utils.ResponseErrorLogin(c, utils.ErrorLogin{
+			Code:    http.StatusInternalServerError,
+			Message: "Akun tidak ditemukan",
+		})
+	} else {
+		w = keluarga.Warga[0]
+
+	}
 
 	ord.IdWarga = w.Id
 

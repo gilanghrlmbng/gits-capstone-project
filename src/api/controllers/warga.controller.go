@@ -47,7 +47,16 @@ func CreateWarga(c echo.Context) error {
 			Message: err.Error(),
 		})
 	}
-	cek := keluarga.Warga[0]
+	var cek entity.Warga
+	if len(keluarga.Warga) == 0 {
+		return utils.ResponseErrorLogin(c, utils.ErrorLogin{
+			Code:    http.StatusInternalServerError,
+			Message: "Akun tidak ditemukan",
+		})
+	} else {
+		cek = keluarga.Warga[0]
+
+	}
 
 	if cek.Id != "" {
 		return utils.ResponseError(c, utils.Error{
@@ -215,8 +224,16 @@ func LoginWarga(c echo.Context) error {
 			Message: err.Error(),
 		})
 	}
-	warga := keluarga.Warga[0]
+	var warga entity.Warga
+	if len(keluarga.Warga) == 0 {
+		return utils.ResponseErrorLogin(c, utils.ErrorLogin{
+			Code:    http.StatusInternalServerError,
+			Message: "Akun tidak ditemukan",
+		})
+	} else {
+		warga = keluarga.Warga[0]
 
+	}
 
 	isValid := utils.CheckPassword(w.Password, warga.Id, warga.Password)
 	if !isValid {
