@@ -40,14 +40,7 @@ func CreateWarga(c echo.Context) error {
 	}
 	w.IdKeluarga = k.Id
 
-	cek, err := models.GetWargaByEmail(c, w.Email)
-	if err != nil {
-		return utils.ResponseError(c, utils.Error{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error(),
-		})
-	}
-
+	cek, _ := models.GetWargaByEmail(c, w.Email)
 	if cek.Id != "" {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
