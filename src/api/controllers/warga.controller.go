@@ -40,22 +40,12 @@ func CreateWarga(c echo.Context) error {
 	}
 	w.IdKeluarga = k.Id
 
-	keluarga, err := models.GetKeluargaByEmail(c, w.Email)
+	cek, err := models.GetWargaByEmail(c, w.Email)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		})
-	}
-	var cek entity.Warga
-	if len(keluarga.Warga) == 0 {
-		return utils.ResponseErrorLogin(c, utils.ErrorLogin{
-			Code:    http.StatusInternalServerError,
-			Message: "Akun tidak ditemukan",
-		})
-	} else {
-		cek = keluarga.Warga[0]
-
 	}
 
 	if cek.Id != "" {
