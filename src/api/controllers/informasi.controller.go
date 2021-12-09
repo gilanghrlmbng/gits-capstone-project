@@ -24,13 +24,14 @@ func CreateInformasi(c echo.Context) error {
 	}
 	userData := c.Get("user").(*jwt.Token)
 	claims := userData.Claims.(*utils.JWTCustomClaims)
-	if claims.IdRT == "" {
+	if claims.IdRT == "" || claims.User != "pengurus" {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: "Maaf anda tidak memiliki akses ini",
 		})
 	}
 
+	p.IdRT = claims.IdRT
 	p.CreatedBy = claims.Nama
 	if err := p.ValidateCreate(); err.Code > 0 {
 		return utils.ResponseError(c, err)
@@ -38,7 +39,6 @@ func CreateInformasi(c echo.Context) error {
 
 	entropy := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
 	p.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
-	p.IdRT = claims.IdRT
 	p.CreatedAt = time.Now()
 
 	Informasi, err := models.CreateInformasi(c, p)
@@ -106,7 +106,7 @@ func GetInfoTerkini(c echo.Context) error {
 		})
 	}
 
-	p, err := models.GetAllInformasiByKategori(c,claims.IdRT,"Informasi")
+	p, err := models.GetAllInformasiByKategori(c, claims.IdRT, "Informasi")
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -114,9 +114,9 @@ func GetInfoTerkini(c echo.Context) error {
 		})
 	}
 	return utils.ResponseDataInformasi(c, utils.JSONResponseDataInformasi{
-		Code:             http.StatusOK,
+		Code:            http.StatusOK,
 		GetAllInformasi: p,
-		Message:          "Berhasil",
+		Message:         "Berhasil",
 	})
 }
 
@@ -130,7 +130,7 @@ func GetKegiatanWarga(c echo.Context) error {
 		})
 	}
 
-	p, err := models.GetAllInformasiByKategori(c,claims.IdRT,"Kegiatan")
+	p, err := models.GetAllInformasiByKategori(c, claims.IdRT, "Kegiatan")
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -138,9 +138,9 @@ func GetKegiatanWarga(c echo.Context) error {
 		})
 	}
 	return utils.ResponseDataInformasi(c, utils.JSONResponseDataInformasi{
-		Code:             http.StatusOK,
+		Code:            http.StatusOK,
 		GetAllInformasi: p,
-		Message:          "Berhasil",
+		Message:         "Berhasil",
 	})
 }
 

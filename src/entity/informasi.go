@@ -62,10 +62,10 @@ func (i Informasi) ValidateCreate() utils.Error {
 		}
 	}
 
-	if i.Kategori == "" {
+	if i.Kategori != "Kegiatan" && i.Kategori != "Informasi" {
 		return utils.Error{
 			Code:    http.StatusBadRequest,
-			Message: "Kategori tidak boleh kosong",
+			Message: "Kategori Invalid, masukkan 'Kegiatan' atau 'Informasi'",
 		}
 	}
 	return utils.Error{}

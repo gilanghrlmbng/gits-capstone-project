@@ -89,7 +89,7 @@ func initData(e *echo.Echo, db *gorm.DB) {
 	_ = SeedInformasi(db, listIdRt)
 
 	//aduan
-	_ = SeedAduan(db, listIdWarga)
+	_ = SeedAduan(db, listIdRt, listIdWarga)
 
 	e.Logger.Info("dummy data terinisialisasi")
 }

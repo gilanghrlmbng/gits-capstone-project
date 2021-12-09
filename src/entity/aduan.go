@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"net/http"
 	"src/utils"
 	"time"
 
@@ -9,7 +10,9 @@ import (
 
 type Aduan struct {
 	Id        string          `gorm:"type:varchar(50);primaryKey" json:"id" form:"id"`
+	IdRT      string          `gorm:"type:varchar(50);not null" json:"id_rt" form:"id_rt"`
 	IdWarga   string          `gorm:"type:varchar(50);not null" json:"id_warga" form:"id_warga"`
+	Judul     string          `gorm:"not null" json:"judul" form:"judul"`
 	Gambar    string          `gorm:"not null" json:"gambar" form:"gambar"`
 	Deskripsi string          `gorm:"not null" json:"deskripsi" form:"deskripsi"`
 	CreatedBy string          `gorm:"not null" json:"createdBy" form:"createdBy"`
@@ -23,6 +26,18 @@ func (Aduan) TableName() string {
 }
 
 func (a Aduan) ValidateCreate() utils.Error {
+	if a.Judul == "" {
+		return utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Judul tidak boleh kosong",
+		}
+	}
+	if a.Deskripsi == "" {
+		return utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Deskripsi tidak boleh kosong",
+		}
+	}
 
 	return utils.Error{}
 }

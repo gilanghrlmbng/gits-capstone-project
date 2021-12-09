@@ -99,7 +99,7 @@ func TopUpDompetKeluarga(c echo.Context) error {
 
 	userData := c.Get("user").(*jwt.Token)
 	claims := userData.Claims.(*utils.JWTCustomClaims)
-	if claims.IdKeluarga == "" && claims.User == "warga" {
+	if claims.IdKeluarga == "" || claims.User != "warga" {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: "Maaf anda tidak memiliki akses ini",
@@ -142,7 +142,7 @@ func WithdrawDompetKeluarga(c echo.Context) error {
 
 	userData := c.Get("user").(*jwt.Token)
 	claims := userData.Claims.(*utils.JWTCustomClaims)
-	if claims.IdKeluarga == "" && claims.User == "warga" {
+	if claims.IdKeluarga == "" || claims.User != "warga" {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: "Maaf anda tidak memiliki akses ini",

@@ -98,7 +98,7 @@ func TopUpDompetRT(c echo.Context) error {
 
 	userData := c.Get("user").(*jwt.Token)
 	claims := userData.Claims.(*utils.JWTCustomClaims)
-	if claims.IdRT == "" && claims.User == "pengurus" {
+	if claims.IdRT == "" || claims.User != "pengurus" {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: "Maaf anda tidak memiliki akses ini",
@@ -141,7 +141,7 @@ func WithdrawDompetRT(c echo.Context) error {
 
 	userData := c.Get("user").(*jwt.Token)
 	claims := userData.Claims.(*utils.JWTCustomClaims)
-	if claims.IdRT == "" && claims.User == "pengurus" {
+	if claims.IdRT == "" || claims.User != "pengurus" {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: "Maaf anda tidak memiliki akses ini",

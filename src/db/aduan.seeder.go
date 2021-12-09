@@ -9,12 +9,14 @@ import (
 	"gorm.io/gorm"
 )
 
-func SeedAduan(db *gorm.DB, listIdWarga []string) []string {
+func SeedAduan(db *gorm.DB, listIdRT, listIdWarga []string) []string {
 	entropy1 := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
 	Id1 := ulid.MustNew(ulid.Timestamp(time.Now()), entropy1).String()
 	data1 := entity.Aduan{
 		Id:        Id1,
 		IdWarga:   listIdWarga[0],
+		IdRT:      listIdRT[0],
+		Judul:     "Aduan 1",
 		Gambar:    "https://dummyimage.com/500x500/eee/fff&text=F1",
 		Deskripsi: "Deskripsi Aduan 1",
 		CreatedBy: "Agustina",
@@ -29,6 +31,8 @@ func SeedAduan(db *gorm.DB, listIdWarga []string) []string {
 	data2 := entity.Aduan{
 		Id:        Id2,
 		IdWarga:   listIdWarga[1],
+		IdRT:      listIdRT[0],
+		Judul:     "Aduan 2",
 		Gambar:    "https://dummyimage.com/500x500/eee/fff&text=F2",
 		Deskripsi: "Deskripsi Aduan 2",
 		CreatedBy: "Ronals",
