@@ -32,6 +32,7 @@ func CreateKeluarga(c echo.Context) error {
 			Message: err.Error(),
 		})
 	}
+	k.NamaToko = k.Nama
 
 	// terus ini ada validasi buat ngecek inputan dari reqeust body udah sesuai apa belum
 	if err := k.ValidateCreate(); err.Code > 0 {
@@ -42,7 +43,6 @@ func CreateKeluarga(c echo.Context) error {
 	entropy := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
 	k.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
 
-	k.NamaToko = k.Nama
 	k.Gambar = "https://dummyimage.com/500x500/29493B/fff&text=Warung"
 
 	// Ini buat masukin isi dari created_at nya
