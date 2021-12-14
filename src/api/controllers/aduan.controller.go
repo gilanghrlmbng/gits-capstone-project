@@ -46,6 +46,7 @@ func CreateAduan(c echo.Context) error {
 	}
 
 	a.IdRT = claims.IdRT
+
 	entropy := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
 	a.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
 	a.IdWarga = warga.Id

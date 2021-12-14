@@ -111,6 +111,12 @@ type JSONResponseDataPersuratan struct {
 	Message           string      `json:"message"`
 }
 
+type JSONResponseDataItemOrder struct {
+	Code            int64       `json:"code"`
+	CreateItemOrder interface{} `json:"create_item_order,omitempty"`
+	Message         string      `json:"message"`
+}
+
 type JSONResponse struct {
 	Code    int64  `json:"code"`
 	Message string `json:"message"`
@@ -177,6 +183,10 @@ func ResponseDataPersuratan(c echo.Context, res JSONResponseDataPersuratan) erro
 }
 
 func ResponseDataOrder(c echo.Context, res JSONResponseDataOrder) error {
+	return c.JSON(int(res.Code), res)
+}
+
+func ResponseDataItemOrder(c echo.Context, res JSONResponseDataItemOrder) error {
 	return c.JSON(int(res.Code), res)
 }
 

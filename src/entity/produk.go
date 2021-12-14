@@ -13,6 +13,7 @@ type Produk struct {
 	Id         string          `gorm:"type:varchar(50);primaryKey" json:"id" form:"id"`
 	IdKeluarga string          `gorm:"type:varchar(50);not null" json:"id_keluarga" form:"id_keluarga"`
 	Nama       string          `gorm:"type:varchar(50);not null" json:"nama" form:"nama"`
+	ItemOrder  []ItemOrder     `gorm:"foreignKey:id_produk;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"item_order,omitempty" form:"item_order"`
 	Detail     string          `gorm:"not null" json:"detail" form:"detail"`
 	Gambar     string          `gorm:"not null" json:"gambar" form:"gambar"`
 	Tersedia   sql.NullBool    `gorm:"default:true" json:"tersedia" form:"tersedia"`

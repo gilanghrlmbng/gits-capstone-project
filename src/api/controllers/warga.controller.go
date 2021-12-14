@@ -40,6 +40,7 @@ func CreateWarga(c echo.Context) error {
 	}
 	w.IdKeluarga = k.Id
 
+
 	cek, _ := models.GetWargaByEmail(c, w.Email)
 	if cek.Id != "" {
 		return utils.ResponseError(c, utils.Error{
@@ -207,6 +208,7 @@ func LoginWarga(c echo.Context) error {
 			Message: err.Error(),
 		})
 	}
+  
 	var warga entity.Warga
 	if len(keluarga.Warga) == 0 {
 		return utils.ResponseErrorLogin(c, utils.ErrorLogin{

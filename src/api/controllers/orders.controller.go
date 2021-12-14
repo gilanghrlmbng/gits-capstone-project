@@ -14,13 +14,22 @@ import (
 )
 
 func CreateOrder(c echo.Context) error {
+	item := new(entity.ItemOrder)
 	ord := new(entity.Order)
 
-	if err := c.Bind(ord); err != nil {
+	if err := c.Bind(item); err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
 		})
+	}
+
+	produk, err := models.GetProdukByID(c, item.IdProduk)
+	harga := produk.Harga
+	item.HargaTotal = harga * item.Jumlah
+
+	if err := item.ValidateCreate(); err.Code > 0 {
+		return utils.ResponseError(c, err)
 	}
 
 	userData := c.Get("user").(*jwt.Token)
@@ -32,6 +41,7 @@ func CreateOrder(c echo.Context) error {
 			Message: "Maaf anda tidak memiliki akses ini",
 		})
 	}
+
 	warga, err := models.GetWargaByEmail(c, claims.Email)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
@@ -39,20 +49,35 @@ func CreateOrder(c echo.Context) error {
 			Message: err.Error(),
 		})
 	}
-	ord.IdWarga = warga.Id
-
-	// id pembayaran belum.
-	// ord.IdPembayaran =
-
-	if err := ord.ValidateCreate(); err.Code > 0 {
-		return utils.ResponseError(c, err)
-	}
 
 	entropy := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
 	ord.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
 
+	ord.IdWarga = warga.Id
+
+	item.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
+	item.IdOrder = ord.Id
+
+	//still not working well, totals ord still return 0
+	for i := 0; i < len(ord.ItemOrder); i++ {
+		ord.Harga_total = ord.Harga_total + item.HargaTotal
+	}
+
 	ord.CreatedAt = time.Now()
+
+	// if err := ord.ValidateCreate(); err.Code > 0 {
+	// 	return utils.ResponseError(c, err)
+	// }
+
 	Order, err := models.CreateOrder(c, ord)
+
+	_, err = models.CreateItemOrder(c, item)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
 
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
