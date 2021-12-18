@@ -21,7 +21,7 @@ func SeedWarga(db *gorm.DB, listKeluarga []string) []string {
 		Email:       "warga1@gmail.com",
 		Gender:      "perempuan",
 		NoHandphone: "08123123123123",
-		Gambar: "https://dummyimage.com/500x500/eee/fff&text=A",
+		Gambar:      "https://dummyimage.com/500x500/eee/fff&text=A",
 		Password:    "aaaaaa",
 		CreatedAt:   time.Now(),
 	}
@@ -39,7 +39,7 @@ func SeedWarga(db *gorm.DB, listKeluarga []string) []string {
 		Email:       "warga2@gmail.com",
 		Gender:      "laki-laki",
 		NoHandphone: "08123123123123",
-		Gambar: "https://dummyimage.com/500x500/eee/fff&text=A",
+		Gambar:      "https://dummyimage.com/500x500/eee/fff&text=A",
 		Password:    "PasswordWargaSaya",
 		CreatedAt:   time.Now(),
 	}
@@ -54,10 +54,10 @@ func SeedWarga(db *gorm.DB, listKeluarga []string) []string {
 		Id:          Id3,
 		IdKeluarga:  listKeluarga[1],
 		Nama:        "mamat",
-		Email:       "warga3@gmail.com",
+		Email:       "alifnaufalyasin@gmail.com",
 		Gender:      "laki-laki",
 		NoHandphone: "08123123123123",
-		Gambar: "https://dummyimage.com/500x500/eee/fff&text=M",
+		Gambar:      "https://dummyimage.com/500x500/eee/fff&text=M",
 		Password:    "PasswordWargaSaya",
 		CreatedAt:   time.Now(),
 	}

@@ -84,6 +84,7 @@ func GetAllProdukByKeluarga(c echo.Context) error {
 	}
 
 	allProduk, err := models.GetAllProduk(c, claims.IdKeluarga)
+	c.Logger().Info(allProduk)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,

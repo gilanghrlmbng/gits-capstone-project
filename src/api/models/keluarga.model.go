@@ -42,6 +42,18 @@ func GetAllKeluarga(c echo.Context, filter string) ([]entity.Keluarga, error) {
 	return keluargas, nil
 }
 
+func GetAllKeluargaByRT(c echo.Context, idRT string) ([]entity.Keluarga, error) {
+	var keluargas []entity.Keluarga
+	db := db.GetDB(c)
+	err := db.Where("id_rt = ?", idRT).Find(&keluargas)
+	if err.Error != nil {
+		c.Logger().Error(err)
+		return keluargas, err.Error
+	}
+
+	return keluargas, nil
+}
+
 func GetAllKeluargaWithEntity(c echo.Context, filter string, entitas string) ([]entity.Keluarga, error) {
 	var keluargas []entity.Keluarga
 	db := db.GetDB(c)
@@ -94,7 +106,6 @@ func SoftDeleteKeluargaById(c echo.Context, id string) (int64, error) {
 
 	return err.RowsAffected, nil
 }
-
 
 func GetKeluargaByKode(c echo.Context, kode string) (entity.Keluarga, error) {
 	var k entity.Keluarga

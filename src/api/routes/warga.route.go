@@ -10,7 +10,7 @@ import (
 func Warga(e *echo.Echo, JWTconfig middleware.JWTConfig) *echo.Echo {
 	auth := e.Group("/warga")
 	auth.Use(middleware.JWTWithConfig(JWTconfig))
-	
+
 	auth.GET("", controllers.GetAllWarga)
 	auth.GET("/me", controllers.GetWargaByID)
 	auth.GET("/detail/:id", controllers.GetWargaByID)
@@ -19,6 +19,8 @@ func Warga(e *echo.Echo, JWTconfig middleware.JWTConfig) *echo.Echo {
 
 	e.POST("/warga", controllers.CreateWarga)
 	e.POST("/warga/login", controllers.LoginWarga)
+	e.POST("/warga/forgetpassword", controllers.ForgetPasswordWarga)
+	e.POST("/warga/resetpasswordbykode", controllers.ResetPasswordWargaByKode)
 
 	return e
 }

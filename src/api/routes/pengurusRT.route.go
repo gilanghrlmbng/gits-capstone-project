@@ -18,6 +18,8 @@ func PengurusRT(e *echo.Echo, JWTconfig middleware.JWTConfig) *echo.Echo {
 
 	e.POST("/pengurus", controllers.CreatePengurus)
 	e.POST("/pengurus/login", controllers.LoginPengurus)
+	e.POST("/pengurus/forgetpassword", controllers.ForgetPasswordPengurus)
+	e.POST("/pengurus/resetpasswordbykode", controllers.ResetPasswordPengurusByKode)
 
 	return e
 }

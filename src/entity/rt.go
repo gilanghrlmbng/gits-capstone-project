@@ -15,6 +15,7 @@ type Rt struct {
 	Informasi    []Informasi     `gorm:"foreignKey:id_rt;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"informasi,omitempty" form:"informasi"`
 	Persuratan   []Persuratan    `gorm:"foreignKey:id_rt;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"persuratan,omitempty" form:"persuratan"`
 	Aduan        []Aduan         `gorm:"foreignKey:id_rt;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"aduan,omitempty" form:"aduan"`
+	Tagihan      []Tagihan       `gorm:"foreignKey:id_rt;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"tagihan,omitempty" form:"tagihan"`
 	DompetRT     DompetRT        `gorm:"foreignKey:id_rt;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"dompet_rt,omitempty" form:"dompet_rt"`
 	KodeRT       string          `gorm:"type:varchar(100); not null" json:"kode_rt,omitempty" form:"kode_rt"`
 	NamaRt       string          `gorm:"type:varchar(50);not null" json:"nama_rt" form:"nama_rt"`

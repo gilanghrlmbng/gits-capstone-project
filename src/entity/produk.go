@@ -1,7 +1,6 @@
 package entity
 
 import (
-	"database/sql"
 	"net/http"
 	"src/utils"
 	"time"
@@ -16,7 +15,7 @@ type Produk struct {
 	ItemOrder  []ItemOrder     `gorm:"foreignKey:id_produk;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"item_order,omitempty" form:"item_order"`
 	Detail     string          `gorm:"not null" json:"detail" form:"detail"`
 	Gambar     string          `gorm:"not null" json:"gambar" form:"gambar"`
-	Tersedia   sql.NullBool    `gorm:"default:true" json:"tersedia" form:"tersedia"`
+	Tersedia   bool            `gorm:"default:true" json:"tersedia" form:"tersedia"`
 	Harga      int64           `gorm:"not null" json:"harga" form:"harga"`
 	CreatedAt  time.Time       `gorm:"type:timestamptz;not null" json:"created_at"`
 	UpdatedAt  time.Time       `gorm:"type:timestamptz;" json:"updated_at"`

@@ -111,6 +111,14 @@ type JSONResponseDataPersuratan struct {
 	Message           string      `json:"message"`
 }
 
+type JSONResponseDataTagihan struct {
+	Code           int64       `json:"code"`
+	GetTagihanByID interface{} `json:"get_tagihan_by_id,omitempty"`
+	GetAllTagihan  interface{} `json:"get_all_tagihan,omitempty"`
+	CreateTagihan  interface{} `json:"create_tagihan,omitempty"`
+	Message        string      `json:"message"`
+}
+
 type JSONResponseDataItemOrder struct {
 	Code            int64       `json:"code"`
 	CreateItemOrder interface{} `json:"create_item_order,omitempty"`
@@ -135,6 +143,10 @@ func Response(c echo.Context, res JSONResponse) error {
 }
 
 func ResponseData(c echo.Context, res JSONResponseData) error {
+	return c.JSON(int(res.Code), res)
+}
+
+func ResponseDataTagihan(c echo.Context, res JSONResponseDataTagihan) error {
 	return c.JSON(int(res.Code), res)
 }
 

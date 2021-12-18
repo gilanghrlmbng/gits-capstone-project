@@ -9,10 +9,12 @@ import (
 )
 
 type Config struct {
-	ServicePort string
-	Database    DatabaseConfig
-	Secret      string
-	Port        string `env:"PORT,default=4132"`
+	ServicePort   string
+	Database      DatabaseConfig
+	Secret        string
+	Port          string `env:"PORT,default=4132"`
+	Email         string `env:"EMAIL,required"`
+	PasswordEmail string `env:"PASSWORD_EMAIL,required"`
 }
 
 type DatabaseConfig struct {
@@ -37,8 +39,10 @@ func GetConfig(e *echo.Echo) Config {
 			Password: os.Getenv("DB_PASSWORD"),
 			Name:     os.Getenv("DB_NAME"),
 		},
-		Secret: os.Getenv("SECRET"),
-		Port:   os.Getenv("PORT"),
+		Secret:        os.Getenv("SECRET"),
+		Port:          os.Getenv("PORT"),
+		Email:         os.Getenv("EMAIL"),
+		PasswordEmail: os.Getenv("PASSWORD_EMAIL"),
 	}
 }
 
@@ -56,7 +60,9 @@ func GetConfigs(c echo.Context) Config {
 			Password: os.Getenv("DB_PASSWORD"),
 			Name:     os.Getenv("DB_NAME"),
 		},
-		Secret: os.Getenv("SECRET"),
-		Port:   os.Getenv("PORT"),
+		Secret:        os.Getenv("SECRET"),
+		Port:          os.Getenv("PORT"),
+		Email:         os.Getenv("EMAIL"),
+		PasswordEmail: os.Getenv("PASSWORD_EMAIL"),
 	}
 }

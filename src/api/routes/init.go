@@ -4,9 +4,17 @@ import (
 	"net/http"
 	"src/config"
 	"src/utils"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+)
+
+var (
+	// ErrRateLimitExceeded denotes an error raised when rate limit is exceeded
+	ErrRateLimitExceeded = echo.NewHTTPError(http.StatusTooManyRequests, "rate limit exceeded")
+	// ErrExtractorError denotes an error raised when extractor function is unsuccessful
+	ErrExtractorError = echo.NewHTTPError(http.StatusForbidden, "error while extracting identifier")
 )
 
 func Init(e *echo.Echo) *echo.Echo {
@@ -28,6 +36,38 @@ func Init(e *echo.Echo) *echo.Echo {
 		Code:    http.StatusUnauthorized,
 		Message: "Token Invalid",
 	}
+
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
+	}))
+
+	// DefaultRateLimiterConfig defines default values for RateLimiterConfig
+	var DefaultRateLimiterConfig = middleware.RateLimiterConfig{
+		Skipper: middleware.DefaultSkipper,
+		Store: middleware.NewRateLimiterMemoryStoreWithConfig(
+			middleware.RateLimiterMemoryStoreConfig{Rate: 10, Burst: 30, ExpiresIn: 5 * time.Minute},
+		),
+		IdentifierExtractor: func(ctx echo.Context) (string, error) {
+			id := ctx.RealIP()
+			return id, nil
+		},
+		ErrorHandler: func(context echo.Context, err error) error {
+			return &echo.HTTPError{
+				Code:     ErrExtractorError.Code,
+				Message:  ErrExtractorError.Message,
+				Internal: err,
+			}
+		},
+		DenyHandler: func(context echo.Context, identifier string, err error) error {
+			return &echo.HTTPError{
+				Code:     ErrRateLimitExceeded.Code,
+				Message:  ErrRateLimitExceeded.Message,
+				Internal: err,
+			}
+		},
+	}
+	e.Use(middleware.RateLimiterWithConfig(DefaultRateLimiterConfig))
+
 	e.Logger.Info("menginisialisasikan routes")
 	e = Keluarga(e, JWTconfig)
 	e = RT(e, JWTconfig)

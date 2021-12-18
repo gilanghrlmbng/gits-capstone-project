@@ -61,15 +61,21 @@ func GetWargaByID(c echo.Context, id string) (entity.Warga, error) {
 
 func GetKeluargaByEmail(c echo.Context, email string) (entity.Keluarga, error) {
 	// var w entity.Warga
-	var k entity.Keluarga
+	var k []entity.Keluarga
 	db := db.GetDB(c)
-	err := db.Preload("Warga", "email = ?", email).First(&k)
+	err := db.Preload("Warga", "email = ?", email).Find(&k)
 	if err.Error != nil {
 		c.Logger().Error(err)
 		return entity.Keluarga{}, errors.New("email tidak ditemukan")
 	}
+	var keluarga entity.Keluarga
+	for _, kel := range k {
+		if len(kel.Warga) != 0 {
+			keluarga = kel
+		}
+	}
 
-	return k, nil
+	return keluarga, nil
 }
 
 func GetWargaByEmail(c echo.Context, email string) (entity.Warga, error) {

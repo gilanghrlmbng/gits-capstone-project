@@ -13,8 +13,8 @@ func Tagihan(e *echo.Echo, JWTconfig middleware.JWTConfig) *echo.Echo {
 	auth.POST("/tagihan", controllers.CreateTagihan)
 	auth.GET("/tagihan", controllers.GetAllTagihan)
 	auth.GET("/tagihan/:id", controllers.GetTagihanByID)
-	auth.PUT("/tagihan/:id", controllers.UpdateTagihanById)
-	auth.DELETE("/tagihann/:id", controllers.SoftDeleteTagihanById)
+	auth.PUT("/tagihan/:id", controllers.BayarTagihanByID)
+	auth.DELETE("/tagihan/:id", controllers.SoftDeleteTagihanById)
 
 	return e
 }

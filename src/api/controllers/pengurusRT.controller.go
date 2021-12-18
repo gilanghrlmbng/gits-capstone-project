@@ -256,3 +256,106 @@ func loginPengurus(c echo.Context, pass string, prt *entity.PengurusRT) error {
 		Message: "Berhasil",
 	})
 }
+
+func ForgetPasswordPengurus(c echo.Context) error {
+	fp := new(ForgetPasswordRequest)
+
+	if err := c.Bind(fp); err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+
+	p, err := models.PengurusSearchEmail(c, fp.Email)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+	entropy := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
+	fpId := ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
+	kode := models.GenerateKodeForgetPasswordPengurus(c, 6)
+
+	forgetPass := entity.ForgetPasswordPengurus{
+		Id:         fpId,
+		IdPengurus: p.Id,
+		Kode:       kode,
+		CreatedAt:  time.Now(),
+	}
+
+	fpw, err := models.CreateForgetPasswordPengurus(c, &forgetPass)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	p.ForgetPasswordPengurus = fpw
+	_, err = models.UpdatePengurusById(c, p.Id, &p)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	err = utils.SendEmail(c, fp.Email, "Kode Reset Password", fmt.Sprintf("Berikut ini adalah kode Verifikasi untuk reset password akun pengurus anda <br><br> Kode: <b>%s</b> <br><br> abaikan jika anda tidak sedang mereset password", kode))
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	return utils.Response(c, utils.JSONResponse{
+		Code:    http.StatusOK,
+		Message: "Berhasil",
+	})
+}
+
+func ResetPasswordPengurusByKode(c echo.Context) error {
+	rp := new(ResetPasswordRequest)
+
+	if err := c.Bind(rp); err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+
+	p, err := models.GetPengurusByForgetPasswordKode(c, rp.Kode)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	p.ForgetPasswordPengurus = entity.ForgetPasswordPengurus{}
+	p.Password = utils.HashPassword(rp.Password, p.Id)
+
+	_, err = models.UpdatePengurusById(c, p.Id, &p)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	_, err = models.DeleteForgetPasswordPengurus(c, rp.Kode)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	c.Logger().Info(p)
+	return utils.Response(c, utils.JSONResponse{
+		Code:    http.StatusOK,
+		Message: "Berhasil",
+	})
+}

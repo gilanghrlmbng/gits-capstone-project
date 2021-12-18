@@ -24,14 +24,16 @@ func CreateTagihan(c echo.Context, s *entity.Tagihan) (entity.Tagihan, error) {
 	return *s, nil
 }
 
-func GetAllTagihan(c echo.Context, idKeluarga string) (s []entity.Tagihan, err error) {
+func GetAllTagihan(c echo.Context, idKeluarga, idRT string) (s []entity.Tagihan, err error) {
 	var tagihan []entity.Tagihan
 	db := db.GetDB(c)
 	var errs *gorm.DB
-	if idKeluarga == "" {
-		errs = db.Find(&tagihan)
-	} else {
+	if idKeluarga != "" {
 		errs = db.Where("id_keluarga = ?", idKeluarga).Find(&tagihan)
+	} else if idRT != "" {
+		errs = db.Where("id_rt = ?", idRT).Find(&tagihan)
+	} else {
+		errs = db.Find(&tagihan)
 	}
 
 	if errs.Error != nil {

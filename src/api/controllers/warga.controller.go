@@ -40,7 +40,6 @@ func CreateWarga(c echo.Context) error {
 	}
 	w.IdKeluarga = k.Id
 
-
 	cek, _ := models.GetWargaByEmail(c, w.Email)
 	if cek.Id != "" {
 		return utils.ResponseError(c, utils.Error{
@@ -208,7 +207,7 @@ func LoginWarga(c echo.Context) error {
 			Message: err.Error(),
 		})
 	}
-  
+
 	var warga entity.Warga
 	if len(keluarga.Warga) == 0 {
 		return utils.ResponseErrorLogin(c, utils.ErrorLogin{
@@ -267,4 +266,115 @@ func loginWarga(c echo.Context, pass, id_rt string, w *entity.Warga) error {
 		Message: "Berhasil",
 	})
 
+}
+
+type ForgetPasswordRequest struct {
+	Email string `json:"email" form:"email"`
+}
+
+func ForgetPasswordWarga(c echo.Context) error {
+	fp := new(ForgetPasswordRequest)
+
+	if err := c.Bind(fp); err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+
+	warga, err := models.GetWargaByEmail(c, fp.Email)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+	entropy := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
+	fpId := ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
+	kode := models.GenerateKodeForgetPasswordWarga(c, 6)
+	forgetPass := entity.ForgetPasswordWarga{
+		Id:        fpId,
+		IdWarga:   warga.Id,
+		Kode:      kode,
+		CreatedAt: time.Now(),
+	}
+
+	fpw, err := models.CreateForgetPasswordWarga(c, &forgetPass)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	warga.ForgetPasswordWarga = fpw
+	_, err = models.UpdateWargaById(c, warga.Id, &warga)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	err = utils.SendEmail(c, fp.Email, "Kode Reset Password", fmt.Sprintf("Berikut ini adalah kode Verifikasi untuk reset password akun warga anda <br><br> Kode: <b>%s</b> <br><br> abaikan jika anda tidak sedang mereset password", kode))
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	return utils.Response(c, utils.JSONResponse{
+		Code:    http.StatusOK,
+		Message: "Berhasil",
+	})
+}
+
+type ResetPasswordRequest struct {
+	Kode     string `json:"kode" form:"kode"`
+	Password string `json:"password" form:"password"`
+}
+
+func ResetPasswordWargaByKode(c echo.Context) error {
+	rp := new(ResetPasswordRequest)
+
+	if err := c.Bind(rp); err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+
+	w, err := models.GetWargaByForgetPasswordKode(c, rp.Kode)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	w.ForgetPasswordWarga = entity.ForgetPasswordWarga{}
+	w.Password = utils.HashPassword(rp.Password, w.Id)
+
+	_, err = models.UpdateWargaById(c, w.Id, &w)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	_, err = models.DeleteForgetPasswordWarga(c, rp.Kode)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	c.Logger().Info(w)
+	return utils.Response(c, utils.JSONResponse{
+		Code:    http.StatusOK,
+		Message: "Berhasil",
+	})
 }

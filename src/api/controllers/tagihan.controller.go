@@ -31,36 +31,63 @@ func CreateTagihan(c echo.Context) error {
 		})
 	}
 
-	t.IdKeluarga = claims.IdKeluarga
-	
 	if err := t.ValidateCreate(); err.Code > 0 {
 		return utils.ResponseError(c, err)
 	}
-	
 
-	entropy := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
-	t.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
-
-	t.CreatedAt = time.Now()
-
-	Tagihan, err := models.CreateTagihan(c, t)
+	Keluargas, err := models.GetAllKeluargaByRT(c, claims.IdRT)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		})
 	}
+	t.CreatedAt = time.Now()
 
-	return utils.ResponseDataPersuratan(c, utils.JSONResponseDataPersuratan{
-		Code:             http.StatusCreated,
-		CreatePersuratan: Tagihan,
-		Message:          "Berhasil",
+	for _, kel := range Keluargas {
+		entropy := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
+		Id := ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
+
+		tag := entity.Tagihan{
+			Id:         Id,
+			IdKeluarga: kel.Id,
+			IdRT:       claims.IdRT,
+			Nama:       t.Nama,
+			Detail:     t.Detail,
+			Jumlah:     t.Jumlah,
+			CreatedAt:  t.CreatedAt,
+		}
+
+		_, err := models.CreateTagihan(c, &tag)
+		if err != nil {
+			return utils.ResponseError(c, utils.Error{
+				Code:    http.StatusInternalServerError,
+				Message: err.Error(),
+			})
+		}
+	}
+
+	return utils.ResponseDataTagihan(c, utils.JSONResponseDataTagihan{
+		Code:          http.StatusCreated,
+		CreateTagihan: t,
+		Message:       "Berhasil",
 	})
 }
 
 func GetAllTagihan(c echo.Context) error {
+	userData := c.Get("user").(*jwt.Token)
+	claims := userData.Claims.(*utils.JWTCustomClaims)
 
-	allTagihan, err := models.GetAllTagihan(c, "")
+	var allTagihan []entity.Tagihan
+	var err error
+	if claims.User == "pengurus" {
+		allTagihan, err = models.GetAllTagihan(c, "", claims.IdRT)
+	} else if claims.User == "warga" {
+		allTagihan, err = models.GetAllTagihan(c, claims.IdKeluarga, "")
+	} else {
+		allTagihan, err = models.GetAllTagihan(c, "", "")
+	}
+
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -68,10 +95,10 @@ func GetAllTagihan(c echo.Context) error {
 		})
 	}
 
-	return utils.ResponseDataPersuratan(c, utils.JSONResponseDataPersuratan{
-		Code:             http.StatusOK,
-		GetAllPersuratan: allTagihan,
-		Message:          "Berhasil",
+	return utils.ResponseDataTagihan(c, utils.JSONResponseDataTagihan{
+		Code:          http.StatusOK,
+		GetAllTagihan: allTagihan,
+		Message:       "Berhasil",
 	})
 }
 
@@ -84,17 +111,83 @@ func GetTagihanByID(c echo.Context) error {
 		})
 	}
 
-	s, err := models.GetPersuratanByID(c, id)
+	t, err := models.GetTagihanByID(c, id)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		})
 	}
-	return utils.ResponseDataPersuratan(c, utils.JSONResponseDataPersuratan{
-		Code:              http.StatusOK,
-		GetPersuratanByID: s,
-		Message:           "Berhasil",
+	return utils.ResponseDataTagihan(c, utils.JSONResponseDataTagihan{
+		Code:           http.StatusOK,
+		GetTagihanByID: t,
+		Message:        "Berhasil",
+	})
+}
+
+func BayarTagihanByID(c echo.Context) error {
+	id := c.Param("id")
+	if id == "" {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Id tidak valid",
+		})
+	}
+
+	userData := c.Get("user").(*jwt.Token)
+	claims := userData.Claims.(*utils.JWTCustomClaims)
+	if claims.IdKeluarga == "" && claims.User != "warga" {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Maaf anda tidak memiliki akses ini",
+		})
+	}
+
+	dompet, err := models.GetDompetKeluargaByID(c, "", claims.IdKeluarga)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	t, err := models.GetTagihanByID(c, id)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	if dompet.Jumlah < t.Jumlah {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Saldo tidak mencukupi",
+		})
+	}
+
+	dompet.Jumlah = dompet.Jumlah - t.Jumlah
+	t.Terbayar = true
+
+	_, err = models.UpdateDompetKeluargaById(c, dompet.Id, &dompet)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	_, err = models.UpdateTagihanById(c, t.Id, &t)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	return utils.Response(c, utils.JSONResponse{
+		Code:    http.StatusOK,
+		Message: "Berhasil",
 	})
 }
 
@@ -107,9 +200,9 @@ func UpdateTagihanById(c echo.Context) error {
 		})
 	}
 
-	s := new(entity.Tagihan)
+	t := new(entity.Tagihan)
 
-	if err := c.Bind(s); err != nil {
+	if err := c.Bind(t); err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -124,9 +217,9 @@ func UpdateTagihanById(c echo.Context) error {
 		})
 	}
 
-	s.UpdatedAt = time.Now()
+	t.UpdatedAt = time.Now()
 
-	_, err = models.UpdateTagihanById(c, id, s)
+	_, err = models.UpdateTagihanById(c, id, t)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,

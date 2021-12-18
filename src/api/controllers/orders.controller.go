@@ -25,8 +25,14 @@ func CreateOrder(c echo.Context) error {
 	}
 
 	produk, err := models.GetProdukByID(c, item.IdProduk)
-	harga := produk.Harga
-	item.HargaTotal = harga * item.Jumlah
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	item.HargaTotal = produk.Harga * item.Jumlah
 
 	if err := item.ValidateCreate(); err.Code > 0 {
 		return utils.ResponseError(c, err)
@@ -70,6 +76,12 @@ func CreateOrder(c echo.Context) error {
 	// }
 
 	Order, err := models.CreateOrder(c, ord)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
 
 	_, err = models.CreateItemOrder(c, item)
 	if err != nil {

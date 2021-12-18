@@ -54,7 +54,7 @@ func SeedPengurusRT(db *gorm.DB, listRT []string) []string {
 		Id:          Id3,
 		IdRT:        listRT[0],
 		Nama:        "John Doe 3",
-		Email:       "john3@gmail.com",
+		Email:       "alifnaufalyasin@gmail.com",
 		Gender:      "laki-laki",
 		NoHandphone: "08123123123123",
 		Gambar:      "https://dummyimage.com/500x500/eee/fff&text=J",
