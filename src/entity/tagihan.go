@@ -1,6 +1,8 @@
 package entity
 
 import (
+	"net/http"
+	"src/utils"
 	"time"
 
 	"gorm.io/gorm"
@@ -19,4 +21,27 @@ type Tagihan struct {
 
 func (Tagihan) TableName() string {
 	return "tagihan"
+}
+
+func (t Tagihan) ValidateCreate() utils.Error {
+	if t.Nama == "" {
+		return utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Nama tagigan tidak boleh kosong",
+		}
+	}
+	if t.Detail == "" {
+		return utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Detail tagihan tidak boleh kosong",
+		}
+	}
+	if t.Jumlah == 0 {
+		return utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Jumlah tagihan tidak boleh kosong",
+		}
+	}
+
+	return utils.Error{}
 }
