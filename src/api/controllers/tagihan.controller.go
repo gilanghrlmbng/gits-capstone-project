@@ -151,6 +151,14 @@ func BayarTagihanByID(c echo.Context) error {
 		})
 	}
 
+	dompetRT, err := models.GetDompetByID(c, "", claims.IdRT)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
 	t, err := models.GetTagihanByID(c, id)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
@@ -167,9 +175,18 @@ func BayarTagihanByID(c echo.Context) error {
 	}
 
 	dompet.Jumlah = dompet.Jumlah - t.Jumlah
+	dompetRT.Jumlah = dompetRT.Jumlah + t.Jumlah
 	t.Terbayar = true
 
 	_, err = models.UpdateDompetKeluargaById(c, dompet.Id, &dompet)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	_, err = models.UpdateDompetById(c, dompetRT.Id, &dompetRT)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
