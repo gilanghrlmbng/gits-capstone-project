@@ -36,7 +36,7 @@ func GetAllItemOrder(c echo.Context) ([]entity.ItemOrder, error) {
 	return item, nil
 }
 
-func GetItemOrderByID(c echo.Context, id string) ([]entity.ItemOrder, error) {
+func GetItem(c echo.Context, id string) ([]entity.ItemOrder, error) {
 	var item []entity.ItemOrder
 	db := db.GetDB(c)
 
@@ -48,15 +48,14 @@ func GetItemOrderByID(c echo.Context, id string) ([]entity.ItemOrder, error) {
 	return item, nil
 }
 
-func ProdukSearch(c echo.Context, nama string) (entity.Produk, error) {
-
-	var prt entity.Produk
+func GetItemByIDOrder(c echo.Context, id_order string) ([]entity.ItemOrder, error) {
+	var item []entity.ItemOrder
 	db := db.GetDB(c)
 
-	err := db.First(&prt, "nama = ?", nama)
+	err := db.First(&item, "id_order = ?", id_order)
 	if err.Error != nil {
 		c.Logger().Error(err)
-		return entity.Produk{}, errors.New("nama tidak ditemukan")
+		return item, errors.New("id tidak ditemukan")
 	}
-	return prt, nil
+	return item, nil
 }

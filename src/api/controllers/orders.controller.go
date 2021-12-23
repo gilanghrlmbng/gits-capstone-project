@@ -56,26 +56,31 @@ func CreateOrder(c echo.Context) error {
 		})
 	}
 
+	orders, err := models.GetAllOrder(c)
+
 	entropy := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
-	ord.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
 
 	ord.IdWarga = warga.Id
+
+	if len(orders) == 0 {
+		ord.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
+		_, err = models.CreateOrder(c, ord)
+	} else {
+		if orders[len(orders)-1].IdWarga == ord.IdWarga {
+			ord.Id = orders[len(orders)-1].Id
+		} else {
+			ord.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
+			_, err = models.CreateOrder(c, ord)
+		}
+	}
 
 	item.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
 	item.IdOrder = ord.Id
 
-	//still not working well, totals ord still return 0
-	for i := 0; i < len(ord.ItemOrder); i++ {
-		ord.Harga_total = ord.Harga_total + item.HargaTotal
-	}
+	_, err = models.CreateItemOrder(c, item)
 
-	ord.CreatedAt = time.Now()
+	items, err := models.GetAllItemOrder(c)
 
-	// if err := ord.ValidateCreate(); err.Code > 0 {
-	// 	return utils.ResponseError(c, err)
-	// }
-
-	Order, err := models.CreateOrder(c, ord)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -83,7 +88,17 @@ func CreateOrder(c echo.Context) error {
 		})
 	}
 
-	_, err = models.CreateItemOrder(c, item)
+	for i := 0; i < len(items); i++ {
+		if items[i].IdOrder == item.IdOrder {
+			ord.Harga_total = ord.Harga_total + items[i].HargaTotal
+			_, err = models.UpdateOrderById(c, ord.Id, ord)
+		}
+
+	}
+
+	ord.CreatedAt = time.Now()
+
+	allOrder, err := models.GetAllOrder(c)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -100,7 +115,7 @@ func CreateOrder(c echo.Context) error {
 
 	return utils.ResponseDataOrder(c, utils.JSONResponseDataOrder{
 		Code:        http.StatusCreated,
-		CreateOrder: Order,
+		CreateOrder: allOrder,
 		Message:     "Berhasil",
 	})
 }

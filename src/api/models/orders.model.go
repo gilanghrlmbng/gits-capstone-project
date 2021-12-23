@@ -48,6 +48,18 @@ func GetOrderByID(c echo.Context, id string) (entity.Order, error) {
 	return ord, nil
 }
 
+func GetOrderByIDWarga(c echo.Context, id_warga string) ([]entity.Order, error) {
+	var ord []entity.Order
+	db := db.GetDB(c)
+
+	err := db.First(&ord, "id_warga = ?", id_warga)
+	if err.Error != nil {
+		c.Logger().Error(err)
+		return ord, errors.New("id tidak ditemukan")
+	}
+	return ord, nil
+}
+
 func UpdateOrderById(c echo.Context, id string, order *entity.Order) (int64, error) {
 	db := db.GetDB(c)
 
