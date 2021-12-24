@@ -71,7 +71,7 @@ func CreateWarga(c echo.Context) error {
 }
 
 func GetAllWarga(c echo.Context) error {
-	allWarga, err := models.GetAllWarga(c, c.QueryParam("id_keluarga"))
+	allWarga, err := models.GetAllWarga(c, c.QueryParam("id_keluarga"), c.QueryParam("nama"))
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -307,7 +307,7 @@ func ForgetPasswordWarga(c echo.Context) error {
 		})
 	}
 
-	warga.ForgetPasswordWarga = fpw
+	warga.ForgetPasswordWarga = &fpw
 	_, err = models.UpdateWargaById(c, warga.Id, &warga)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
@@ -353,7 +353,7 @@ func ResetPasswordWargaByKode(c echo.Context) error {
 		})
 	}
 
-	w.ForgetPasswordWarga = entity.ForgetPasswordWarga{}
+	w.ForgetPasswordWarga = &entity.ForgetPasswordWarga{}
 	w.Password = utils.HashPassword(rp.Password, w.Id)
 
 	_, err = models.UpdateWargaById(c, w.Id, &w)

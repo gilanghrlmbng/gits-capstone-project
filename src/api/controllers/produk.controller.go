@@ -57,8 +57,16 @@ func CreateProduk(c echo.Context) error {
 }
 
 func GetAllProduk(c echo.Context) error {
+	userData := c.Get("user").(*jwt.Token)
+	claims := userData.Claims.(*utils.JWTCustomClaims)
+	if claims.IdKeluarga == "" {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Maaf anda tidak memiliki akses ini",
+		})
+	}
 
-	allProduk, err := models.GetAllProduk(c, c.QueryParam("id_keluarga"))
+	allProduk, err := models.GetAllProduk(c, c.QueryParam("id_keluarga"), claims.IdKeluarga)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -83,7 +91,7 @@ func GetAllProdukByKeluarga(c echo.Context) error {
 		})
 	}
 
-	allProduk, err := models.GetAllProduk(c, claims.IdKeluarga)
+	allProduk, err := models.GetAllProduk(c, claims.IdKeluarga, "")
 	c.Logger().Info(allProduk)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{

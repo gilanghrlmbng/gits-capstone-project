@@ -293,7 +293,7 @@ func ForgetPasswordPengurus(c echo.Context) error {
 		})
 	}
 
-	p.ForgetPasswordPengurus = fpw
+	p.ForgetPasswordPengurus = &fpw
 	_, err = models.UpdatePengurusById(c, p.Id, &p)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
@@ -334,7 +334,7 @@ func ResetPasswordPengurusByKode(c echo.Context) error {
 		})
 	}
 
-	p.ForgetPasswordPengurus = entity.ForgetPasswordPengurus{}
+	p.ForgetPasswordPengurus = &entity.ForgetPasswordPengurus{}
 	p.Password = utils.HashPassword(rp.Password, p.Id)
 
 	_, err = models.UpdatePengurusById(c, p.Id, &p)

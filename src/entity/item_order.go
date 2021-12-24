@@ -25,10 +25,10 @@ func (ItemOrder) TableName() string {
 }
 
 func (ord ItemOrder) ValidateCreate() utils.Error {
-	if ord.HargaTotal == 0 {
+	if ord.Jumlah == 0 {
 		return utils.Error{
 			Code:    http.StatusBadRequest,
-			Message: "Harga Total tidak boleh 0",
+			Message: "Jumlah tidak boleh 0",
 		}
 	}
 	return utils.Error{}

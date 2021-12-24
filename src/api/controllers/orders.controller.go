@@ -14,91 +14,68 @@ import (
 )
 
 func CreateOrder(c echo.Context) error {
-	item := new(entity.ItemOrder)
+	var items []entity.ItemOrder
 	ord := new(entity.Order)
 
-	if err := c.Bind(item); err != nil {
+	if err := c.Bind(&items); err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
 		})
 	}
-
-	produk, err := models.GetProdukByID(c, item.IdProduk)
-	if err != nil {
-		return utils.ResponseError(c, utils.Error{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error(),
-		})
-	}
-
-	item.HargaTotal = produk.Harga * item.Jumlah
-
-	if err := item.ValidateCreate(); err.Code > 0 {
-		return utils.ResponseError(c, err)
-	}
+	entropy := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
+	ord.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
 
 	userData := c.Get("user").(*jwt.Token)
 	claims := userData.Claims.(*utils.JWTCustomClaims)
 
-	if claims.UserId == "" {
+	if claims.UserId == "" && claims.User != "warga" {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: "Maaf anda tidak memiliki akses ini",
 		})
 	}
 
-	warga, err := models.GetWargaByEmail(c, claims.Email)
-	if err != nil {
-		return utils.ResponseError(c, utils.Error{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error(),
-		})
-	}
-
-	orders, err := models.GetAllOrder(c)
-
-	entropy := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
-
-	ord.IdWarga = warga.Id
-
-	if len(orders) == 0 {
-		ord.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
-		_, err = models.CreateOrder(c, ord)
-	} else {
-		if orders[len(orders)-1].IdWarga == ord.IdWarga {
-			ord.Id = orders[len(orders)-1].Id
-		} else {
-			ord.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
-			_, err = models.CreateOrder(c, ord)
-		}
-	}
-
-	item.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
-	item.IdOrder = ord.Id
-
-	_, err = models.CreateItemOrder(c, item)
-
-	items, err := models.GetAllItemOrder(c)
-
-	if err != nil {
-		return utils.ResponseError(c, utils.Error{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error(),
-		})
-	}
-
-	for i := 0; i < len(items); i++ {
-		if items[i].IdOrder == item.IdOrder {
-			ord.Harga_total = ord.Harga_total + items[i].HargaTotal
-			_, err = models.UpdateOrderById(c, ord.Id, ord)
-		}
-
-	}
-
+	ord.IdWarga = claims.UserId
 	ord.CreatedAt = time.Now()
 
-	allOrder, err := models.GetAllOrder(c)
+	var hargaTotal int64 = 0
+	var idKelProduk string = ""
+	for idx, item := range items {
+		produk, err := models.GetProdukByID(c, item.IdProduk)
+		if err != nil {
+			return utils.ResponseError(c, utils.Error{
+				Code:    http.StatusBadRequest,
+				Message: err.Error(),
+			})
+		}
+		if idKelProduk == "" {
+			idKelProduk = produk.IdKeluarga
+		} else if produk.IdKeluarga != idKelProduk {
+			return utils.ResponseError(c, utils.Error{
+				Code:    http.StatusBadRequest,
+				Message: "Item yang dipesan harus dari toko yang sama",
+			})
+		}
+
+		if err := item.ValidateCreate(); err.Code > 0 {
+			return utils.ResponseError(c, err)
+		}
+
+		items[idx].HargaTotal = produk.Harga * item.Jumlah
+		hargaTotal += items[idx].HargaTotal
+
+		entropys := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
+		items[idx].Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropys).String()
+
+		items[idx].IdOrder = ord.Id
+		items[idx].CreatedAt = ord.CreatedAt
+	}
+	c.Logger().Info("Items ", items)
+	ord.Harga_total = hargaTotal
+	ord.Status = entity.OrderStatusDipesan
+
+	_, err := models.CreateOrder(c, ord)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -106,16 +83,19 @@ func CreateOrder(c echo.Context) error {
 		})
 	}
 
+	_, err = models.CreateBatchItemOrder(c, items)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		})
 	}
+
+	orders, _ := models.GetOrderByID(c, ord.Id)
 
 	return utils.ResponseDataOrder(c, utils.JSONResponseDataOrder{
 		Code:        http.StatusCreated,
-		CreateOrder: allOrder,
+		CreateOrder: orders,
 		Message:     "Berhasil",
 	})
 }

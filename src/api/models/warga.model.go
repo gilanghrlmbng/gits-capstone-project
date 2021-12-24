@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"src/db"
 	"src/entity"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
@@ -27,13 +28,17 @@ func CreateWarga(c echo.Context, w *entity.Warga) (entity.Warga, error) {
 	return *w, nil
 }
 
-func GetAllWarga(c echo.Context, IdKeluarga string) ([]entity.Warga, error) {
+func GetAllWarga(c echo.Context, IdKeluarga, nama string) ([]entity.Warga, error) {
 	var ws []entity.Warga
 	db := db.GetDB(c)
 
 	var err *gorm.DB
-	if IdKeluarga != "" {
+	if IdKeluarga != "" && nama != "" {
+		err = db.Where("id_keluarga = ? AND LOWER(nama) LIKE ?", IdKeluarga, fmt.Sprintf("%%%s%%", strings.ToLower(nama))).Find(&ws)
+	} else if IdKeluarga != "" {
 		err = db.Where("id_keluarga = ?", IdKeluarga).Find(&ws)
+	} else if nama != "" {
+		err = db.Where("LOWER(nama) LIKE ?", fmt.Sprintf("%%%s%%", strings.ToLower(nama))).Find(&ws)
 	} else {
 		err = db.Find(&ws)
 	}

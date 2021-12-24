@@ -8,10 +8,16 @@ import (
 	"gorm.io/gorm"
 )
 
+const (
+	OrderStatusDipesan  = "Di Pesan"
+	OrderStatusDiProses = "Di Proses"
+	OrderStatusSelesai  = "Selesai"
+)
+
 type Order struct {
 	Id           string          `gorm:"type:varchar(50);primaryKey" json:"id" form:"id"`
 	IdWarga      string          `gorm:"type:varchar(50);not null" json:"id_warga" form:"id_warga"`
-	IdPembayaran string          `gorm:"type:varchar(50);not null" json:"id_pembayaran" form:"id_pembayaran"`
+	IdPembayaran string          `gorm:"type:varchar(50)" json:"id_pembayaran" form:"id_pembayaran"`
 	ItemOrder    []ItemOrder     `gorm:"foreignKey:id_order;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"item_order,omitempty" form:"item_order"`
 	Harga_total  int64           `gorm:"not null" json:"harga_total" form:"harga_total"`
 	Status       string          `gorm:"type:varchar(200)" json:"status" form:"status"`

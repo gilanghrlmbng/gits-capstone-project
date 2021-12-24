@@ -24,6 +24,22 @@ func CreateItemOrder(c echo.Context, i *entity.ItemOrder) (entity.ItemOrder, err
 	return *i, nil
 }
 
+func CreateBatchItemOrder(c echo.Context, items []entity.ItemOrder) ([]entity.ItemOrder, error) {
+	db := db.GetDB(c)
+
+	err := db.Create(items)
+	if err.Error != nil {
+		c.Logger().Error(err)
+		return []entity.ItemOrder{}, err.Error
+	}
+
+	if err.RowsAffected == 0 {
+		return []entity.ItemOrder{}, errors.New("gagal menambahkan item order")
+	}
+
+	return items, nil
+}
+
 func GetAllItemOrder(c echo.Context) ([]entity.ItemOrder, error) {
 	var item []entity.ItemOrder
 	db := db.GetDB(c)

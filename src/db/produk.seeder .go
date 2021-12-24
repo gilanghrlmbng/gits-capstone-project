@@ -56,10 +56,8 @@ func SeedProduk(db *gorm.DB, listKeluarga []string) []string {
 	db.Create(&data3)
 
 	// Data 4
-	entropy4 := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
-	Id4 := ulid.MustNew(ulid.Timestamp(time.Now()), entropy4).String()
 	data4 := entity.Produk{
-		Id:         Id4,
+		Id:         "01FQNTQ9KYRFW9YNMYGAXP1R8M",
 		IdKeluarga: listKeluarga[1],
 		Nama:       "Kue Donat",
 		Detail:     "Donat manis aneka topping",
@@ -70,5 +68,18 @@ func SeedProduk(db *gorm.DB, listKeluarga []string) []string {
 
 	db.Create(&data4)
 
-	return []string{Id1, Id2, Id3, Id4}
+	// Data 5
+	data5 := entity.Produk{
+		Id:         "01FQNTQ9M1WA992RJY56VTJ4YX",
+		IdKeluarga: listKeluarga[1],
+		Nama:       "Kue Sus",
+		Detail:     "Kue sus manis",
+		Gambar:     "https://dummyimage.com/500x500/eee/fff&text=KS",
+		Harga:      2500,
+		CreatedAt:  time.Now(),
+	}
+
+	db.Create(&data5)
+
+	return []string{Id1, Id2, Id3}
 }

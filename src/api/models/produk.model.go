@@ -24,12 +24,16 @@ func CreateProduk(c echo.Context, p *entity.Produk) (entity.Produk, error) {
 	return *p, nil
 }
 
-func GetAllProduk(c echo.Context, idKeluarga string) (p []entity.Produk, err error) {
+func GetAllProduk(c echo.Context, idKeluarga, kelLogin string) (p []entity.Produk, err error) {
 	var produks []entity.Produk
 	db := db.GetDB(c)
 	var errs *gorm.DB
-	if idKeluarga != "" {
+	if idKeluarga != "" && kelLogin != "" {
+		errs = db.Where("id_keluarga = ? AND id_keluarga <> ?", idKeluarga, kelLogin).Find(&produks)
+	} else if idKeluarga != "" {
 		errs = db.Where("id_keluarga = ?", idKeluarga).Find(&produks)
+	} else if kelLogin != "" {
+		errs = db.Where("id_keluarga <> ?", kelLogin).Find(&produks)
 	} else {
 		errs = db.Find(&produks)
 	}

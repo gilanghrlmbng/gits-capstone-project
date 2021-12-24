@@ -40,7 +40,7 @@ func GetOrderByID(c echo.Context, id string) (entity.Order, error) {
 	var ord entity.Order
 	db := db.GetDB(c)
 
-	err := db.First(&ord, "id = ?", id)
+	err := db.Preload("ItemOrder").First(&ord, "id = ?", id)
 	if err.Error != nil {
 		c.Logger().Error(err)
 		return entity.Order{}, errors.New("id tidak ditemukan")
