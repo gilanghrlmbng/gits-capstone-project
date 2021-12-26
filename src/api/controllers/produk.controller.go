@@ -17,6 +17,7 @@ func CreateProduk(c echo.Context) error {
 	p := new(entity.Produk)
 
 	if err := c.Bind(p); err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -33,6 +34,7 @@ func CreateProduk(c echo.Context) error {
 	p.IdKeluarga = claims.IdKeluarga
 
 	if err := p.ValidateCreate(); err.Code > 0 {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, err)
 	}
 
@@ -43,6 +45,7 @@ func CreateProduk(c echo.Context) error {
 
 	Produk, err := models.CreateProduk(c, p)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -68,6 +71,7 @@ func GetAllProduk(c echo.Context) error {
 
 	allProduk, err := models.GetAllProduk(c, c.QueryParam("id_keluarga"), claims.IdKeluarga)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -94,6 +98,7 @@ func GetAllProdukByKeluarga(c echo.Context) error {
 	allProduk, err := models.GetAllProduk(c, claims.IdKeluarga, "")
 	c.Logger().Info(allProduk)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -118,6 +123,7 @@ func GetProdukByID(c echo.Context) error {
 
 	p, err := models.GetProdukByID(c, id)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -142,6 +148,7 @@ func UpdateProdukById(c echo.Context) error {
 	p := new(entity.Produk)
 
 	if err := c.Bind(p); err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -150,6 +157,7 @@ func UpdateProdukById(c echo.Context) error {
 
 	_, err := models.GetProdukByID(c, id)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -160,6 +168,7 @@ func UpdateProdukById(c echo.Context) error {
 
 	_, err = models.UpdateProdukById(c, id, p)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -184,6 +193,7 @@ func SoftDeleteProdukById(c echo.Context) error {
 	_, err := models.GetProdukByID(c, id)
 
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -193,6 +203,7 @@ func SoftDeleteProdukById(c echo.Context) error {
 	_, err = models.SoftDeleteProdukById(c, id)
 
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),

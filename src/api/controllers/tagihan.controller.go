@@ -17,6 +17,7 @@ func CreateTagihan(c echo.Context) error {
 	t := new(entity.Tagihan)
 
 	if err := c.Bind(t); err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -32,11 +33,13 @@ func CreateTagihan(c echo.Context) error {
 	}
 
 	if err := t.ValidateCreate(); err.Code > 0 {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, err)
 	}
 
 	Keluargas, err := models.GetAllKeluargaByRT(c, claims.IdRT)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -60,6 +63,7 @@ func CreateTagihan(c echo.Context) error {
 
 		_, err := models.CreateTagihan(c, &tag)
 		if err != nil {
+			c.Logger().Error(err)
 			return utils.ResponseError(c, utils.Error{
 				Code:    http.StatusInternalServerError,
 				Message: err.Error(),
@@ -89,6 +93,7 @@ func GetAllTagihan(c echo.Context) error {
 	}
 
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -113,6 +118,7 @@ func GetTagihanByID(c echo.Context) error {
 
 	t, err := models.GetTagihanByID(c, id)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -145,6 +151,7 @@ func BayarTagihanByID(c echo.Context) error {
 
 	dompet, err := models.GetDompetKeluargaByID(c, "", claims.IdKeluarga)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -153,6 +160,7 @@ func BayarTagihanByID(c echo.Context) error {
 
 	dompetRT, err := models.GetDompetByID(c, "", claims.IdRT)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -161,6 +169,7 @@ func BayarTagihanByID(c echo.Context) error {
 
 	t, err := models.GetTagihanByID(c, id)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -180,6 +189,7 @@ func BayarTagihanByID(c echo.Context) error {
 
 	_, err = models.UpdateDompetKeluargaById(c, dompet.Id, &dompet)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -188,6 +198,7 @@ func BayarTagihanByID(c echo.Context) error {
 
 	_, err = models.UpdateDompetById(c, dompetRT.Id, &dompetRT)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -196,6 +207,7 @@ func BayarTagihanByID(c echo.Context) error {
 
 	_, err = models.UpdateTagihanById(c, t.Id, &t)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -220,6 +232,7 @@ func UpdateTagihanById(c echo.Context) error {
 	t := new(entity.Tagihan)
 
 	if err := c.Bind(t); err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -238,6 +251,7 @@ func UpdateTagihanById(c echo.Context) error {
 
 	_, err = models.UpdateTagihanById(c, id, t)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -262,6 +276,7 @@ func SoftDeleteTagihanById(c echo.Context) error {
 	_, err := models.GetTagihanByID(c, id)
 
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -271,6 +286,7 @@ func SoftDeleteTagihanById(c echo.Context) error {
 	_, err = models.SoftDeleteTagihanById(c, id)
 
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),

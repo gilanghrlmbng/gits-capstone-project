@@ -17,6 +17,7 @@ func CreatePersuratan(c echo.Context) error {
 	s := new(entity.Persuratan)
 
 	if err := c.Bind(s); err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -34,6 +35,7 @@ func CreatePersuratan(c echo.Context) error {
 	s.IdRT = claims.IdRT
 
 	if err := s.ValidateCreate(); err.Code > 0 {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, err)
 	}
 
@@ -44,6 +46,7 @@ func CreatePersuratan(c echo.Context) error {
 
 	Persuratan, err := models.CreatePersuratan(c, s)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -61,6 +64,7 @@ func GetAllPersuratan(c echo.Context) error {
 
 	allPersuratan, err := models.GetAllPersuratan(c, "")
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -85,6 +89,7 @@ func GetPersuratanByID(c echo.Context) error {
 
 	s, err := models.GetPersuratanByID(c, id)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -109,6 +114,7 @@ func UpdatePersuratanById(c echo.Context) error {
 	s := new(entity.Persuratan)
 
 	if err := c.Bind(s); err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -117,6 +123,7 @@ func UpdatePersuratanById(c echo.Context) error {
 
 	_, err := models.GetPersuratanByID(c, id)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -127,6 +134,7 @@ func UpdatePersuratanById(c echo.Context) error {
 
 	_, err = models.UpdatePersuratanById(c, id, s)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -151,6 +159,7 @@ func SoftDeletePersuratanById(c echo.Context) error {
 	_, err := models.GetPersuratanByID(c, id)
 
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -160,6 +169,7 @@ func SoftDeletePersuratanById(c echo.Context) error {
 	_, err = models.SoftDeletePersuratanById(c, id)
 
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),

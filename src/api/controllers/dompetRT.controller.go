@@ -21,6 +21,7 @@ func CreateDompet(c echo.Context, id_rt string) utils.Error {
 	d.IdRT = id_rt
 
 	if err := d.ValidateCreate(); err.Code > 0 {
+		c.Logger().Error(err)
 		return err
 	}
 
@@ -31,6 +32,7 @@ func CreateDompet(c echo.Context, id_rt string) utils.Error {
 
 	_, err := models.CreateDompet(c, &d)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -46,6 +48,7 @@ func CreateDompet(c echo.Context, id_rt string) utils.Error {
 func GetAllDompet(c echo.Context) error {
 	allDompet, err := models.GetAllDompet(c)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -74,6 +77,7 @@ func GetDompetByID(c echo.Context) error {
 
 	d, err := models.GetDompetByID(c, id, id_rt)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -90,6 +94,7 @@ func TopUpDompetRT(c echo.Context) error {
 	d := new(entity.DompetRT)
 
 	if err := c.Bind(d); err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -107,6 +112,7 @@ func TopUpDompetRT(c echo.Context) error {
 
 	dompet, err := models.GetDompetByID(c, "", claims.IdRT)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -117,6 +123,7 @@ func TopUpDompetRT(c echo.Context) error {
 
 	_, err = models.UpdateDompetById(c, dompet.Id, &dompet)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -133,6 +140,7 @@ func WithdrawDompetRT(c echo.Context) error {
 	d := new(entity.DompetRT)
 
 	if err := c.Bind(d); err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -150,6 +158,7 @@ func WithdrawDompetRT(c echo.Context) error {
 
 	dompet, err := models.GetDompetByID(c, "", claims.IdRT)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -160,6 +169,7 @@ func WithdrawDompetRT(c echo.Context) error {
 
 	_, err = models.UpdateDompetById(c, dompet.Id, &dompet)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -184,6 +194,7 @@ func UpdateDompetById(c echo.Context) error {
 	d := new(entity.DompetRT)
 
 	if err := c.Bind(d); err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -203,6 +214,7 @@ func UpdateDompetById(c echo.Context) error {
 
 	_, err = models.UpdateDompetById(c, id, d)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -227,6 +239,7 @@ func SoftDeleteDompetById(c echo.Context) error {
 	_, err := models.GetDompetByID(c, id, "")
 
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -236,6 +249,7 @@ func SoftDeleteDompetById(c echo.Context) error {
 	_, err = models.SoftDeleteDompetById(c, id)
 
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),

@@ -20,6 +20,7 @@ func CreateWarga(c echo.Context) error {
 
 	// kemudian ini buat dapetin request body dari mobile
 	if err := c.Bind(w); err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -28,11 +29,13 @@ func CreateWarga(c echo.Context) error {
 	w.Gambar = fmt.Sprintf("https://dummyimage.com/500x500/29493B/fff&text=%c", w.Nama[0])
 	// terus ini ada validasi buat ngecek inputan dari reqeust body udah sesuai apa belum
 	if err := w.ValidateCreate(); err.Code > 0 {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, err)
 	}
 
 	k, err := models.GetKeluargaByKode(c, w.KodeKeluarga)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -60,6 +63,7 @@ func CreateWarga(c echo.Context) error {
 	// Ini fungsi dari models buat create data ke database
 	_, err = models.CreateWarga(c, w)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -73,6 +77,7 @@ func CreateWarga(c echo.Context) error {
 func GetAllWarga(c echo.Context) error {
 	allWarga, err := models.GetAllWarga(c, c.QueryParam("id_keluarga"), c.QueryParam("nama"))
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -105,6 +110,7 @@ func GetWargaByID(c echo.Context) error {
 
 	w, err := models.GetWargaByID(c, id)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -129,6 +135,7 @@ func UpdateWargaById(c echo.Context) error {
 	w := new(entity.Warga)
 
 	if err := c.Bind(w); err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -137,6 +144,7 @@ func UpdateWargaById(c echo.Context) error {
 
 	_, err := models.GetWargaByID(c, id)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -149,6 +157,7 @@ func UpdateWargaById(c echo.Context) error {
 
 	_, err = models.UpdateWargaById(c, id, w)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -171,6 +180,7 @@ func SoftDeleteWargaById(c echo.Context) error {
 
 	_, err := models.GetWargaByID(c, id)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -179,6 +189,7 @@ func SoftDeleteWargaById(c echo.Context) error {
 
 	_, err = models.SoftDeleteWargaById(c, id)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -194,6 +205,7 @@ func LoginWarga(c echo.Context) error {
 	w := new(entity.Warga)
 
 	if err := c.Bind(w); err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseErrorLogin(c, utils.ErrorLogin{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -202,6 +214,7 @@ func LoginWarga(c echo.Context) error {
 
 	keluarga, err := models.GetKeluargaByEmail(c, w.Email)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseErrorLogin(c, utils.ErrorLogin{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -227,6 +240,7 @@ func LoginWarga(c echo.Context) error {
 	}
 	token, err := utils.GenerateTokenWarga(c, warga.Nama, warga.Email, warga.Id, warga.IdKeluarga, keluarga.IdRT, utils.JWTStandartClaims)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseErrorLogin(c, utils.ErrorLogin{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -253,6 +267,7 @@ func loginWarga(c echo.Context, pass, id_rt string, w *entity.Warga) error {
 	}
 	token, err := utils.GenerateTokenWarga(c, w.Nama, w.Email, w.Id, w.IdKeluarga, id_rt, utils.JWTStandartClaims)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseErrorLogin(c, utils.ErrorLogin{
 			Code:    http.StatusBadRequest,
 			Token:   "",
@@ -276,6 +291,7 @@ func ForgetPasswordWarga(c echo.Context) error {
 	fp := new(ForgetPasswordRequest)
 
 	if err := c.Bind(fp); err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -284,6 +300,7 @@ func ForgetPasswordWarga(c echo.Context) error {
 
 	warga, err := models.GetWargaByEmail(c, fp.Email)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -301,6 +318,7 @@ func ForgetPasswordWarga(c echo.Context) error {
 
 	fpw, err := models.CreateForgetPasswordWarga(c, &forgetPass)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -310,6 +328,7 @@ func ForgetPasswordWarga(c echo.Context) error {
 	warga.ForgetPasswordWarga = &fpw
 	_, err = models.UpdateWargaById(c, warga.Id, &warga)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -318,6 +337,7 @@ func ForgetPasswordWarga(c echo.Context) error {
 
 	err = utils.SendEmail(c, fp.Email, "Kode Reset Password", fmt.Sprintf("Berikut ini adalah kode Verifikasi untuk reset password akun warga anda <br><br> Kode: <b>%s</b> <br><br> abaikan jika anda tidak sedang mereset password", kode))
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -339,6 +359,7 @@ func ResetPasswordWargaByKode(c echo.Context) error {
 	rp := new(ResetPasswordRequest)
 
 	if err := c.Bind(rp); err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -347,6 +368,7 @@ func ResetPasswordWargaByKode(c echo.Context) error {
 
 	w, err := models.GetWargaByForgetPasswordKode(c, rp.Kode)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -358,6 +380,7 @@ func ResetPasswordWargaByKode(c echo.Context) error {
 
 	_, err = models.UpdateWargaById(c, w.Id, &w)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -366,6 +389,7 @@ func ResetPasswordWargaByKode(c echo.Context) error {
 
 	_, err = models.DeleteForgetPasswordWarga(c, rp.Kode)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),

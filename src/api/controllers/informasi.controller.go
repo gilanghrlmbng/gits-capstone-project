@@ -17,6 +17,7 @@ func CreateInformasi(c echo.Context) error {
 	p := new(entity.Informasi)
 
 	if err := c.Bind(p); err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -34,6 +35,7 @@ func CreateInformasi(c echo.Context) error {
 	p.IdRT = claims.IdRT
 	p.CreatedBy = claims.Nama
 	if err := p.ValidateCreate(); err.Code > 0 {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, err)
 	}
 
@@ -41,8 +43,10 @@ func CreateInformasi(c echo.Context) error {
 	p.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
 	p.CreatedAt = time.Now()
 
+	c.Logger().Info("Informasi: ", p)
 	Informasi, err := models.CreateInformasi(c, p)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -60,6 +64,7 @@ func GetAllInformasi(c echo.Context) error {
 
 	allInformasi, err := models.GetAllInformasi(c, c.QueryParam("id_keluarga"))
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -84,6 +89,7 @@ func GetInformasiByID(c echo.Context) error {
 
 	p, err := models.GetInformasiByID(c, id)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -108,6 +114,7 @@ func GetInfoTerkini(c echo.Context) error {
 
 	p, err := models.GetAllInformasiByKategori(c, claims.IdRT, "Informasi")
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -132,6 +139,7 @@ func GetKegiatanWarga(c echo.Context) error {
 
 	p, err := models.GetAllInformasiByKategori(c, claims.IdRT, "Kegiatan")
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -156,6 +164,7 @@ func UpdateInformasiById(c echo.Context) error {
 	p := new(entity.Informasi)
 
 	if err := c.Bind(p); err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -164,6 +173,7 @@ func UpdateInformasiById(c echo.Context) error {
 
 	_, err := models.GetInformasiByID(c, id)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -174,6 +184,7 @@ func UpdateInformasiById(c echo.Context) error {
 
 	_, err = models.UpdateInformasiById(c, id, p)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -198,6 +209,7 @@ func SoftDeleteInformasiById(c echo.Context) error {
 	_, err := models.GetInformasiByID(c, id)
 
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -207,6 +219,7 @@ func SoftDeleteInformasiById(c echo.Context) error {
 	_, err = models.SoftDeleteInformasiById(c, id)
 
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),

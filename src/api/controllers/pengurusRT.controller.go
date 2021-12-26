@@ -18,6 +18,7 @@ func CreatePengurus(c echo.Context) error {
 	prt := new(entity.PengurusRT)
 
 	if err := c.Bind(prt); err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -27,11 +28,13 @@ func CreatePengurus(c echo.Context) error {
 	prt.Gambar = fmt.Sprintf("https://dummyimage.com/500x500/29493B/fff&text=%c", prt.Nama[0])
 
 	if err := prt.ValidateCreate(); err.Code > 0 {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, err)
 	}
 
 	rt, err := models.GetRTByKode(c, prt.KodeRT)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -54,6 +57,7 @@ func CreatePengurus(c echo.Context) error {
 	prt.Password = utils.HashPassword(prt.Password, prt.Id)
 	_, err = models.CreatePengurusRT(c, prt)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -66,6 +70,7 @@ func CreatePengurus(c echo.Context) error {
 func GetAllPengurusRT(c echo.Context) error {
 	allPengurusRT, err := models.GetAllPengurusRT(c)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -97,6 +102,7 @@ func GetPengurusByID(c echo.Context) error {
 
 	prt, err := models.GetPengurusByID(c, id)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -121,6 +127,7 @@ func UpdatePengurusById(c echo.Context) error {
 	prt := new(entity.PengurusRT)
 
 	if err := c.Bind(prt); err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -129,6 +136,7 @@ func UpdatePengurusById(c echo.Context) error {
 
 	_, err := models.GetPengurusByID(c, id)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -142,6 +150,7 @@ func UpdatePengurusById(c echo.Context) error {
 
 	_, err = models.UpdatePengurusById(c, id, prt)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -175,6 +184,7 @@ func SoftDeletePengurusById(c echo.Context) error {
 	_, err = models.SoftDeletePengurusById(c, id)
 
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -200,6 +210,7 @@ func LoginPengurus(c echo.Context) error {
 	pengurus, err := models.PengurusSearchEmail(c, prt.Email)
 
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseErrorLogin(c, utils.ErrorLogin{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -217,6 +228,7 @@ func LoginPengurus(c echo.Context) error {
 
 	token, err := utils.GenerateTokenPengurus(c, pengurus.Nama, pengurus.Email, pengurus.Id, pengurus.IdRT, utils.JWTStandartClaims)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseErrorLogin(c, utils.ErrorLogin{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -243,6 +255,7 @@ func loginPengurus(c echo.Context, pass string, prt *entity.PengurusRT) error {
 
 	token, err := utils.GenerateTokenPengurus(c, prt.Nama, prt.Email, prt.Id, prt.IdRT, utils.JWTStandartClaims)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseErrorLogin(c, utils.ErrorLogin{
 			Code:    http.StatusBadRequest,
 			Token:   "",
@@ -261,6 +274,7 @@ func ForgetPasswordPengurus(c echo.Context) error {
 	fp := new(ForgetPasswordRequest)
 
 	if err := c.Bind(fp); err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -269,6 +283,7 @@ func ForgetPasswordPengurus(c echo.Context) error {
 
 	p, err := models.PengurusSearchEmail(c, fp.Email)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -287,6 +302,7 @@ func ForgetPasswordPengurus(c echo.Context) error {
 
 	fpw, err := models.CreateForgetPasswordPengurus(c, &forgetPass)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -296,6 +312,7 @@ func ForgetPasswordPengurus(c echo.Context) error {
 	p.ForgetPasswordPengurus = &fpw
 	_, err = models.UpdatePengurusById(c, p.Id, &p)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -304,6 +321,7 @@ func ForgetPasswordPengurus(c echo.Context) error {
 
 	err = utils.SendEmail(c, fp.Email, "Kode Reset Password", fmt.Sprintf("Berikut ini adalah kode Verifikasi untuk reset password akun pengurus anda <br><br> Kode: <b>%s</b> <br><br> abaikan jika anda tidak sedang mereset password", kode))
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -320,6 +338,7 @@ func ResetPasswordPengurusByKode(c echo.Context) error {
 	rp := new(ResetPasswordRequest)
 
 	if err := c.Bind(rp); err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -328,6 +347,7 @@ func ResetPasswordPengurusByKode(c echo.Context) error {
 
 	p, err := models.GetPengurusByForgetPasswordKode(c, rp.Kode)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -339,6 +359,7 @@ func ResetPasswordPengurusByKode(c echo.Context) error {
 
 	_, err = models.UpdatePengurusById(c, p.Id, &p)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -347,6 +368,7 @@ func ResetPasswordPengurusByKode(c echo.Context) error {
 
 	_, err = models.DeleteForgetPasswordPengurus(c, rp.Kode)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),

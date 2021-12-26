@@ -27,6 +27,7 @@ func CreateKeluarga(c echo.Context) error {
 	k.IdRT = claims.IdRT
 	// kemudian ini buat dapetin request body dari mobile
 	if err := c.Bind(k); err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -53,6 +54,7 @@ func CreateKeluarga(c echo.Context) error {
 	// Ini fungsi dari models buat create data ke database
 	keluarga, err := models.CreateKeluarga(c, k)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -61,6 +63,7 @@ func CreateKeluarga(c echo.Context) error {
 
 	eror := CreateDompetKeluarga(c, k.Id)
 	if eror.Code != http.StatusCreated {
+		c.Logger().Error(eror)
 		c.Logger().Error("Failed to Create Dompet Keluarga")
 		return utils.ResponseError(c, eror)
 	}
@@ -76,6 +79,7 @@ func CreateKeluarga(c echo.Context) error {
 func GetAllKeluarga(c echo.Context) error {
 	allKeluarga, err := models.GetAllKeluarga(c, c.QueryParam("nama"))
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -92,6 +96,7 @@ func GetAllKeluarga(c echo.Context) error {
 func GetAllKeluargaWithWarga(c echo.Context) error {
 	allKeluarga, err := models.GetAllKeluargaWithEntity(c, c.QueryParam("nama"), "Warga")
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -116,6 +121,7 @@ func GetKeluargaByID(c echo.Context) error {
 
 	k, err := models.GetKeluargaByID(c, id)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -148,6 +154,7 @@ func UpdateKeluargaById(c echo.Context) error {
 	k := new(entity.Keluarga)
 
 	if err := c.Bind(k); err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -156,6 +163,7 @@ func UpdateKeluargaById(c echo.Context) error {
 
 	_, err := models.GetKeluargaByID(c, id)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -165,6 +173,7 @@ func UpdateKeluargaById(c echo.Context) error {
 	k.UpdatedAt = time.Now()
 	_, err = models.UpdateKeluargaById(c, id, k)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -187,6 +196,7 @@ func SoftDeleteKeluargaById(c echo.Context) error {
 
 	_, err := models.GetKeluargaByID(c, id)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -195,6 +205,7 @@ func SoftDeleteKeluargaById(c echo.Context) error {
 
 	_, err = models.SoftDeleteKeluargaById(c, id)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),

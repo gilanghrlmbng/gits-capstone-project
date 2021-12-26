@@ -17,6 +17,7 @@ func CreateAduan(c echo.Context) error {
 	a := new(entity.Aduan)
 
 	if err := c.Bind(a); err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -24,6 +25,7 @@ func CreateAduan(c echo.Context) error {
 	}
 
 	if err := a.ValidateCreate(); err.Code > 0 {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, err)
 	}
 
@@ -39,6 +41,7 @@ func CreateAduan(c echo.Context) error {
 
 	warga, err := models.GetWargaByEmail(c, claims.Email)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -55,6 +58,7 @@ func CreateAduan(c echo.Context) error {
 
 	Aduan, err := models.CreateAduan(c, a)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusCreated,
 			Message: err.Error(),
@@ -72,6 +76,7 @@ func GetAllAduan(c echo.Context) error {
 	allAduan, err := models.GetAllAduan(c)
 
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -96,6 +101,7 @@ func GetAduanByID(c echo.Context) error {
 
 	Aduan, err := models.GetAduanByID(c, id)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -120,6 +126,7 @@ func UpdateAduanById(c echo.Context) error {
 	a := new(entity.Aduan)
 
 	if err := c.Bind(a); err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -128,6 +135,7 @@ func UpdateAduanById(c echo.Context) error {
 
 	_, err := models.GetAduanByID(c, id)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -138,6 +146,7 @@ func UpdateAduanById(c echo.Context) error {
 
 	_, err = models.UpdateAduanById(c, id, a)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -162,6 +171,7 @@ func SoftDeleteAduanById(c echo.Context) error {
 	_, err := models.GetAduanByID(c, id)
 
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -171,6 +181,7 @@ func SoftDeleteAduanById(c echo.Context) error {
 	_, err = models.SoftDeleteAduanById(c, id)
 
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),

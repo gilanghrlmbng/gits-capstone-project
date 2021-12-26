@@ -18,6 +18,7 @@ func CreateRT(c echo.Context) error {
 
 	// kemudian ini buat dapetin request body dari mobile
 	if err := c.Bind(rt); err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -26,6 +27,7 @@ func CreateRT(c echo.Context) error {
 
 	// terus ini ada validasi buat ngecek inputan dari reqeust body udah sesuai apa belum
 	if err := rt.ValidateCreate(); err.Code > 0 {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, err)
 	}
 
@@ -40,6 +42,7 @@ func CreateRT(c echo.Context) error {
 	// Ini fungsi dari models buat create data ke database
 	Rt, err := models.CreateRT(c, rt)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -49,6 +52,7 @@ func CreateRT(c echo.Context) error {
 	eror := CreateDompet(c, rt.Id)
 	if eror.Code != http.StatusCreated {
 		c.Logger().Error("Failed to Create Dompet RT")
+		c.Logger().Error(eror)
 		return utils.ResponseError(c, eror)
 	}
 
@@ -63,6 +67,7 @@ func CreateRT(c echo.Context) error {
 func GetAllRT(c echo.Context) error {
 	allRT, err := models.GetAllRT(c)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -79,6 +84,7 @@ func GetAllRT(c echo.Context) error {
 func GetAllRTWithPengurus(c echo.Context) error {
 	allRT, err := models.GetAllRTWithPengurus(c)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -95,6 +101,7 @@ func GetAllRTWithPengurus(c echo.Context) error {
 func GetAllRTWithKeluarga(c echo.Context) error {
 	allRT, err := models.GetAllRTWithKeluarga(c)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -119,6 +126,7 @@ func GetRTByID(c echo.Context) error {
 
 	rt, err := models.GetRTByID(c, id)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -143,6 +151,7 @@ func UpdateRTById(c echo.Context) error {
 	rt := new(entity.Rt)
 
 	if err := c.Bind(rt); err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -151,6 +160,7 @@ func UpdateRTById(c echo.Context) error {
 
 	_, err := models.GetRTByID(c, id)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -161,6 +171,7 @@ func UpdateRTById(c echo.Context) error {
 
 	_, err = models.UpdateRTById(c, id, rt)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -183,6 +194,7 @@ func SoftDeleteRTById(c echo.Context) error {
 
 	_, err := models.GetRTByID(c, id)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -191,6 +203,7 @@ func SoftDeleteRTById(c echo.Context) error {
 
 	_, err = models.SoftDeleteRTById(c, id)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),

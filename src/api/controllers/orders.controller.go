@@ -18,6 +18,7 @@ func CreateOrder(c echo.Context) error {
 	ord := new(entity.Order)
 
 	if err := c.Bind(&items); err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -44,6 +45,7 @@ func CreateOrder(c echo.Context) error {
 	for idx, item := range items {
 		produk, err := models.GetProdukByID(c, item.IdProduk)
 		if err != nil {
+			c.Logger().Error(err)
 			return utils.ResponseError(c, utils.Error{
 				Code:    http.StatusBadRequest,
 				Message: err.Error(),
@@ -77,6 +79,7 @@ func CreateOrder(c echo.Context) error {
 
 	_, err := models.CreateOrder(c, ord)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -85,6 +88,7 @@ func CreateOrder(c echo.Context) error {
 
 	_, err = models.CreateBatchItemOrder(c, items)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -104,6 +108,7 @@ func GetAllOrder(c echo.Context) error {
 	allOrder, err := models.GetAllOrder(c)
 
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -128,6 +133,7 @@ func GetOrderByID(c echo.Context) error {
 
 	ord, err := models.GetOrderByID(c, id)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -153,6 +159,7 @@ func UpdateOrderById(c echo.Context) error {
 	ord := new(entity.Order)
 
 	if err := c.Bind(ord); err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -162,6 +169,7 @@ func UpdateOrderById(c echo.Context) error {
 	_, err := models.GetOrderByID(c, id)
 
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -173,6 +181,7 @@ func UpdateOrderById(c echo.Context) error {
 	_, err = models.UpdateOrderById(c, id, ord)
 
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -198,6 +207,7 @@ func SoftDeleteOrderById(c echo.Context) error {
 	_, err := models.GetOrderByID(c, id)
 
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -206,6 +216,7 @@ func SoftDeleteOrderById(c echo.Context) error {
 	_, err = models.SoftDeleteOrderById(c, id)
 
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),

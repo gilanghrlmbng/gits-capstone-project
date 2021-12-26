@@ -31,6 +31,7 @@ func CreateDompetKeluarga(c echo.Context, id_keluarga string) utils.Error {
 
 	_, err := models.CreateDompetKeluarga(c, &d)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -46,6 +47,7 @@ func CreateDompetKeluarga(c echo.Context, id_keluarga string) utils.Error {
 func GetAllDompetKeluarga(c echo.Context) error {
 	allDompet, err := models.GetAllDompetKeluarga(c)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -75,6 +77,7 @@ func GetDompetKeluargaByID(c echo.Context) error {
 
 	d, err := models.GetDompetKeluargaByID(c, id, id_keluarga)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -91,6 +94,7 @@ func TopUpDompetKeluarga(c echo.Context) error {
 	d := new(entity.DompetKeluarga)
 
 	if err := c.Bind(d); err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -108,6 +112,7 @@ func TopUpDompetKeluarga(c echo.Context) error {
 
 	dompet, err := models.GetDompetKeluargaByID(c, "", claims.IdKeluarga)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -118,6 +123,7 @@ func TopUpDompetKeluarga(c echo.Context) error {
 
 	_, err = models.UpdateDompetKeluargaById(c, dompet.Id, &dompet)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -134,6 +140,7 @@ func WithdrawDompetKeluarga(c echo.Context) error {
 	d := new(entity.DompetKeluarga)
 
 	if err := c.Bind(d); err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -151,6 +158,7 @@ func WithdrawDompetKeluarga(c echo.Context) error {
 
 	dompet, err := models.GetDompetKeluargaByID(c, "", claims.IdKeluarga)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -161,6 +169,7 @@ func WithdrawDompetKeluarga(c echo.Context) error {
 
 	_, err = models.UpdateDompetKeluargaById(c, dompet.Id, &dompet)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -185,6 +194,7 @@ func UpdateDompetKeluargaById(c echo.Context) error {
 	d := new(entity.DompetKeluarga)
 
 	if err := c.Bind(d); err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -194,6 +204,7 @@ func UpdateDompetKeluargaById(c echo.Context) error {
 	_, err := models.GetDompetKeluargaByID(c, id, "")
 
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -204,6 +215,7 @@ func UpdateDompetKeluargaById(c echo.Context) error {
 
 	_, err = models.UpdateDompetKeluargaById(c, id, d)
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -228,6 +240,7 @@ func SoftDeleteDompetKeluargaById(c echo.Context) error {
 	_, err := models.GetDompetKeluargaByID(c, id, "")
 
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -237,6 +250,7 @@ func SoftDeleteDompetKeluargaById(c echo.Context) error {
 	_, err = models.SoftDeleteDompetKeluargaById(c, id)
 
 	if err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
