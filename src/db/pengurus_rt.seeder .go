@@ -21,7 +21,7 @@ func SeedPengurusRT(db *gorm.DB, listRT []string) []string {
 		Email:       "pengurus1@gmail.com",
 		Gender:      "laki-laki",
 		NoHandphone: "08123123123123",
-		Gambar:      "https://dummyimage.com/500x500/eee/fff&text=J",
+		Gambar:      "default_image",
 		Password:    "aaaaaa",
 		CreatedAt:   time.Now(),
 	}
@@ -39,7 +39,7 @@ func SeedPengurusRT(db *gorm.DB, listRT []string) []string {
 		Email:       "john2@gmail.com",
 		Gender:      "laki-laki",
 		NoHandphone: "08123123123123",
-		Gambar:      "https://dummyimage.com/500x500/eee/fff&text=J",
+		Gambar:      "default_image",
 		Password:    "IniPunyaPakRT",
 		CreatedAt:   time.Now(),
 	}
@@ -57,7 +57,7 @@ func SeedPengurusRT(db *gorm.DB, listRT []string) []string {
 		Email:       "alifnaufalyasin@gmail.com",
 		Gender:      "laki-laki",
 		NoHandphone: "08123123123123",
-		Gambar:      "https://dummyimage.com/500x500/eee/fff&text=J",
+		Gambar:      "default_image",
 		Password:    "IniPunyaPakRT",
 		CreatedAt:   time.Now(),
 	}

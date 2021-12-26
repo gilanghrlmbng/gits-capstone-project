@@ -12,7 +12,7 @@ type Informasi struct {
 	Id        string          `gorm:"type:varchar(50);primaryKey" json:"id" form:"id"`
 	IdRT      string          `gorm:"type:varchar(50);not null" json:"id_rt" form:"id_rt"`
 	Judul     string          `gorm:"type:varchar(50);not null" json:"judul" form:"judul"`
-	Gambar    string          `gorm:"type:varchar(60);not null" json:"gambar" form:"gambar"`
+	Gambar    string          `gorm:"default:default_image" json:"gambar" form:"gambar"`
 	Detail    string          `gorm:"type:varchar(60); not null" json:"detail" form:"detail"`
 	Kategori  string          `gorm:"type:varchar(60); not null" json:"kategori" form:"kategori"`
 	Lokasi    string          `gorm:"type:varchar(60); not null" json:"lokasi" form:"lokasi"`

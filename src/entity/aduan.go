@@ -13,7 +13,7 @@ type Aduan struct {
 	IdRT      string          `gorm:"type:varchar(50);not null" json:"id_rt" form:"id_rt"`
 	IdWarga   string          `gorm:"type:varchar(50);not null" json:"id_warga" form:"id_warga"`
 	Judul     string          `gorm:"not null" json:"judul" form:"judul"`
-	Gambar    string          `gorm:"not null" json:"gambar" form:"gambar"`
+	Gambar    string          `json:"gambar" form:"gambar"`
 	Deskripsi string          `gorm:"not null" json:"deskripsi" form:"deskripsi"`
 	CreatedBy string          `gorm:"not null" json:"createdBy" form:"createdBy"`
 	CreatedAt time.Time       `gorm:"type:timestamptz;not null" json:"created_at"`
