@@ -165,6 +165,12 @@ func WithdrawDompetKeluarga(c echo.Context) error {
 		})
 	}
 
+	if d.Jumlah > dompet.Jumlah {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Saldo tidak mencukupi",
+		})
+	}
 	dompet.Jumlah = dompet.Jumlah - d.Jumlah
 
 	_, err = models.UpdateDompetKeluargaById(c, dompet.Id, &dompet)

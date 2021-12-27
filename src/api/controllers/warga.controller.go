@@ -402,3 +402,47 @@ func ResetPasswordWargaByKode(c echo.Context) error {
 		Message: "Berhasil",
 	})
 }
+
+type ChangePasswordRequest struct {
+	Password    string `json:"password" form:"password"`
+	NewPaswword string `json:"new_password" form:"new_password"`
+}
+
+func GantiPasswordWarga(c echo.Context) error {
+	cp := new(ChangePasswordRequest)
+
+	if err := c.Bind(cp); err != nil {
+		c.Logger().Error(err)
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+
+	userData := c.Get("user").(*jwt.Token)
+	claims := userData.Claims.(*utils.JWTCustomClaims)
+
+	w, _ := models.GetWargaByID(c, claims.UserId)
+
+	isValid := utils.CheckPassword(cp.Password, claims.UserId, w.Password)
+	if !isValid {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Password yang anda masukkan salah",
+		})
+	}
+
+	_, err := models.UpdateWargaById(c, claims.UserId, &entity.Warga{Password: utils.HashPassword(cp.NewPaswword, w.Id)})
+	if err != nil {
+		c.Logger().Error(err)
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	return utils.Response(c, utils.JSONResponse{
+		Code:    http.StatusOK,
+		Message: "Berhasil",
+	})
+}

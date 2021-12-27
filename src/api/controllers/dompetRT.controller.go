@@ -164,7 +164,12 @@ func WithdrawDompetRT(c echo.Context) error {
 			Message: err.Error(),
 		})
 	}
-
+	if d.Jumlah > dompet.Jumlah {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Saldo tidak mencukupi",
+		})
+	}
 	dompet.Jumlah = dompet.Jumlah - d.Jumlah
 
 	_, err = models.UpdateDompetById(c, dompet.Id, &dompet)

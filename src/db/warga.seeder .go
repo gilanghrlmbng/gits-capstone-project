@@ -33,6 +33,8 @@ func SeedWarga(db *gorm.DB, listKeluarga []string) []string {
 	entropy2 := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
 	Id2 := ulid.MustNew(ulid.Timestamp(time.Now()), entropy2).String()
 	data2 := entity.Warga{
+		Id:          Id2,
+		IdKeluarga:  listKeluarga[0],
 		Email:       "warga2@gmail.com",
 		Gender:      "laki-laki",
 		NoHandphone: "08123123123123",

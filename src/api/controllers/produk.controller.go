@@ -32,6 +32,7 @@ func CreateProduk(c echo.Context) error {
 		})
 	}
 	p.IdKeluarga = claims.IdKeluarga
+	p.Tersedia = "false"
 
 	if err := p.ValidateCreate(); err.Code > 0 {
 		c.Logger().Error(err)

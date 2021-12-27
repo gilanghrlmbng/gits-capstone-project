@@ -381,3 +381,42 @@ func ResetPasswordPengurusByKode(c echo.Context) error {
 		Message: "Berhasil",
 	})
 }
+
+func GantiPasswordPengurus(c echo.Context) error {
+	cp := new(ChangePasswordRequest)
+
+	if err := c.Bind(cp); err != nil {
+		c.Logger().Error(err)
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+
+	userData := c.Get("user").(*jwt.Token)
+	claims := userData.Claims.(*utils.JWTCustomClaims)
+
+	p, _ := models.GetPengurusByID(c, claims.UserId)
+
+	isValid := utils.CheckPassword(cp.Password, claims.UserId, p.Password)
+	if !isValid {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Password yang anda masukkan salah",
+		})
+	}
+
+	_, err := models.UpdatePengurusById(c, claims.UserId, &entity.PengurusRT{Password: utils.HashPassword(cp.NewPaswword, p.Id)})
+	if err != nil {
+		c.Logger().Error(err)
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	return utils.Response(c, utils.JSONResponse{
+		Code:    http.StatusOK,
+		Message: "Berhasil",
+	})
+}

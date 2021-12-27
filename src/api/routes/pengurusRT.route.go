@@ -12,6 +12,7 @@ func PengurusRT(e *echo.Echo, JWTconfig middleware.JWTConfig) *echo.Echo {
 	auth.Use(middleware.JWTWithConfig(JWTconfig))
 	auth.GET("", controllers.GetAllPengurusRT)
 	auth.GET("/me", controllers.GetPengurusByID)
+	auth.PUT("/changepassword", controllers.GantiPasswordPengurus)
 	auth.GET("/detail/:id", controllers.GetPengurusByID)
 	auth.PUT("/:id", controllers.UpdatePengurusById)
 	auth.DELETE("/:id", controllers.SoftDeletePengurusById)
