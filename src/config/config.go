@@ -12,7 +12,7 @@ type Config struct {
 	ServicePort   string
 	Database      DatabaseConfig
 	Secret        string
-	Port          string `env:"PORT,default=4132"`
+	Port          string `env:"PORT,default=80"`
 	Email         string `env:"EMAIL,required"`
 	PasswordEmail string `env:"PASSWORD_EMAIL,required"`
 }
