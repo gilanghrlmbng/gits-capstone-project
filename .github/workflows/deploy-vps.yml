@@ -1,11 +1,9 @@
-name: deploy-vps
+name: "Deploy-VPS"
 
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
-
+    
 jobs:
   deploying:
     runs-on: ubuntu-latest
