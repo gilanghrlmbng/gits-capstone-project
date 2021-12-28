@@ -3,7 +3,7 @@ name: deploy-vps
 on:
   push:
     branches: [ master ]
-  merge:
+  pull_request:
     branches: [ master ]
 
 jobs:
@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: action/checkout@v2
+      - uses: actions/checkout@v2
 
       - name: Deploy using ssh
         uses: appleboy/ssh-action@master
