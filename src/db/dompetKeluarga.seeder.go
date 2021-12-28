@@ -1,7 +1,6 @@
 package db
 
 import (
-	"fmt"
 	"math/rand"
 	"src/entity"
 	"time"
@@ -12,8 +11,7 @@ import (
 
 func SeedDompetKeluarga(db *gorm.DB, listIdKeluarga []string) []string {
 	var idDompet []string
-	for idx, val := range listIdKeluarga {
-		fmt.Println(idx)
+	for _, val := range listIdKeluarga {
 		entropy1 := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
 		Id := ulid.MustNew(ulid.Timestamp(time.Now()), entropy1).String()
 

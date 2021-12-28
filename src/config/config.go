@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 
@@ -11,6 +12,7 @@ import (
 type Config struct {
 	ServicePort   string
 	Database      DatabaseConfig
+	DatabaseInit  DatabaseInit
 	Secret        string
 	Port          string `env:"PORT,default=80"`
 	Email         string `env:"EMAIL,required"`
@@ -25,10 +27,29 @@ type DatabaseConfig struct {
 	Name     string `env:"DATABASE_NAME,required"`
 }
 
+type DatabaseInit struct {
+	ResetTable bool `env:"RESET_TABLES, default=false"`
+	SeedTable  bool `env:"SEED_TABLES, default=false"`
+}
+
 func GetConfig(e *echo.Echo) Config {
 	err := godotenv.Load()
 	if err != nil {
 		e.Logger.Error(err)
+	}
+
+	seedTable, err := strconv.ParseBool(os.Getenv("SEED_TABLES"))
+	if err != nil {
+		e.Logger.Error(err)
+	}
+	resetTable, err := strconv.ParseBool(os.Getenv("RESET_TABLES"))
+	if err != nil {
+		e.Logger.Error(err)
+	}
+
+	databaseInit := DatabaseInit{
+		ResetTable: resetTable,
+		SeedTable:  seedTable,
 	}
 
 	return Config{
@@ -39,6 +60,7 @@ func GetConfig(e *echo.Echo) Config {
 			Password: os.Getenv("DB_PASSWORD"),
 			Name:     os.Getenv("DB_NAME"),
 		},
+		DatabaseInit:  databaseInit,
 		Secret:        os.Getenv("SECRET"),
 		Port:          os.Getenv("PORT"),
 		Email:         os.Getenv("EMAIL"),

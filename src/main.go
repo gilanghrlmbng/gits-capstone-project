@@ -34,7 +34,8 @@ func main() {
 	}
 
 	// Inisialisasi DB
-	db.Init(echoMainServer, true, true)
+	db.Init(echoMainServer)
+
 	// Inisialisasi Server
 	echoMainServer = api.Init(echoMainServer)
 

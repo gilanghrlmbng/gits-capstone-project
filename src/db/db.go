@@ -13,7 +13,7 @@ import (
 var db *gorm.DB = nil
 var err error
 
-func Init(e *echo.Echo, tableDelete, dataInitialization bool) {
+func Init(e *echo.Echo) {
 
 	e.Logger.Info("menginisialisasikan database")
 
@@ -35,15 +35,16 @@ func Init(e *echo.Echo, tableDelete, dataInitialization bool) {
 
 	}
 
-	if tableDelete {
+	if config.DatabaseInit.ResetTable {
 		migrations.DeleteAllTable(e, db)
+		e.Logger.Info("Database was reset")
 	}
 
 	migrations.Migration(e, db)
 
-	if dataInitialization {
+	if config.DatabaseInit.SeedTable {
 		initData(e, db)
-		// fmt.Print(" ")
+		e.Logger.Info("Database seeder finish")
 	}
 
 	e.Logger.Info("database terinisialisasi")
