@@ -238,6 +238,17 @@ func LoginWarga(c echo.Context) error {
 			Message: "Password yang anda masukkan salah",
 		})
 	}
+	if w.TokenFirebase != "" {
+		_, err := models.UpdateWargaById(c, warga.Id, &entity.Warga{TokenFirebase: w.TokenFirebase})
+		if err != nil {
+			c.Logger().Error(err)
+			return utils.ResponseErrorLogin(c, utils.ErrorLogin{
+				Code:    http.StatusInternalServerError,
+				Message: err.Error(),
+			})
+		}
+	}
+
 	token, err := utils.GenerateTokenWarga(c, warga.Nama, warga.Email, warga.Id, warga.IdKeluarga, keluarga.IdRT, utils.JWTStandartClaims)
 	if err != nil {
 		c.Logger().Error(err)
@@ -265,6 +276,18 @@ func loginWarga(c echo.Context, pass, id_rt string, w *entity.Warga) error {
 			Message: "Password yang anda masukkan salah",
 		})
 	}
+
+	if w.TokenFirebase != "" {
+		_, err := models.UpdateWargaById(c, w.Id, &entity.Warga{TokenFirebase: w.TokenFirebase})
+		if err != nil {
+			c.Logger().Error(err)
+			return utils.ResponseErrorLogin(c, utils.ErrorLogin{
+				Code:    http.StatusInternalServerError,
+				Message: err.Error(),
+			})
+		}
+	}
+
 	token, err := utils.GenerateTokenWarga(c, w.Nama, w.Email, w.Id, w.IdKeluarga, id_rt, utils.JWTStandartClaims)
 	if err != nil {
 		c.Logger().Error(err)

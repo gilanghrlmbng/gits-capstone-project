@@ -226,6 +226,17 @@ func LoginPengurus(c echo.Context) error {
 		})
 	}
 
+	if prt.TokenFirebase != "" {
+		_, err := models.UpdatePengurusById(c, pengurus.Id, &entity.PengurusRT{TokenFirebase: prt.TokenFirebase})
+		if err != nil {
+			c.Logger().Error(err)
+			return utils.ResponseErrorLogin(c, utils.ErrorLogin{
+				Code:    http.StatusInternalServerError,
+				Message: err.Error(),
+			})
+		}
+	}
+
 	token, err := utils.GenerateTokenPengurus(c, pengurus.Nama, pengurus.Email, pengurus.Id, pengurus.IdRT, utils.JWTStandartClaims)
 	if err != nil {
 		c.Logger().Error(err)
@@ -251,6 +262,17 @@ func loginPengurus(c echo.Context, pass string, prt *entity.PengurusRT) error {
 			Code:    http.StatusBadRequest,
 			Message: "Password Salah",
 		})
+	}
+
+	if prt.TokenFirebase != "" {
+		_, err := models.UpdatePengurusById(c, prt.Id, &entity.PengurusRT{TokenFirebase: prt.TokenFirebase})
+		if err != nil {
+			c.Logger().Error(err)
+			return utils.ResponseErrorLogin(c, utils.ErrorLogin{
+				Code:    http.StatusInternalServerError,
+				Message: err.Error(),
+			})
+		}
 	}
 
 	token, err := utils.GenerateTokenPengurus(c, prt.Nama, prt.Email, prt.Id, prt.IdRT, utils.JWTStandartClaims)

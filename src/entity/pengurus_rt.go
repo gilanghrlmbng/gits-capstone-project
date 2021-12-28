@@ -12,6 +12,7 @@ import (
 type PengurusRT struct {
 	Id                     string                  `gorm:"type:varchar(50);primaryKey" json:"id" form:"id"`
 	IdRT                   string                  `gorm:"type:varchar(50);not null" json:"id_rt" form:"id_rt"`
+	TokenFirebase          string                  `gorm:"type:varchar" json:"token_firebase" form:"token_firebase"`
 	ForgetPasswordPengurus *ForgetPasswordPengurus `gorm:"foreignKey:id_pengurus;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"forget_password_pengurus,omitempty" form:"forget_password_pengurus"`
 	NoHandphone            string                  `gorm:"type:varchar(20);not null" json:"no_hp" form:"no_hp"`
 	KodeRT                 string                  `gorm:"type:varchar(100); not null" json:"kode_rt,omitempty" form:"kode_rt"`

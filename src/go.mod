@@ -28,7 +28,7 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.1 // indirect
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
-	golang.org/x/net v0.0.0-20210913180222-943fd674d43e // indirect
+	golang.org/x/net v0.0.0-20211209124913-491a49abca63 // indirect
 	golang.org/x/sys v0.0.0-20210910150752-751e447fb3d0 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324 // indirect
@@ -41,6 +41,7 @@ require (
 )
 
 require (
+	github.com/aws/aws-sdk-go v1.42.25
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
 	github.com/golang/protobuf v1.4.3 // indirect
@@ -51,3 +52,5 @@ require (
 	github.com/prometheus/procfs v0.6.0 // indirect
 	google.golang.org/protobuf v1.25.0 // indirect
 )
+
+require github.com/jmespath/go-jmespath v0.4.0 // indirect
