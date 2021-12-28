@@ -2,8 +2,10 @@ package models
 
 import (
 	"errors"
+	"fmt"
 	"src/db"
 	"src/entity"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
@@ -24,16 +26,25 @@ func CreateProduk(c echo.Context, p *entity.Produk) (entity.Produk, error) {
 	return *p, nil
 }
 
-func GetAllProduk(c echo.Context, idKeluarga, kelLogin string) (p []entity.Produk, err error) {
+func GetAllProduk(c echo.Context, idKeluarga, kelLogin, nama string) (p []entity.Produk, err error) {
 	var produks []entity.Produk
 	db := db.GetDB(c)
 	var errs *gorm.DB
-	if idKeluarga != "" && kelLogin != "" {
-		errs = db.Where("id_keluarga = ? AND id_keluarga <> ?", idKeluarga, kelLogin).Find(&produks)
+	if idKeluarga != "" && nama != "" {
+		c.Logger().Info("1")
+		errs = db.Where("id_keluarga = ? AND LOWER(nama) LIKE ?", idKeluarga, fmt.Sprintf("%%%s%%", strings.ToLower(nama))).Find(&produks)
 	} else if idKeluarga != "" {
+		c.Logger().Info("2")
 		errs = db.Where("id_keluarga = ?", idKeluarga).Find(&produks)
+	} else if kelLogin != "" && nama != "" {
+		c.Logger().Info("3")
+		errs = db.Where("id_keluarga <> ? AND LOWER(nama) LIKE ?", kelLogin, fmt.Sprintf("%%%s%%", strings.ToLower(nama))).Find(&produks)
 	} else if kelLogin != "" {
+		c.Logger().Info("4")
 		errs = db.Where("id_keluarga <> ?", kelLogin).Find(&produks)
+	} else if nama != "" {
+		c.Logger().Info("5")
+		errs = db.Where("LOWER(nama) LIKE ?", nama).Find(&produks)
 	} else {
 		errs = db.Find(&produks)
 	}

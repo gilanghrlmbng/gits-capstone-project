@@ -11,6 +11,6 @@ COPY ./ ./
 
 RUN go build -o ./appbin
 
-EXPOSE 4132
+EXPOSE 2001
 
 CMD ["./appbin"]
