@@ -1,0 +1,28 @@
+name: deploy-vps
+
+on:
+  push:
+    branches: [ master ]
+  merge:
+    branches: [ master ]
+
+jobs:
+  deploying:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: action/checkout@v2
+
+      - name: Deploy using ssh
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd ~/gits-smart
+            docker-compose down
+            git pull origin master
+            git status
+            docker-compose up -d
