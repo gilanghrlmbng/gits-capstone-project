@@ -158,6 +158,7 @@ func UpdateWargaById(c echo.Context) error {
 		})
 	}
 	if w.Password != "" {
+
 		w.Password = utils.HashPassword(w.Password, w.Email)
 	}
 	w.UpdatedAt = time.Now()
@@ -397,6 +398,13 @@ func ResetPasswordWargaByKode(c echo.Context) error {
 		})
 	}
 
+	if !utils.CheckStrengthPassword(rp.Password) {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Password panjangnya min. 8 karakter, serta mengandung min. 1 huruf besar, 1 huruf kecil, dan 1 angka!",
+		})
+	}
+
 	w, err := models.GetWargaByForgetPasswordKode(c, rp.Kode)
 	if err != nil {
 		c.Logger().Error(err)
@@ -447,6 +455,13 @@ func GantiPasswordWarga(c echo.Context) error {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
+		})
+	}
+
+	if !utils.CheckStrengthPassword(cp.NewPaswword) {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Password panjangnya min. 8 karakter, serta mengandung min. 1 huruf besar, 1 huruf kecil, dan 1 angka!",
 		})
 	}
 

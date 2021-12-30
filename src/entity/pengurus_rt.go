@@ -49,10 +49,10 @@ func (prt PengurusRT) ValidateCreate() utils.Error {
 			Message: "Kode RT tidak boleh kosong",
 		}
 	}
-	if prt.Password == "" {
+	if !utils.CheckStrengthPassword(prt.Password) {
 		return utils.Error{
 			Code:    http.StatusBadRequest,
-			Message: "Password tidak boleh kosong",
+			Message: "Password panjangnya min. 8 karakter, serta mengandung min. 1 huruf besar, 1 huruf kecil, dan 1 angka!",
 		}
 	}
 	if prt.Gambar == "" {

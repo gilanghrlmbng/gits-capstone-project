@@ -52,10 +52,10 @@ func (w Warga) ValidateCreate() utils.Error {
 			Message: "Email tidak valid",
 		}
 	}
-	if w.Password == "" {
+	if !utils.CheckStrengthPassword(w.Password) {
 		return utils.Error{
 			Code:    http.StatusBadRequest,
-			Message: "Password tidak boleh kosong",
+			Message: "Password panjangnya min. 8 karakter, serta mengandung min. 1 huruf besar, 1 huruf kecil, dan 1 angka!",
 		}
 	}
 	if w.KodeKeluarga == "" {
