@@ -42,7 +42,14 @@ func CreatePengurus(c echo.Context) error {
 	}
 	prt.IdRT = rt.Id
 
-	cek, _ := models.PengurusSearchEmail(c, prt.Email)
+	cek, err := models.PengurusSearchEmail(c, prt.Email)
+	if err != nil && err.Error() != "email tidak ditemukan atau tidak valid" {
+		c.Logger().Error(err)
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
 	if cek.Id != "" {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,

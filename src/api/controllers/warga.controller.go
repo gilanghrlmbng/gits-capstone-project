@@ -43,7 +43,14 @@ func CreateWarga(c echo.Context) error {
 	}
 	w.IdKeluarga = k.Id
 
-	cek, _ := models.GetWargaByEmail(c, w.Email)
+	cek, err := models.GetWargaByEmail(c, w.Email)
+	if err != nil && err.Error() != "email tidak ditemukan atau tidak valid" {
+		c.Logger().Error(err)
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
 	if cek.Id != "" {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
@@ -267,7 +274,8 @@ func LoginWarga(c echo.Context) error {
 }
 
 func loginWarga(c echo.Context, pass, id_rt string, w *entity.Warga) error {
-
+	c.Logger().Info("pass: ", pass)
+	c.Logger().Info("warga: ", w)
 	isValid := utils.CheckPassword(pass, w.Id, w.Password)
 	if !isValid {
 		return utils.ResponseErrorLogin(c, utils.ErrorLogin{

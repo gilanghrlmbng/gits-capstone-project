@@ -83,7 +83,7 @@ func PengurusSearchEmail(c echo.Context, email string) (entity.PengurusRT, error
 	err := db.First(&prt, "email = ?", email)
 	if err.Error != nil {
 		c.Logger().Error(err)
-		return entity.PengurusRT{}, errors.New("email tidak ditemukan")
+		return entity.PengurusRT{}, errors.New("email tidak ditemukan atau tidak valid")
 	}
 	return prt, nil
 }

@@ -24,7 +24,6 @@ func CreateWarga(c echo.Context, w *entity.Warga) (entity.Warga, error) {
 	if err.RowsAffected == 0 {
 		return entity.Warga{}, errors.New("gagal membuat keluarga")
 	}
-	w.Password = ""
 
 	return *w, nil
 }
