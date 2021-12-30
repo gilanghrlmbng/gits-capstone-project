@@ -1,0 +1,47 @@
+version: "3.8"
+services:
+  # app:
+  #   build:
+  #     context: ./src
+  #     dockerfile: Dockerfile
+  #   container_name: smart-server
+  #   ports:
+  #     - "2001:2001"
+  #   links:
+  #     - db
+  #   depends_on:
+  #     db: 
+  #       condition: service_healthy
+  #   expose:
+  #     - "2001"
+  #   environment:
+  #     - DB_HOST=db
+  #     - DB_PORT=5432
+  #     - DB_USERNAME=postgres
+  #     - DB_PASSWORD=postgres
+  #     - DB_NAME=postgres
+  #     - SECRET=gitscapstoneproject
+  #     - PORT=2001
+  #     - RESET_TABLES=true
+  #     - SEED_TABLES=true
+  #     - EMAIL=design.aliven7@gmail.com
+  #     - PASSWORD_EMAIL=jfhrxbvhepngnbsv
+  #   restart: "unless-stopped"
+    
+  db:
+    image: postgres:13.4-alpine
+    ports:
+      - "5432:5432"
+    expose:
+      - "5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    container_name: smart-postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: "unless-stopped"
