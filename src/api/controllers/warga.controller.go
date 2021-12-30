@@ -26,7 +26,7 @@ func CreateWarga(c echo.Context) error {
 			Message: err.Error(),
 		})
 	}
-	w.Gambar = fmt.Sprintf("https://dummyimage.com/500x500/29493B/fff&text=%c", w.Nama[0])
+	w.Gambar = "default_image"
 	// terus ini ada validasi buat ngecek inputan dari reqeust body udah sesuai apa belum
 	if err := w.ValidateCreate(); err.Code > 0 {
 		c.Logger().Error(err)

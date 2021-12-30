@@ -9,13 +9,14 @@ import (
 	"gorm.io/gorm"
 )
 
-func SeedProduk(db *gorm.DB, listKeluarga []string) []string {
+func SeedProduk(db *gorm.DB, listKeluarga, listRT []string) []string {
 	// Data 1
 	entropy1 := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
 	Id1 := ulid.MustNew(ulid.Timestamp(time.Now()), entropy1).String()
 	data1 := entity.Produk{
 		Id:         Id1,
 		IdKeluarga: listKeluarga[0],
+		IdRT:       listRT[0],
 		Nama:       "Mie Goreng",
 		Detail:     "Mie Goreng Mantap Pake Telor",
 		Gambar:     "default_image",
@@ -31,6 +32,7 @@ func SeedProduk(db *gorm.DB, listKeluarga []string) []string {
 	data2 := entity.Produk{
 		Id:         Id2,
 		IdKeluarga: listKeluarga[0],
+		IdRT:       listRT[0],
 		Nama:       "Mie Rebus",
 		Detail:     "Mie Rebus Mantap Pake Telor",
 		Gambar:     "default_image",
@@ -46,6 +48,7 @@ func SeedProduk(db *gorm.DB, listKeluarga []string) []string {
 	data3 := entity.Produk{
 		Id:         Id3,
 		IdKeluarga: listKeluarga[0],
+		IdRT:       listRT[0],
 		Nama:       "Kentang Mustofa",
 		Detail:     "Kering kentang mantap 200gr",
 		Gambar:     "default_image",
@@ -59,6 +62,7 @@ func SeedProduk(db *gorm.DB, listKeluarga []string) []string {
 	data4 := entity.Produk{
 		Id:         "01FQNTQ9KYRFW9YNMYGAXP1R8M",
 		IdKeluarga: listKeluarga[1],
+		IdRT:       listRT[0],
 		Nama:       "Kue Donat",
 		Detail:     "Donat manis aneka topping",
 		Gambar:     "default_image",
@@ -72,6 +76,7 @@ func SeedProduk(db *gorm.DB, listKeluarga []string) []string {
 	data5 := entity.Produk{
 		Id:         "01FQNTQ9M1WA992RJY56VTJ4YX",
 		IdKeluarga: listKeluarga[1],
+		IdRT:       listRT[0],
 		Nama:       "Kue Sus",
 		Detail:     "Kue sus manis",
 		Gambar:     "default_image",
@@ -80,6 +85,20 @@ func SeedProduk(db *gorm.DB, listKeluarga []string) []string {
 	}
 
 	db.Create(&data5)
+
+	// Data 5
+	data6 := entity.Produk{
+		Id:         "01FR64VED5FBRR8TQ7845Y11K5",
+		IdKeluarga: listKeluarga[3],
+		IdRT:       listRT[1],
+		Nama:       "Mangga Manis",
+		Detail:     "Mangga seger manis enak",
+		Gambar:     "default_image",
+		Harga:      30000,
+		CreatedAt:  time.Now(),
+	}
+
+	db.Create(&data6)
 
 	return []string{Id1, Id2, Id3}
 }
