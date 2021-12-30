@@ -70,7 +70,7 @@ func GetAllProduk(c echo.Context) error {
 		})
 	}
 
-	allProduk, err := models.GetAllProduk(c, c.QueryParam("id_keluarga"), claims.IdKeluarga, c.QueryParam("nama"))
+	allProduk, err := models.GetAllProduk(c, c.QueryParam("id_keluarga"), claims.IdKeluarga, c.QueryParam("nama"), claims.IdRT)
 	if err != nil {
 		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
@@ -96,7 +96,7 @@ func GetAllProdukByKeluarga(c echo.Context) error {
 		})
 	}
 
-	allProduk, err := models.GetAllProduk(c, claims.IdKeluarga, "", c.QueryParam("nama"))
+	allProduk, err := models.GetAllProduk(c, claims.IdKeluarga, "", c.QueryParam("nama"), claims.IdRT)
 	c.Logger().Info(allProduk)
 	if err != nil {
 		c.Logger().Error(err)

@@ -26,7 +26,7 @@ func CreateProduk(c echo.Context, p *entity.Produk) (entity.Produk, error) {
 	return *p, nil
 }
 
-func GetAllProduk(c echo.Context, idKeluarga, kelLogin, nama string) (p []entity.Produk, err error) {
+func GetAllProduk(c echo.Context, idKeluarga, kelLogin, nama, idRT string) (p []entity.Produk, err error) {
 	var produks []entity.Produk
 	db := db.GetDB(c)
 	var errs *gorm.DB
@@ -38,13 +38,13 @@ func GetAllProduk(c echo.Context, idKeluarga, kelLogin, nama string) (p []entity
 		errs = db.Where("id_keluarga = ?", idKeluarga).Find(&produks)
 	} else if kelLogin != "" && nama != "" {
 		c.Logger().Info("3")
-		errs = db.Where("id_keluarga <> ? AND LOWER(nama) LIKE ?", kelLogin, fmt.Sprintf("%%%s%%", strings.ToLower(nama))).Find(&produks)
+		errs = db.Where("id_keluarga <> ? AND id_rt = ? AND LOWER(nama) LIKE ?", kelLogin, idRT, fmt.Sprintf("%%%s%%", strings.ToLower(nama))).Find(&produks)
 	} else if kelLogin != "" {
 		c.Logger().Info("4")
-		errs = db.Where("id_keluarga <> ?", kelLogin).Find(&produks)
+		errs = db.Where("id_keluarga <> ? AND id_rt = ?", kelLogin, idRT).Find(&produks)
 	} else if nama != "" {
 		c.Logger().Info("5")
-		errs = db.Where("LOWER(nama) LIKE ?", nama).Find(&produks)
+		errs = db.Where("LOWER(nama) LIKE ? AND id_rt = ?", nama, idRT).Find(&produks)
 	} else {
 		errs = db.Find(&produks)
 	}

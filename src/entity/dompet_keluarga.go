@@ -7,6 +7,10 @@ import (
 	"gorm.io/gorm"
 )
 
+const (
+	SaldoTidakCukup = "Maaf saldo anda tidak mencukupi"
+)
+
 type DompetKeluarga struct {
 	Id         string          `gorm:"type:varchar(50);primaryKey" json:"id" form:"id"`
 	IdKeluarga string          `gorm:"type:varchar(50);not null" json:"id_keluarga" form:"id_keluarga"`

@@ -77,7 +77,7 @@ func initData(e *echo.Echo, db *gorm.DB) {
 	listIdWarga := SeedWarga(db, listIdKeluarga)
 
 	// Produk
-	_ = SeedProduk(db, listIdKeluarga)
+	_ = SeedProduk(db, listIdKeluarga, listIdRt)
 
 	// DompetRT
 	_ = SeedDompetRT(db, listIdRt)

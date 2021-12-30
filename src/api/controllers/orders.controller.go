@@ -76,6 +76,58 @@ func CreateOrder(c echo.Context) error {
 	c.Logger().Info("Items ", items)
 	ord.Harga_total = hargaTotal
 	ord.Status = entity.OrderStatusDipesan
+	ord.IdKeluargaPenjual = idKelProduk
+
+	// pengecekan jenis pembayaran
+	if c.Param("pembayaran") != "Saldo" && c.Param("pembayaran") != "COD" {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Jenis pembayaran tidak terdaftar",
+		})
+	}
+
+	entropy = ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
+	pembayaran := entity.Pembayaran{
+		Id:                ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String(),
+		IdOrder:           ord.Id,
+		IdKeluargaPembeli: claims.IdKeluarga,
+		IdKeluargaPenjual: idKelProduk,
+		Jumlah_pembayaran: hargaTotal,
+		Jenis:             c.Param("pembayaran"),
+		CreatedAt:         ord.CreatedAt,
+	}
+
+	if c.Param("pembayaran") == "Saldo" {
+		dompet, err := models.GetDompetKeluargaByID(c, "", claims.IdKeluarga)
+		if err != nil {
+			c.Logger().Error(err)
+			return utils.ResponseError(c, utils.Error{
+				Code:    http.StatusInternalServerError,
+				Message: err.Error(),
+			})
+		}
+
+		if dompet.Jumlah < hargaTotal {
+			return utils.ResponseError(c, utils.Error{
+				Code:    http.StatusBadRequest,
+				Message: entity.SaldoTidakCukup,
+			})
+		}
+
+		pembayaran.Status = entity.PembayaranTerbayar
+
+		dompet.Jumlah = dompet.Jumlah - hargaTotal
+		_, err = models.UpdateDompetKeluargaById(c, dompet.Id, &dompet)
+		if err != nil {
+			c.Logger().Error(err)
+			return utils.ResponseError(c, utils.Error{
+				Code:    http.StatusInternalServerError,
+				Message: err.Error(),
+			})
+		}
+	} else {
+		pembayaran.Status = entity.PembayaranBelumDibayar
+	}
 
 	_, err := models.CreateOrder(c, ord)
 	if err != nil {
@@ -95,6 +147,15 @@ func CreateOrder(c echo.Context) error {
 		})
 	}
 
+	_, err = models.CreatePembayaran(c, &pembayaran)
+	if err != nil {
+		c.Logger().Error(err)
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
 	orders, _ := models.GetOrderByID(c, ord.Id)
 
 	return utils.ResponseDataOrder(c, utils.JSONResponseDataOrder{
@@ -104,8 +165,32 @@ func CreateOrder(c echo.Context) error {
 	})
 }
 
-func GetAllOrder(c echo.Context) error {
-	allOrder, err := models.GetAllOrder(c)
+func GetAllOrderPembeli(c echo.Context) error {
+	userData := c.Get("user").(*jwt.Token)
+	claims := userData.Claims.(*utils.JWTCustomClaims)
+
+	allOrder, err := models.GetAllOrder(c, claims.UserId, "")
+
+	if err != nil {
+		c.Logger().Error(err)
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	return utils.ResponseDataOrder(c, utils.JSONResponseDataOrder{
+		Code:        http.StatusOK,
+		GetAllOrder: allOrder,
+		Message:     "Berhasil",
+	})
+}
+
+func GetAllOrderPenjual(c echo.Context) error {
+	userData := c.Get("user").(*jwt.Token)
+	claims := userData.Claims.(*utils.JWTCustomClaims)
+
+	allOrder, err := models.GetAllOrder(c, "", claims.IdKeluarga)
 
 	if err != nil {
 		c.Logger().Error(err)
@@ -146,28 +231,25 @@ func GetOrderByID(c echo.Context) error {
 	})
 }
 
-func UpdateOrderById(c echo.Context) error {
-	id := c.Param("id")
+func OrderProses(c echo.Context) error {
 
-	if id == "" {
+	ord, err := models.GetOrderByID(c, c.Param("id"))
+	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
-			Message: "ID tidak valid",
+			Message: "Id tidak valid",
 		})
 	}
 
-	ord := new(entity.Order)
-
-	if err := c.Bind(ord); err != nil {
-		c.Logger().Error(err)
+	if ord.Status != entity.OrderStatusDipesan {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
-			Message: err.Error(),
+			Message: "Flow Order Salah",
 		})
 	}
+	ord.Status = entity.OrderStatusDiProses
 
-	_, err := models.GetOrderByID(c, id)
-
+	_, err = models.UpdateOrderById(c, ord.Id, &ord)
 	if err != nil {
 		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
@@ -176,10 +258,116 @@ func UpdateOrderById(c echo.Context) error {
 		})
 	}
 
-	ord.UpdatedAt = time.Now()
+	return utils.Response(c, utils.JSONResponse{
+		Code:    http.StatusOK,
+		Message: "Berhasil",
+	})
+}
 
-	_, err = models.UpdateOrderById(c, id, ord)
+func OrderCancel(c echo.Context) error {
+	ord, err := models.GetOrderByID(c, c.Param("id"))
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Id tidak valid",
+		})
+	}
 
+	if ord.Status != entity.OrderStatusDipesan {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Flow Order Salah",
+		})
+	}
+	ord.Status = entity.OrderStatusCancel
+
+	if ord.Pembayaran.Jenis == "Saldo" {
+		dompet, err := models.GetDompetKeluargaByID(c, "", ord.Pembayaran.IdKeluargaPembeli)
+		if err != nil {
+			c.Logger().Error(err)
+			return utils.ResponseError(c, utils.Error{
+				Code:    http.StatusInternalServerError,
+				Message: err.Error(),
+			})
+		}
+
+		dompet.Jumlah = dompet.Jumlah + ord.Harga_total
+
+		_, err = models.UpdateDompetKeluargaById(c, dompet.Id, &dompet)
+		if err != nil {
+			c.Logger().Error(err)
+			return utils.ResponseError(c, utils.Error{
+				Code:    http.StatusInternalServerError,
+				Message: err.Error(),
+			})
+		}
+	}
+
+	_, err = models.UpdateOrderById(c, ord.Id, &ord)
+	if err != nil {
+		c.Logger().Error(err)
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	return utils.Response(c, utils.JSONResponse{
+		Code:    http.StatusOK,
+		Message: "Berhasil",
+	})
+}
+
+func OrderSelesai(c echo.Context) error {
+	ord, err := models.GetOrderByID(c, c.Param("id"))
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Id tidak valid",
+		})
+	}
+
+	if ord.Status != entity.OrderStatusDiProses {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Flow Order Salah",
+		})
+	}
+	ord.Status = entity.OrderStatusSelesai
+
+	if ord.Pembayaran.Jenis == "Saldo" {
+		dompet, err := models.GetDompetKeluargaByID(c, "", ord.Pembayaran.IdKeluargaPenjual)
+		if err != nil {
+			c.Logger().Error(err)
+			return utils.ResponseError(c, utils.Error{
+				Code:    http.StatusInternalServerError,
+				Message: err.Error(),
+			})
+		}
+
+		dompet.Jumlah = dompet.Jumlah + ord.Harga_total
+
+		_, err = models.UpdateDompetKeluargaById(c, dompet.Id, &dompet)
+		if err != nil {
+			c.Logger().Error(err)
+			return utils.ResponseError(c, utils.Error{
+				Code:    http.StatusInternalServerError,
+				Message: err.Error(),
+			})
+		}
+	} else {
+		ord.Pembayaran.Status = entity.PembayaranTerbayar
+		_, err = models.UpdatePembayaranById(c, ord.Pembayaran.Id, &ord.Pembayaran)
+		if err != nil {
+			c.Logger().Error(err)
+			return utils.ResponseError(c, utils.Error{
+				Code:    http.StatusInternalServerError,
+				Message: err.Error(),
+			})
+		}
+	}
+
+	_, err = models.UpdateOrderById(c, ord.Id, &ord)
 	if err != nil {
 		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
