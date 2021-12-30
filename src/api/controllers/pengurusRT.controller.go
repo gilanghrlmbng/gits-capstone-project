@@ -374,7 +374,7 @@ func ResetPasswordPengurusByKode(c echo.Context) error {
 		})
 	}
 
-	if utils.CheckStrengthPassword(rp.Password) {
+	if !utils.CheckStrengthPassword(rp.Password) {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: "Password panjangnya min. 8 karakter, serta mengandung min. 1 huruf besar, 1 huruf kecil, dan 1 angka!",
@@ -429,7 +429,7 @@ func GantiPasswordPengurus(c echo.Context) error {
 		})
 	}
 
-	if utils.CheckStrengthPassword(cp.NewPaswword) {
+	if !utils.CheckStrengthPassword(cp.NewPaswword) {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: "Password panjangnya min. 8 karakter, serta mengandung min. 1 huruf besar, 1 huruf kecil, dan 1 angka!",
