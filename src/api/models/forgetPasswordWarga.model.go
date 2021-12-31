@@ -35,7 +35,7 @@ func GetWargaByForgetPasswordKode(c echo.Context, kode string) (entity.Warga, er
 	}
 	var output entity.Warga
 	for _, warga := range w {
-		if warga.ForgetPasswordWarga.Kode == kode {
+		if warga.ForgetPasswordWarga != nil && warga.ForgetPasswordWarga.Kode == kode {
 			output = warga
 		}
 	}
@@ -43,7 +43,7 @@ func GetWargaByForgetPasswordKode(c echo.Context, kode string) (entity.Warga, er
 		c.Logger().Error(err.Error)
 		return entity.Warga{}, errors.New("akun tidak ditemukan atau kode tidak valid")
 	}
-	c.Logger().Info("Warga: ", output)
+
 	return output, nil
 }
 

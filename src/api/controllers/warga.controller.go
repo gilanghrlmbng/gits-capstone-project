@@ -275,8 +275,6 @@ func LoginWarga(c echo.Context) error {
 }
 
 func loginWarga(c echo.Context, pass, id_rt string, w *entity.Warga) error {
-	c.Logger().Info("pass: ", pass)
-	c.Logger().Info("warga: ", w)
 	isValid := utils.CheckPassword(pass, w.Id, w.Password)
 	if !isValid {
 		return utils.ResponseErrorLogin(c, utils.ErrorLogin{
@@ -435,7 +433,6 @@ func ResetPasswordWargaByKode(c echo.Context) error {
 		})
 	}
 
-	c.Logger().Info(w)
 	return utils.Response(c, utils.JSONResponse{
 		Code:    http.StatusOK,
 		Message: "Berhasil",

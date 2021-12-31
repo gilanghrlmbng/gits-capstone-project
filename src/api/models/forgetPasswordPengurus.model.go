@@ -35,7 +35,7 @@ func GetPengurusByForgetPasswordKode(c echo.Context, kode string) (entity.Pengur
 	}
 	var output entity.PengurusRT
 	for _, p := range prt {
-		if p.ForgetPasswordPengurus.Kode == kode {
+		if p.ForgetPasswordPengurus != nil && p.ForgetPasswordPengurus.Kode == kode {
 			output = p
 		}
 	}
@@ -43,7 +43,7 @@ func GetPengurusByForgetPasswordKode(c echo.Context, kode string) (entity.Pengur
 		c.Logger().Error(err.Error)
 		return entity.PengurusRT{}, errors.New("akun tidak ditemukan atau kode tidak valid")
 	}
-	c.Logger().Info("Warga: ", output)
+
 	return output, nil
 }
 
