@@ -1,11 +1,9 @@
 package entity
 
 import (
-	"fmt"
 	"net/http"
 	"net/mail"
 	"src/utils"
-	"strings"
 	"time"
 
 	"gorm.io/gorm"
@@ -34,12 +32,6 @@ func (Warga) TableName() string {
 }
 
 func (w Warga) ValidateCreate() utils.Error {
-	if strings.HasPrefix(w.NoHandphone, "62") {
-		w.NoHandphone = fmt.Sprintf("0%s", strings.SplitAfter(w.NoHandphone, "62"))
-	}
-	if strings.HasPrefix(w.NoHandphone, "+62") {
-		w.NoHandphone = fmt.Sprintf("0%s", strings.SplitAfter(w.NoHandphone, "+62"))
-	}
 	if w.Nama == "" {
 		return utils.Error{
 			Code:    http.StatusBadRequest,

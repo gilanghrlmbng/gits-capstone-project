@@ -7,6 +7,7 @@ import (
 	"src/api/models"
 	"src/entity"
 	"src/utils"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -27,6 +28,14 @@ func CreateWarga(c echo.Context) error {
 		})
 	}
 	w.Gambar = "default_image"
+
+	if strings.HasPrefix(w.NoHandphone, "62") {
+		w.NoHandphone = fmt.Sprintf("0%s", strings.SplitAfter(w.NoHandphone, "62")[1])
+	}
+	if strings.HasPrefix(w.NoHandphone, "+62") {
+		w.NoHandphone = fmt.Sprintf("0%s", strings.SplitAfter(w.NoHandphone, "+62")[1])
+	}
+
 	// terus ini ada validasi buat ngecek inputan dari reqeust body udah sesuai apa belum
 	if err := w.ValidateCreate(); err.Code > 0 {
 		c.Logger().Error(err)
@@ -149,6 +158,11 @@ func UpdateWargaById(c echo.Context) error {
 		})
 	}
 
+	if err := w.ValidateCreate(); err.Code > 0 {
+		c.Logger().Error(err)
+		return utils.ResponseError(c, err)
+	}
+
 	_, err := models.GetWargaByID(c, id)
 	if err != nil {
 		c.Logger().Error(err)
@@ -158,7 +172,6 @@ func UpdateWargaById(c echo.Context) error {
 		})
 	}
 	if w.Password != "" {
-
 		w.Password = utils.HashPassword(w.Password, w.Email)
 	}
 	w.UpdatedAt = time.Now()

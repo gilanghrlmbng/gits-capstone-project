@@ -7,6 +7,7 @@ import (
 	"src/api/models"
 	"src/entity"
 	"src/utils"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -26,6 +27,13 @@ func CreatePengurus(c echo.Context) error {
 	}
 
 	prt.Gambar = "default_image"
+
+	if strings.HasPrefix(prt.NoHandphone, "62") {
+		prt.NoHandphone = fmt.Sprintf("0%s", strings.SplitAfter(prt.NoHandphone, "62")[1])
+	}
+	if strings.HasPrefix(prt.NoHandphone, "+62") {
+		prt.NoHandphone = fmt.Sprintf("0%s", strings.SplitAfter(prt.NoHandphone, "+62")[1])
+	}
 
 	if err := prt.ValidateCreate(); err.Code > 0 {
 		c.Logger().Error(err)
@@ -139,6 +147,11 @@ func UpdatePengurusById(c echo.Context) error {
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
 		})
+	}
+
+	if err := prt.ValidateCreate(); err.Code > 0 {
+		c.Logger().Error(err)
+		return utils.ResponseError(c, err)
 	}
 
 	_, err := models.GetPengurusByID(c, id)

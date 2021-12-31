@@ -15,7 +15,7 @@ type Tagihan struct {
 	Nama       string          `gorm:"type:varchar(50);not null" json:"nama" form:"nama"`
 	Detail     string          `gorm:"not null" json:"detail" form:"detail"`
 	Jumlah     int64           `gorm:"not null" json:"jumlah" form:"jumlah"`
-	Terbayar   bool            `gorm:"default:false" json:"terbayar" form:"terbayar"`
+	Terbayar   string          `gorm:"default:false" json:"terbayar" form:"terbayar"`
 	CreatedAt  time.Time       `gorm:"type:timestamptz;not null" json:"created_at"`
 	UpdatedAt  time.Time       `gorm:"type:timestamptz;" json:"updated_at"`
 	DeletedAt  *gorm.DeletedAt `json:"deleted_at,omitempty"`
@@ -42,6 +42,12 @@ func (t Tagihan) ValidateCreate() utils.Error {
 		return utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: "Jumlah tagihan tidak boleh kosong",
+		}
+	}
+	if t.Terbayar != "true" && t.Terbayar != "false" {
+		return utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Format terbayar salah",
 		}
 	}
 

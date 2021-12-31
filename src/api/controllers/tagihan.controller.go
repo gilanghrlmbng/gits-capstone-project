@@ -140,8 +140,25 @@ func BayarTagihanByID(c echo.Context) error {
 		})
 	}
 
+	t, err := models.GetTagihanByID(c, id)
+	if err != nil {
+		c.Logger().Error(err)
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	if t.Terbayar == "true" {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Tagihan ini sudah terbayar",
+		})
+	}
+
 	userData := c.Get("user").(*jwt.Token)
 	claims := userData.Claims.(*utils.JWTCustomClaims)
+
 	if claims.IdKeluarga == "" && claims.User != "warga" {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
@@ -167,15 +184,6 @@ func BayarTagihanByID(c echo.Context) error {
 		})
 	}
 
-	t, err := models.GetTagihanByID(c, id)
-	if err != nil {
-		c.Logger().Error(err)
-		return utils.ResponseError(c, utils.Error{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error(),
-		})
-	}
-
 	if dompet.Jumlah < t.Jumlah {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
@@ -185,7 +193,7 @@ func BayarTagihanByID(c echo.Context) error {
 
 	dompet.Jumlah = dompet.Jumlah - t.Jumlah
 	dompetRT.Jumlah = dompetRT.Jumlah + t.Jumlah
-	t.Terbayar = true
+	t.Terbayar = "true"
 
 	_, err = models.UpdateDompetKeluargaById(c, dompet.Id, &dompet)
 	if err != nil {

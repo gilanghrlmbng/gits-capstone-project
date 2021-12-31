@@ -6,7 +6,7 @@ on:
     types: [completed]
     
 jobs:
-  on-success:
+  deploying:
     runs-on: ubuntu-latest
 
     steps:
