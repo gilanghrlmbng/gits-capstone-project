@@ -11,11 +11,11 @@ import (
 type Informasi struct {
 	Id        string          `gorm:"type:varchar(50);primaryKey" json:"id" form:"id"`
 	IdRT      string          `gorm:"type:varchar(50);not null" json:"id_rt" form:"id_rt"`
-	Judul     string          `gorm:"type:varchar(50);not null" json:"judul" form:"judul"`
+	Judul     string          `gorm:"type:varchar(100);not null" json:"judul" form:"judul"`
 	Gambar    string          `gorm:"default:default_image" json:"gambar" form:"gambar"`
-	Detail    string          `gorm:"type:varchar(60); not null" json:"detail" form:"detail"`
+	Detail    string          `gorm:"type:varchar; not null" json:"detail" form:"detail"`
 	Kategori  string          `gorm:"type:varchar(60); not null" json:"kategori" form:"kategori"`
-	Lokasi    string          `gorm:"type:varchar(60); not null" json:"lokasi" form:"lokasi"`
+	Lokasi    string          `gorm:"type:varchar; not null" json:"lokasi" form:"lokasi"`
 	CreatedBy string          `gorm:"type:varchar(50);not null" json:"created_by" form:"created_by"`
 	CreatedAt time.Time       `gorm:"type:timestamptz;not null" json:"created_at"`
 	UpdatedAt time.Time       `gorm:"type:timestamptz" json:"updated_at"`

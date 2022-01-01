@@ -18,8 +18,8 @@ type Keluarga struct {
 	DompetKeluarga DompetKeluarga  `gorm:"foreignKey:id_keluarga;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"dompet_keluarga,omitempty" form:"dompet_keluarga"`
 	Alamat         string          `json:"alamat,omitempty" form:"alamat"`
 	Gambar         string          `gorm:"not null" json:"gambar,omitempty" form:"gambar"`
-	NamaToko       string          `gorm:"type:varchar(50)" json:"nama_toko,omitempty" form:"nama_toko"`
-	KodeKeluarga   string          `gorm:"type:varchar(100); not null" json:"kode_keluarga,omitempty" form:"kode_keluarga"`
+	NamaToko       string          `gorm:"type:varchar(100)" json:"nama_toko,omitempty" form:"nama_toko"`
+	KodeKeluarga   string          `gorm:"type:varchar(10); not null" json:"kode_keluarga,omitempty" form:"kode_keluarga"`
 	CreatedAt      time.Time       `gorm:"type:timestamptz;not null" json:"created_at"`
 	UpdatedAt      time.Time       `gorm:"type:timestamptz" json:"updated_at"`
 	DeletedAt      *gorm.DeletedAt `json:"deleted_at,omitempty"`
