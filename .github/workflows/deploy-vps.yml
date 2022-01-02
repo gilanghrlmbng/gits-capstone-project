@@ -19,7 +19,6 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
             cd ~/gits-smart
