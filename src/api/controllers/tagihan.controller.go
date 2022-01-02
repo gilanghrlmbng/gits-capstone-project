@@ -31,7 +31,7 @@ func CreateTagihan(c echo.Context) error {
 			Message: "Maaf anda tidak memiliki akses ini",
 		})
 	}
-        t.Terbayar = "false"
+	t.Terbayar = "false"
 	if err := t.ValidateCreate(); err.Code > 0 {
 		c.Logger().Error(err)
 		return utils.ResponseError(c, err)
