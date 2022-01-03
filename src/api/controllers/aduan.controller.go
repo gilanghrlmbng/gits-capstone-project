@@ -55,6 +55,7 @@ func CreateAduan(c echo.Context) error {
 	a.IdWarga = warga.Id
 	a.CreatedBy = claims.Nama
 	a.CreatedAt = time.Now()
+	a.Status = entity.StatusAduanTerkirim
 
 	Aduan, err := models.CreateAduan(c, a)
 	if err != nil {
@@ -72,8 +73,65 @@ func CreateAduan(c echo.Context) error {
 	})
 }
 
+func AduanDiterima(c echo.Context) error {
+	id := c.Param("id")
+	if id == "" {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Id tidak valid",
+		})
+	}
+
+	Aduan, err := models.GetAduanByID(c, id)
+	if err != nil {
+		c.Logger().Error(err)
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	userData := c.Get("user").(*jwt.Token)
+	claims := userData.Claims.(*utils.JWTCustomClaims)
+
+	if Aduan.IdRT != claims.IdRT {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: "Maaf Id invalid",
+		})
+	}
+
+	_, err = models.UpdateAduanById(c, id, &entity.Aduan{Status: entity.StatusAduanDiterima})
+	if err != nil {
+		c.Logger().Error(err)
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+	return utils.Response(c, utils.JSONResponse{
+		Code:    http.StatusOK,
+		Message: "Berhasil",
+	})
+}
+
 func GetAllAduan(c echo.Context) error {
-	allAduan, err := models.GetAllAduan(c)
+
+	userData := c.Get("user").(*jwt.Token)
+	claims := userData.Claims.(*utils.JWTCustomClaims)
+
+	var allAduan []entity.Aduan
+	var err error
+	if claims.User == "warga" {
+		allAduan, err = models.GetAllAduan(c, claims.UserId, "")
+	} else if claims.User == "pengurus" {
+		allAduan, err = models.GetAllAduan(c, "", claims.IdRT)
+	} else {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: "Anda siapa",
+		})
+	}
 
 	if err != nil {
 		c.Logger().Error(err)

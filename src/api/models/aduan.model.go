@@ -6,6 +6,7 @@ import (
 	"src/entity"
 
 	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
 )
 
 func CreateAduan(c echo.Context, a *entity.Aduan) (entity.Aduan, error) {
@@ -23,11 +24,19 @@ func CreateAduan(c echo.Context, a *entity.Aduan) (entity.Aduan, error) {
 	return *a, nil
 }
 
-func GetAllAduan(c echo.Context) ([]entity.Aduan, error) {
+func GetAllAduan(c echo.Context, idWarga, IdRT string) ([]entity.Aduan, error) {
 	var aduans []entity.Aduan
 	db := db.GetDB(c)
 
-	err := db.Find(&aduans)
+	var err *gorm.DB
+	if idWarga != "" {
+		err = db.Where("id_warga = ?", idWarga).Find(&aduans)
+	} else if IdRT != "" {
+		err = db.Where("id_rt = ?", IdRT).Find(&aduans)
+	} else {
+		err = db.Find(&aduans)
+	}
+
 	if err.Error != nil {
 		c.Logger().Error(err)
 		return aduans, err.Error
