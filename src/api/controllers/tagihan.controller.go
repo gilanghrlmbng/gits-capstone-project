@@ -31,7 +31,9 @@ func CreateTagihan(c echo.Context) error {
 			Message: "Maaf anda tidak memiliki akses ini",
 		})
 	}
+
 	t.Terbayar = "false"
+
 	if err := t.ValidateCreate(); err.Code > 0 {
 		c.Logger().Error(err)
 		return utils.ResponseError(c, err)
@@ -52,13 +54,15 @@ func CreateTagihan(c echo.Context) error {
 		Id := ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
 
 		tag := entity.Tagihan{
-			Id:         Id,
-			IdKeluarga: kel.Id,
-			IdRT:       claims.IdRT,
-			Nama:       t.Nama,
-			Detail:     t.Detail,
-			Jumlah:     t.Jumlah,
-			CreatedAt:  t.CreatedAt,
+			Id:           Id,
+			IdKeluarga:   kel.Id,
+			NamaKeluarga: kel.Nama,
+			IdRT:         claims.IdRT,
+			Nama:         t.Nama,
+			Terbayar:     t.Terbayar,
+			Detail:       t.Detail,
+			Jumlah:       t.Jumlah,
+			CreatedAt:    t.CreatedAt,
 		}
 
 		_, err := models.CreateTagihan(c, &tag)
@@ -85,11 +89,11 @@ func GetAllTagihan(c echo.Context) error {
 	var allTagihan []entity.Tagihan
 	var err error
 	if claims.User == "pengurus" {
-		allTagihan, err = models.GetAllTagihan(c, "", claims.IdRT)
+		allTagihan, err = models.GetAllTagihan(c, "", claims.IdRT, c.QueryParam("terbayar"))
 	} else if claims.User == "warga" {
-		allTagihan, err = models.GetAllTagihan(c, claims.IdKeluarga, "")
+		allTagihan, err = models.GetAllTagihan(c, claims.IdKeluarga, "", c.QueryParam("terbayar"))
 	} else {
-		allTagihan, err = models.GetAllTagihan(c, "", "")
+		allTagihan, err = models.GetAllTagihan(c, "", "", c.QueryParam("terbayar"))
 	}
 
 	if err != nil {

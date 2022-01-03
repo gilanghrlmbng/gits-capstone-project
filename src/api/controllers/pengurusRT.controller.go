@@ -149,7 +149,7 @@ func UpdatePengurusById(c echo.Context) error {
 		})
 	}
 
-	if err := prt.ValidateCreate(); err.Code > 0 {
+	if err := prt.ValidateUpdate(); err.Code > 0 {
 		c.Logger().Error(err)
 		return utils.ResponseError(c, err)
 	}

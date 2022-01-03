@@ -76,3 +76,31 @@ func (w Warga) ValidateCreate() utils.Error {
 	}
 	return utils.Error{}
 }
+
+func (w Warga) ValidateUpdate() utils.Error {
+	if w.Nama == "" {
+		return utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Nama tidak boleh kosong",
+		}
+	}
+	if _, err := mail.ParseAddress(w.Email); err != nil {
+		return utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Email tidak valid",
+		}
+	}
+	if w.Gambar == "" {
+		return utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Gambar tidak boleh kosong",
+		}
+	}
+	if len(w.NoHandphone) < 10 && len(w.NoHandphone) > 13 {
+		return utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Nomor handphone tidak valid (min 10 angka, max 13 angka)",
+		}
+	}
+	return utils.Error{}
+}

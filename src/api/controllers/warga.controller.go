@@ -158,7 +158,8 @@ func UpdateWargaById(c echo.Context) error {
 		})
 	}
 
-	if err := w.ValidateCreate(); err.Code > 0 {
+
+	if err := w.ValidateUpdate(); err.Code > 0 {
 		c.Logger().Error(err)
 		return utils.ResponseError(c, err)
 	}

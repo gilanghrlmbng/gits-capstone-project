@@ -75,3 +75,31 @@ func (prt PengurusRT) ValidateCreate() utils.Error {
 	}
 	return utils.Error{}
 }
+
+func (prt PengurusRT) ValidateUpdate() utils.Error {
+	if prt.Nama == "" {
+		return utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Nama tidak boleh kosong",
+		}
+	}
+	if _, err := mail.ParseAddress(prt.Email); err != nil {
+		return utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Email tidak valid",
+		}
+	}
+	if prt.Gambar == "" {
+		return utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Gambar tidak boleh kosong",
+		}
+	}
+	if len(prt.NoHandphone) < 10 && len(prt.NoHandphone) > 13 {
+		return utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Nomor handphone tidak valid (min 10 angka, max 13 angka)",
+		}
+	}
+	return utils.Error{}
+}

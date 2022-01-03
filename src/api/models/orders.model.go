@@ -25,12 +25,16 @@ func CreateOrder(c echo.Context, ord *entity.Order) (entity.Order, error) {
 	return *ord, nil
 }
 
-func GetAllOrder(c echo.Context, idPembeli, idPenjual string) ([]entity.Order, error) {
+func GetAllOrder(c echo.Context, idPembeli, idPenjual, status string) ([]entity.Order, error) {
 	var ord []entity.Order
 	db := db.GetDB(c)
 	var err *gorm.DB
-	if idPembeli != "" {
+	if idPembeli != "" && status != "" {
+		err = db.Preload("ItemOrder").Preload("Pembayaran").Order("id desc").Where("id_warga = ? AND status = ?", idPembeli, status).Find(&ord)
+	} else if idPembeli != "" {
 		err = db.Preload("ItemOrder").Preload("Pembayaran").Order("id desc").Where("id_warga = ?", idPembeli).Find(&ord)
+	} else if idPenjual != "" && status != "" {
+		err = db.Preload("ItemOrder").Preload("Pembayaran").Order("id desc").Where("id_keluarga_penjual = ? AND status = ?", idPenjual, status).Find(&ord)
 	} else if idPenjual != "" {
 		err = db.Preload("ItemOrder").Preload("Pembayaran").Order("id desc").Where("id_keluarga_penjual = ?", idPenjual).Find(&ord)
 	} else {

@@ -169,7 +169,23 @@ func GetAllOrderPembeli(c echo.Context) error {
 	userData := c.Get("user").(*jwt.Token)
 	claims := userData.Claims.(*utils.JWTCustomClaims)
 
-	allOrder, err := models.GetAllOrder(c, claims.UserId, "")
+	var status string
+	if c.QueryParam("status") == "0" {
+		status = entity.OrderStatusCancel
+	} else if c.QueryParam("status") == "1" {
+		status = entity.OrderStatusDipesan
+	} else if c.QueryParam("status") == "2" {
+		status = entity.OrderStatusDiProses
+	} else if c.QueryParam("status") == "3" {
+		status = entity.OrderStatusSelesai
+	} else if c.QueryParam("status") != "" {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Status invalid",
+		})
+	}
+
+	allOrder, err := models.GetAllOrder(c, claims.UserId, "", status)
 
 	if err != nil {
 		c.Logger().Error(err)
@@ -190,7 +206,23 @@ func GetAllOrderPenjual(c echo.Context) error {
 	userData := c.Get("user").(*jwt.Token)
 	claims := userData.Claims.(*utils.JWTCustomClaims)
 
-	allOrder, err := models.GetAllOrder(c, "", claims.IdKeluarga)
+	var status string
+	if c.QueryParam("status") == "0" {
+		status = entity.OrderStatusCancel
+	} else if c.QueryParam("status") == "1" {
+		status = entity.OrderStatusDipesan
+	} else if c.QueryParam("status") == "2" {
+		status = entity.OrderStatusDiProses
+	} else if c.QueryParam("status") == "3" {
+		status = entity.OrderStatusSelesai
+	} else if c.QueryParam("status") != "" {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Status invalid",
+		})
+	}
+
+	allOrder, err := models.GetAllOrder(c, "", claims.IdKeluarga, status)
 
 	if err != nil {
 		c.Logger().Error(err)
