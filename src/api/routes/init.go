@@ -25,6 +25,14 @@ func Init(e *echo.Echo) *echo.Echo {
 		TokenLookup: "header:Authorization",
 		Claims:      &utils.JWTCustomClaims{},
 		SigningKey:  []byte(config.GetConfig(e).Secret),
+		ErrorHandlerWithContext: func(err error, c echo.Context) error {
+			c.Logger().Error("Error JWT Context: ", err)
+			return &echo.HTTPError{
+				Code:     http.StatusUnauthorized,
+				Message:  "Token Invalid",
+				Internal: err,
+			}
+		},
 	}
 	middleware.ErrJWTMissing.Code = http.StatusUnauthorized
 
