@@ -24,20 +24,27 @@ func CreatePersuratan(c echo.Context, s *entity.Persuratan) (entity.Persuratan, 
 	return *s, nil
 }
 
-func GetAllPersuratan(c echo.Context, idRT string) (s []entity.Persuratan, err error) {
-	var persuratans []entity.Persuratan
+func GetAllPersuratan(c echo.Context, idRT, id_warga, status string) (persuratans []entity.Persuratan, err error) {
+
 	db := db.GetDB(c)
+
 	var errs *gorm.DB
-	if idRT == "" {
-		errs = db.Find(&persuratans)
-	} else {
+	if idRT != "" && status != "" {
+		errs = db.Where("id_rt = ? AND status = ?", idRT, status).Find(&persuratans)
+	} else if idRT != "" {
 		errs = db.Where("id_rt = ?", idRT).Find(&persuratans)
+	} else if id_warga != "" && status != "" {
+		errs = db.Where("id_warga = ? AND status = ?", id_warga, status).Find(&persuratans)
+	} else if id_warga != "" {
+		errs = db.Where("id_warga = ?", id_warga).Find(&persuratans)
+	} else {
+		errs = db.Find(&persuratans)
 	}
 
 	if errs.Error != nil {
 		c.Logger().Error(err)
 		err = errs.Error
-		return
+		return []entity.Persuratan{}, err
 	}
 
 	return persuratans, nil

@@ -25,7 +25,7 @@ func CreatePersuratan(c echo.Context) error {
 	}
 	userData := c.Get("user").(*jwt.Token)
 	claims := userData.Claims.(*utils.JWTCustomClaims)
-	if claims.IdRT == "" {
+	if claims.IdRT == "" && claims.User != "warga" {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: "Maaf anda tidak memiliki akses ini",
@@ -33,6 +33,8 @@ func CreatePersuratan(c echo.Context) error {
 	}
 
 	s.IdRT = claims.IdRT
+	s.IdWarga = claims.UserId
+	s.Status = entity.StatusPersuratanTerkirim
 
 	if err := s.ValidateCreate(); err.Code > 0 {
 		c.Logger().Error(err)
@@ -61,8 +63,28 @@ func CreatePersuratan(c echo.Context) error {
 }
 
 func GetAllPersuratan(c echo.Context) error {
+	var allPersuratan []entity.Persuratan
+	var err error
+	userData := c.Get("user").(*jwt.Token)
+	claims := userData.Claims.(*utils.JWTCustomClaims)
 
-	allPersuratan, err := models.GetAllPersuratan(c, "")
+	var status string = ""
+	if c.QueryParam("status") == "0" {
+		status = entity.StatusPersuratanTolak
+	} else if c.QueryParam("status") == "1" {
+		status = entity.StatusPersuratanTerkirim
+	} else if c.QueryParam("status") == "2" {
+		status = entity.StatusPersuratanDiproses
+	} else if c.QueryParam("status") == "3" {
+		status = entity.StatusPersuratanSelesai
+	}
+
+	if claims.User == "pengurus" {
+		allPersuratan, err = models.GetAllPersuratan(c, claims.IdRT, "", status)
+	} else {
+		allPersuratan, err = models.GetAllPersuratan(c, "", claims.UserId, status)
+	}
+
 	if err != nil {
 		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
@@ -111,21 +133,27 @@ func UpdatePersuratanById(c echo.Context) error {
 		})
 	}
 
+	Surat, err := models.GetPersuratanByID(c, id)
+	if err != nil {
+		c.Logger().Error(err)
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+	if Surat.Status != entity.StatusPersuratanTerkirim {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: "Maaf surat sudah diproses, data tidak bisa diubah lagi",
+		})
+	}
+
 	s := new(entity.Persuratan)
 
 	if err := c.Bind(s); err != nil {
 		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
-			Message: err.Error(),
-		})
-	}
-
-	_, err := models.GetPersuratanByID(c, id)
-	if err != nil {
-		c.Logger().Error(err)
-		return utils.ResponseError(c, utils.Error{
-			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		})
 	}
