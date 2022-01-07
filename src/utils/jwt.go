@@ -28,7 +28,7 @@ var (
 
 func GenerateTokenWarga(c echo.Context, nama, email, id, id_keluarga, id_rt string, ExpiredHour int) (string, error) {
 	JWTStandartClaims := jwt.StandardClaims{
-		ExpiresAt: time.Now().Add(time.Hour * ExpiredHour).Unix(),
+		ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
 	}
 	// Set custom claims
 	claims := &JWTCustomClaims{
@@ -53,7 +53,7 @@ func GenerateTokenWarga(c echo.Context, nama, email, id, id_keluarga, id_rt stri
 
 func GenerateTokenPengurus(c echo.Context, nama, email, id, id_rt string, ExpiredHour int) (string, error) {
 	JWTStandartClaims := jwt.StandardClaims{
-		ExpiresAt: time.Now().Add(time.Hour * ExpiredHour).Unix(),
+		ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
 	}
 
 	// Set custom claims
