@@ -257,7 +257,7 @@ func LoginPengurus(c echo.Context) error {
 		}
 	}
 
-	token, err := utils.GenerateTokenPengurus(c, pengurus.Nama, pengurus.Email, pengurus.Id, pengurus.IdRT, utils.JWTStandartClaims)
+	token, err := utils.GenerateTokenPengurus(c, pengurus.Nama, pengurus.Email, pengurus.Id, pengurus.IdRT, utils.ExpiredHour)
 	if err != nil {
 		c.Logger().Error(err)
 		return utils.ResponseErrorLogin(c, utils.ErrorLogin{
@@ -295,7 +295,7 @@ func loginPengurus(c echo.Context, pass string, prt *entity.PengurusRT) error {
 		}
 	}
 
-	token, err := utils.GenerateTokenPengurus(c, prt.Nama, prt.Email, prt.Id, prt.IdRT, utils.JWTStandartClaims)
+	token, err := utils.GenerateTokenPengurus(c, prt.Nama, prt.Email, prt.Id, prt.IdRT, utils.ExpiredHour)
 	if err != nil {
 		c.Logger().Error(err)
 		return utils.ResponseErrorLogin(c, utils.ErrorLogin{

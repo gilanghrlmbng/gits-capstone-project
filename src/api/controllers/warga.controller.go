@@ -271,7 +271,7 @@ func LoginWarga(c echo.Context) error {
 		}
 	}
 
-	token, err := utils.GenerateTokenWarga(c, warga.Nama, warga.Email, warga.Id, warga.IdKeluarga, keluarga.IdRT, utils.JWTStandartClaims)
+	token, err := utils.GenerateTokenWarga(c, warga.Nama, warga.Email, warga.Id, warga.IdKeluarga, keluarga.IdRT, utils.ExpiredHour)
 	if err != nil {
 		c.Logger().Error(err)
 		return utils.ResponseErrorLogin(c, utils.ErrorLogin{
@@ -309,7 +309,7 @@ func loginWarga(c echo.Context, pass, id_rt string, w *entity.Warga) error {
 		}
 	}
 
-	token, err := utils.GenerateTokenWarga(c, w.Nama, w.Email, w.Id, w.IdKeluarga, id_rt, utils.JWTStandartClaims)
+	token, err := utils.GenerateTokenWarga(c, w.Nama, w.Email, w.Id, w.IdKeluarga, id_rt, utils.ExpiredHour)
 	if err != nil {
 		c.Logger().Error(err)
 		return utils.ResponseErrorLogin(c, utils.ErrorLogin{
