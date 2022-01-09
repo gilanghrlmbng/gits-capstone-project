@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"src/config"
 
 	"github.com/labstack/echo/v4"
 )
@@ -13,14 +14,14 @@ import (
 type Notification struct {
 	Title       string `json:"title"`
 	Body        string `json:"body"`
-	ClickAction string `json:"click_action"`
+	ClickAction string `json:"click_action,omitempty"`
 }
 type RequestSendNotificationToken struct {
 	To           string `json:"to"`
 	Notification Notification
 }
 
-func SendNotificationToken(c echo.Context, reqData RequestSendNotificationToken, firebaseKey string) error {
+func SendNotificationToken(c echo.Context, reqData RequestSendNotificationToken) error {
 	payloadBuf := new(bytes.Buffer)
 	json.NewEncoder(payloadBuf).Encode(reqData)
 
@@ -30,7 +31,7 @@ func SendNotificationToken(c echo.Context, reqData RequestSendNotificationToken,
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", fmt.Sprintf("key=%s", firebaseKey))
+	req.Header.Set("Authorization", fmt.Sprintf("key=%s", config.GetConfigs(c).FirebaseApiKey))
 
 	httpClient := &http.Client{}
 	resp, err := httpClient.Do(req)

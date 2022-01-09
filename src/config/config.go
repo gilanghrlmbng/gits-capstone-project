@@ -10,13 +10,14 @@ import (
 )
 
 type Config struct {
-	ServicePort   string
-	Database      DatabaseConfig
-	DatabaseInit  DatabaseInit
-	Secret        string
-	Port          string `env:"PORT,default=80"`
-	Email         string `env:"EMAIL,required"`
-	PasswordEmail string `env:"PASSWORD_EMAIL,required"`
+	ServicePort    string
+	Database       DatabaseConfig
+	DatabaseInit   DatabaseInit
+	Secret         string
+	Port           string `env:"PORT,default=80"`
+	Email          string `env:"EMAIL,required"`
+	PasswordEmail  string `env:"PASSWORD_EMAIL,required"`
+	FirebaseApiKey string `env:"FIREBASE_API_KEY,required"`
 }
 
 type DatabaseConfig struct {
@@ -60,11 +61,12 @@ func GetConfig(e *echo.Echo) Config {
 			Password: os.Getenv("DB_PASSWORD"),
 			Name:     os.Getenv("DB_NAME"),
 		},
-		DatabaseInit:  databaseInit,
-		Secret:        os.Getenv("SECRET"),
-		Port:          os.Getenv("PORT"),
-		Email:         os.Getenv("EMAIL"),
-		PasswordEmail: os.Getenv("PASSWORD_EMAIL"),
+		DatabaseInit:   databaseInit,
+		Secret:         os.Getenv("SECRET"),
+		Port:           os.Getenv("PORT"),
+		Email:          os.Getenv("EMAIL"),
+		PasswordEmail:  os.Getenv("PASSWORD_EMAIL"),
+		FirebaseApiKey: os.Getenv("FIREBASE_API_KEY"),
 	}
 }
 
@@ -72,6 +74,20 @@ func GetConfigs(c echo.Context) Config {
 	err := godotenv.Load()
 	if err != nil {
 		c.Logger().Error(err)
+	}
+
+	seedTable, err := strconv.ParseBool(os.Getenv("SEED_TABLES"))
+	if err != nil {
+		c.Logger().Error(err)
+	}
+	resetTable, err := strconv.ParseBool(os.Getenv("RESET_TABLES"))
+	if err != nil {
+		c.Logger().Error(err)
+	}
+
+	databaseInit := DatabaseInit{
+		ResetTable: resetTable,
+		SeedTable:  seedTable,
 	}
 
 	return Config{
@@ -82,9 +98,11 @@ func GetConfigs(c echo.Context) Config {
 			Password: os.Getenv("DB_PASSWORD"),
 			Name:     os.Getenv("DB_NAME"),
 		},
-		Secret:        os.Getenv("SECRET"),
-		Port:          os.Getenv("PORT"),
-		Email:         os.Getenv("EMAIL"),
-		PasswordEmail: os.Getenv("PASSWORD_EMAIL"),
+		DatabaseInit:   databaseInit,
+		Secret:         os.Getenv("SECRET"),
+		Port:           os.Getenv("PORT"),
+		Email:          os.Getenv("EMAIL"),
+		PasswordEmail:  os.Getenv("PASSWORD_EMAIL"),
+		FirebaseApiKey: os.Getenv("FIREBASE_API_KEY"),
 	}
 }
