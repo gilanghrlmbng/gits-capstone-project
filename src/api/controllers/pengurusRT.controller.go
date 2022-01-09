@@ -305,6 +305,18 @@ func loginPengurus(c echo.Context, pass string, prt *entity.PengurusRT) error {
 		})
 	}
 
+	reqNotif := utils.RequestSendNotificationToken{
+		To: prt.TokenFirebase,
+		Notification: utils.Notification{
+			Title: "Welcome to Sma-RT",
+			Body:  fmt.Sprintf("Hi %s, Selamat datang di Sma-RT, selamat menggunakan aplikasi kami", prt.Nama),
+		},
+	}
+	err = utils.SendNotificationToken(c, reqNotif)
+	if err != nil {
+		c.Logger().Error("Notif Error: ", err)
+	}
+
 	return utils.ResponseLogin(c, utils.JSONResponseLogin{
 		Code:    http.StatusOK,
 		Token:   token,
