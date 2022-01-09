@@ -43,7 +43,6 @@ func CreateInformasi(c echo.Context) error {
 	p.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
 	p.CreatedAt = time.Now()
 
-	c.Logger().Info("Informasi: ", p)
 	Informasi, err := models.CreateInformasi(c, p)
 	if err != nil {
 		c.Logger().Error(err)

@@ -31,19 +31,14 @@ func GetAllProduk(c echo.Context, idKeluarga, kelLogin, nama, idRT string) (p []
 	db := db.GetDB(c)
 	var errs *gorm.DB
 	if idKeluarga != "" && nama != "" {
-		c.Logger().Info("1")
 		errs = db.Where("id_keluarga = ? AND LOWER(nama) LIKE ?", idKeluarga, fmt.Sprintf("%%%s%%", strings.ToLower(nama))).Find(&produks)
 	} else if idKeluarga != "" {
-		c.Logger().Info("2")
 		errs = db.Where("id_keluarga = ?", idKeluarga).Find(&produks)
 	} else if kelLogin != "" && nama != "" {
-		c.Logger().Info("3")
 		errs = db.Where("id_keluarga <> ? AND id_rt = ? AND LOWER(nama) LIKE ?", kelLogin, idRT, fmt.Sprintf("%%%s%%", strings.ToLower(nama))).Find(&produks)
 	} else if kelLogin != "" {
-		c.Logger().Info("4")
 		errs = db.Where("id_keluarga <> ? AND id_rt = ?", kelLogin, idRT).Find(&produks)
 	} else if nama != "" {
-		c.Logger().Info("5")
 		errs = db.Where("LOWER(nama) LIKE ? AND id_rt = ?", nama, idRT).Find(&produks)
 	} else {
 		errs = db.Find(&produks)

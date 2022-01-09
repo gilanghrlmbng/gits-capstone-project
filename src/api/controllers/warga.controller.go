@@ -331,11 +331,12 @@ func loginWarga(c echo.Context, pass, id_rt string, w *entity.Warga) error {
 			Message: err.Error(),
 		})
 	}
+
 	reqNotif := utils.RequestSendNotificationToken{
 		To: w.TokenFirebase,
 		Notification: utils.Notification{
-			Title: fmt.Sprintf("Hi %s, Selamat datang di Sma-RT", w.Nama),
-			Body:  "Selamat menggunakan aplikasi kami",
+			Title: "Welcome to Sma-RT",
+			Body:  fmt.Sprintf("Hi %s, Selamat datang di Sma-RT, selamat menggunakan aplikasi kami", w.Nama),
 		},
 	}
 	err = utils.SendNotificationToken(c, reqNotif)

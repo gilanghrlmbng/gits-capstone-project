@@ -25,6 +25,7 @@ services:
       - SEED_TABLES=true
       - EMAIL=design.aliven7@gmail.com
       - PASSWORD_EMAIL=jfhrxbvhepngnbsv
+      - FIREBASE_API_KEY=AAAAPB7DZ3k:APA91bEdWRKIYHYVwxqHtW_fWxnX01kLZOMxGglwhDi4SN1XU8Uth9j05f6bXS-l-kVVPNjdSXxpX96EKEDALroaUd5yPKJNcp6B4cRVNPT8PiCE3oNLvRmG-iKN5DW-rKtsYGj8hWsi
     restart: "unless-stopped"
     
   # db:

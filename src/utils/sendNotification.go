@@ -17,8 +17,8 @@ type Notification struct {
 	ClickAction string `json:"click_action,omitempty"`
 }
 type RequestSendNotificationToken struct {
-	To           string `json:"to"`
-	Notification Notification
+	To           string       `json:"to"`
+	Notification Notification `json:"notification"`
 }
 
 func SendNotificationToken(c echo.Context, reqData RequestSendNotificationToken) error {
