@@ -17,7 +17,9 @@ func Order(e *echo.Echo, JWTconfig middleware.JWTConfig) *echo.Echo {
 	auth.PUT("/order/selesai/:id", controllers.OrderSelesai)
 
 	auth.GET("/order/warga", controllers.GetAllOrderPembeli)
+	auth.GET("/order/warga/:id", controllers.GetOrderByIdPembeli)
 	auth.GET("/order/toko", controllers.GetAllOrderPenjual)
+	auth.GET("/order/toko/:id", controllers.GetOrderByIdPenjual)
 	auth.GET("/order/:id", controllers.GetOrderByID)
 	// auth.PUT("/order/:id", controllers.UpdateOrderById)
 	// auth.DELETE("/order/:id", controllers.SoftDeleteOrderById)
