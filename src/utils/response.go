@@ -138,6 +138,12 @@ type JSONResponseDataOrder struct {
 	Message      string      `json:"message"`
 }
 
+type JSONResponseDataKeranjang struct {
+	Code             int64       `json:"code"`
+	GetKeranjangByID interface{} `json:"get_keranjang_by_id,omitempty"`
+	Message          string      `json:"message"`
+}
+
 func Response(c echo.Context, res JSONResponse) error {
 	return c.JSON(int(res.Code), res)
 }
@@ -195,6 +201,10 @@ func ResponseDataPersuratan(c echo.Context, res JSONResponseDataPersuratan) erro
 }
 
 func ResponseDataOrder(c echo.Context, res JSONResponseDataOrder) error {
+	return c.JSON(int(res.Code), res)
+}
+
+func ResponseDataKeranjang(c echo.Context, res JSONResponseDataKeranjang) error {
 	return c.JSON(int(res.Code), res)
 }
 

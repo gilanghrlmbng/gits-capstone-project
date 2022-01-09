@@ -59,8 +59,8 @@ func GetOrderByID(c echo.Context, id string) (entity.Order, error) {
 	return ord, nil
 }
 
-func GetOrderByIDWarga(c echo.Context, id_warga string) ([]entity.Order, error) {
-	var ord []entity.Order
+func GetOrderByIDWarga(c echo.Context, id_warga string) (entity.Order, error) {
+	var ord entity.Order
 	db := db.GetDB(c)
 
 	err := db.Preload("ItemOrder").Preload("Pembayaran").Order("id desc").First(&ord, "id_warga = ?", id_warga)

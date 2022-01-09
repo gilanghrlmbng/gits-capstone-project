@@ -14,6 +14,7 @@ type Warga struct {
 	Order               []Order              `gorm:"foreignKey:id_warga;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"order,omitempty" form:"order"`
 	Persuratan          []Persuratan         `gorm:"foreignKey:id_warga;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"persuratan,omitempty" form:"persuratan"`
 	TokenFirebase       string               `gorm:"type:varchar" json:"token_firebase" form:"token_firebase"`
+	Keranjang           Keranjang            `gorm:"foreignKey:id_warga;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"keranjang,omitempty" form:"keranjang"`
 	ForgetPasswordWarga *ForgetPasswordWarga `gorm:"foreignKey:id_warga;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"forget_password_warga,omitempty" form:"forget_password_warga"`
 	IdKeluarga          string               `gorm:"type:varchar(50);not null" json:"id_keluarga" form:"id_keluarga"`
 	KodeKeluarga        string               `gorm:"type:varchar(100); not null" json:"kode_keluarga,omitempty" form:"kode_keluarga"`

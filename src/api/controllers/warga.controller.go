@@ -86,6 +86,20 @@ func CreateWarga(c echo.Context) error {
 		})
 	}
 
+	ents := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
+
+	_, err = models.CreateKeranjang(c, &entity.Keranjang{
+		Id:      ulid.MustNew(ulid.Timestamp(time.Now()), ents).String(),
+		IdWarga: w.Id,
+	})
+	if err != nil {
+		c.Logger().Error(err)
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
 	// Return datanya
 	return loginWarga(c, pass, k.IdRT, w)
 }
@@ -157,7 +171,6 @@ func UpdateWargaById(c echo.Context) error {
 			Message: err.Error(),
 		})
 	}
-
 
 	if err := w.ValidateUpdate(); err.Code > 0 {
 		c.Logger().Error(err)

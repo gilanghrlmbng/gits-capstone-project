@@ -11,7 +11,7 @@ import (
 type ItemOrder struct {
 	Id         string          `gorm:"type:varchar(50);primaryKey" json:"id" form:"id"`
 	IdProduk   string          `gorm:"type:varchar(50);not null" json:"id_produk" form:"id_produk"`
-	IdOrder    string          `gorm:"type:varchar(50);not null" json:"id_order" form:"id_order"`
+	IdOrder    string          `gorm:"type:varchar(50)" json:"id_order,omitempty" form:"id_order,omitempty"`
 	Jumlah     int64           `gorm:"not null" json:"jumlah" form:"jumlah"`
 	HargaTotal int64           `gorm:"not null" json:"harga_total" form:"harga_total"`
 	Catatan    string          `gorm:"type:varchar;not null" json:"catatan" form:"catatan"`
