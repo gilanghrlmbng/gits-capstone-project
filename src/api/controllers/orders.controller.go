@@ -414,6 +414,76 @@ func OrderSelesai(c echo.Context) error {
 	})
 }
 
+func GetOrderByIdPembeli(c echo.Context) error {
+	userData := c.Get("user").(*jwt.Token)
+	claims := userData.Claims.(*utils.JWTCustomClaims)
+
+	id := c.Param("id")
+	if id == "" {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Id tidak valid",
+		})
+	}
+
+	ord, err := models.GetOrderByID(c, id)
+	if ord.IdWarga != claims.UserId {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Id tidak valid",
+		})
+	}
+
+	if err != nil {
+		c.Logger().Error(err)
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	return utils.ResponseDataOrder(c, utils.JSONResponseDataOrder{
+		Code:         http.StatusOK,
+		GetOrderByID: ord,
+		Message:      "Berhasil",
+	})
+}
+
+func GetOrderByIdPenjual(c echo.Context) error {
+	userData := c.Get("user").(*jwt.Token)
+	claims := userData.Claims.(*utils.JWTCustomClaims)
+
+	id := c.Param("id")
+	if id == "" {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Id tidak valid",
+		})
+	}
+
+	ord, err := models.GetOrderByID(c, id)
+	if ord.IdKeluargaPenjual != claims.IdKeluarga {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Id tidak valid",
+		})
+	}
+
+	if err != nil {
+		c.Logger().Error(err)
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	return utils.ResponseDataOrder(c, utils.JSONResponseDataOrder{
+		Code:         http.StatusOK,
+		GetOrderByID: ord,
+		Message:      "Berhasil",
+	})
+}
+
 func SoftDeleteOrderById(c echo.Context) error {
 	id := c.Param("id")
 

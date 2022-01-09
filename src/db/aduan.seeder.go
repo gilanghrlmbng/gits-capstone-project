@@ -16,9 +16,9 @@ func SeedAduan(db *gorm.DB, listIdRT, listIdWarga []string) []string {
 		Id:        Id1,
 		IdWarga:   listIdWarga[0],
 		IdRT:      listIdRT[0],
-		Judul:     "Aduan 1",
-		Gambar:    "default_image",
-		Deskripsi: "Deskripsi Aduan 1",
+		Judul:     "Ada Tuyul",
+		Gambar:    "Kehilangan Uang_2021_12-31_00_15_54",
+		Deskripsi: "Uang saya hilang 1M di lemari, padahal saya cek sebelumnya ga ada",
 		CreatedBy: "Agustina",
 		CreatedAt: time.Now(),
 	}
@@ -32,10 +32,10 @@ func SeedAduan(db *gorm.DB, listIdRT, listIdWarga []string) []string {
 		Id:        Id2,
 		IdWarga:   listIdWarga[1],
 		IdRT:      listIdRT[0],
-		Judul:     "Aduan 2",
-		Gambar:    "default_image",
-		Deskripsi: "Deskripsi Aduan 2",
-		CreatedBy: "Ronals",
+		Judul:     "Sepeda Anak saya diambil tetangga",
+		Gambar:    "Laporan Kehilangan_2021_12-28_17_19_38",
+		Deskripsi: "Tetangga saya suka main ambil sepeda anak saya, dia bilang minjem, tapi udah 1 tahun belum dibalikin",
+		CreatedBy: "Asep",
 		CreatedAt: time.Now(),
 	}
 

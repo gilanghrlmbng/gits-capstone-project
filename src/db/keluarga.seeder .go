@@ -19,7 +19,7 @@ func SeedKeluarga(db *gorm.DB, listRT []string) []string {
 		Nama:         "Keluarga Pak Agus",
 		NamaToko:     "Keluarga Pak Agus",
 		Alamat:       "Rumah No 7",
-		Gambar:       "default_image",
+		Gambar:       "Toko Agustina_2021_12-28_17_15_59",
 		KodeKeluarga: "As3ZGx",
 		CreatedAt:    time.Now(),
 	}
@@ -35,7 +35,7 @@ func SeedKeluarga(db *gorm.DB, listRT []string) []string {
 		Nama:         "Keluarga Pak Aleks",
 		NamaToko:     "Keluarga Pak Aleks",
 		Alamat:       "No 8, Tetanggaan sama Pak Agus",
-		Gambar:       "default_image",
+		Gambar:       "Keluarga Pak Aleks_2022_01-02_09_53_34",
 		KodeKeluarga: "0MK2Rr",
 		CreatedAt:    time.Now(),
 	}
@@ -48,10 +48,10 @@ func SeedKeluarga(db *gorm.DB, listRT []string) []string {
 	data3 := entity.Keluarga{
 		Id:           Id3,
 		IdRT:         listRT[0],
-		Nama:         "Keluarga Bu Novita",
-		NamaToko:     "Keluarga Bu Novita",
+		Nama:         "Keluarga Lord Rangga",
+		NamaToko:     "Keluarga Lord Rangga",
 		Alamat:       "Rumah No 1",
-		Gambar:       "default_image",
+		Gambar:       "Keluarga Lord Rangga_2022_01-02_09_56_13",
 		KodeKeluarga: "4Kd9D3",
 		CreatedAt:    time.Now(),
 	}
@@ -67,7 +67,7 @@ func SeedKeluarga(db *gorm.DB, listRT []string) []string {
 		Nama:         "Keluarga Bu Angelina",
 		NamaToko:     "Keluarga Bu Angelina",
 		Alamat:       "Rumah No 6",
-		Gambar:       "default_image",
+		Gambar:       "Keluarga Pak Agus_2022_01-02_09_51_04",
 		KodeKeluarga: "20KrNd",
 		CreatedAt:    time.Now(),
 	}

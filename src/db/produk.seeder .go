@@ -19,7 +19,7 @@ func SeedProduk(db *gorm.DB, listKeluarga, listRT []string) []string {
 		IdRT:       listRT[0],
 		Nama:       "Mie Goreng",
 		Detail:     "Mie Goreng Mantap Pake Telor",
-		Gambar:     "default_image",
+		Gambar:     "Mie Goreng_2021_12-28_18_33_15",
 		Harga:      20000,
 		CreatedAt:  time.Now(),
 	}
@@ -35,7 +35,7 @@ func SeedProduk(db *gorm.DB, listKeluarga, listRT []string) []string {
 		IdRT:       listRT[0],
 		Nama:       "Mie Rebus",
 		Detail:     "Mie Rebus Mantap Pake Telor",
-		Gambar:     "default_image",
+		Gambar:     "Mie Goreng_2021_12-05_12_40_26",
 		Harga:      20000,
 		CreatedAt:  time.Now(),
 	}
@@ -51,7 +51,7 @@ func SeedProduk(db *gorm.DB, listKeluarga, listRT []string) []string {
 		IdRT:       listRT[0],
 		Nama:       "Kentang Mustofa",
 		Detail:     "Kering kentang mantap 200gr",
-		Gambar:     "default_image",
+		Gambar:     "Kentang Rebus_2021_12-08_14_21_44",
 		Harga:      25000,
 		CreatedAt:  time.Now(),
 	}
@@ -65,7 +65,7 @@ func SeedProduk(db *gorm.DB, listKeluarga, listRT []string) []string {
 		IdRT:       listRT[0],
 		Nama:       "Kue Donat",
 		Detail:     "Donat manis aneka topping",
-		Gambar:     "default_image",
+		Gambar:     "Donut Pink_2021_12-01_15_18_18",
 		Harga:      3000,
 		CreatedAt:  time.Now(),
 	}
@@ -79,21 +79,21 @@ func SeedProduk(db *gorm.DB, listKeluarga, listRT []string) []string {
 		IdRT:       listRT[0],
 		Nama:       "Kue Sus",
 		Detail:     "Kue sus manis",
-		Gambar:     "default_image",
+		Gambar:     "Croffle_2021_11-28_19_46_59",
 		Harga:      2500,
 		CreatedAt:  time.Now(),
 	}
 
 	db.Create(&data5)
 
-	// Data 5
+	// Data 6
 	data6 := entity.Produk{
 		Id:         "01FR64VED5FBRR8TQ7845Y11K5",
 		IdKeluarga: listKeluarga[3],
 		IdRT:       listRT[1],
-		Nama:       "Mangga Manis",
-		Detail:     "Mangga seger manis enak",
-		Gambar:     "default_image",
+		Nama:       "Ayam Bakar",
+		Detail:     "Ayam bakar enak sedap",
+		Gambar:     "Ayam Bakar_2021_12-31_01_31_20",
 		Harga:      30000,
 		CreatedAt:  time.Now(),
 	}
