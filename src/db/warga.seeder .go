@@ -35,6 +35,7 @@ func SeedWarga(db *gorm.DB, listKeluarga []string) []string {
 	data2 := entity.Warga{
 		Id:          Id2,
 		IdKeluarga:  listKeluarga[0],
+		Nama:        "Asep",
 		Email:       "warga2@gmail.com",
 		Gender:      "laki-laki",
 		NoHandphone: "08123123123123",
