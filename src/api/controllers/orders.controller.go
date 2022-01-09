@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"math/rand"
 	"net/http"
 	"src/api/models"
@@ -42,6 +43,7 @@ func CreateOrder(c echo.Context) error {
 
 	var hargaTotal int64 = 0
 	var idKelProduk string = ""
+	var NamaProduk string = ""
 	for idx, item := range items {
 		produk, err := models.GetProdukByID(c, item.IdProduk)
 		if err != nil {
@@ -66,6 +68,11 @@ func CreateOrder(c echo.Context) error {
 
 		items[idx].HargaTotal = produk.Harga * item.Jumlah
 		hargaTotal += items[idx].HargaTotal
+		if NamaProduk == "" {
+			NamaProduk = produk.Nama
+		} else {
+			NamaProduk = fmt.Sprintf("%s, %s", NamaProduk, produk.Nama)
+		}
 
 		entropys := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
 		items[idx].Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropys).String()
@@ -73,7 +80,6 @@ func CreateOrder(c echo.Context) error {
 		items[idx].IdOrder = ord.Id
 		items[idx].CreatedAt = ord.CreatedAt
 	}
-	c.Logger().Info("Items ", items)
 	ord.Harga_total = hargaTotal
 	ord.Status = entity.OrderStatusDipesan
 	ord.IdKeluargaPenjual = idKelProduk
@@ -157,6 +163,25 @@ func CreateOrder(c echo.Context) error {
 	}
 
 	orders, _ := models.GetOrderByID(c, ord.Id)
+
+	// Send Notif to seller family
+	keluarga, err := models.GetKeluargaByIDWithWarga(c, idKelProduk)
+	if err != nil {
+		c.Logger().Error(err)
+	}
+	for _, w := range keluarga.Warga {
+		reqNotif := utils.RequestSendNotificationToken{
+			To: w.TokenFirebase,
+			Notification: utils.Notification{
+				Title: "Produkmu ada yang beli nih..",
+				Body:  fmt.Sprintf("%s telah dipesan", NamaProduk),
+			},
+		}
+		err = utils.SendNotificationToken(c, reqNotif)
+		if err != nil {
+			c.Logger().Error("Notif Error: ", err)
+		}
+	}
 
 	return utils.ResponseDataOrder(c, utils.JSONResponseDataOrder{
 		Code:        http.StatusCreated,
@@ -290,6 +315,23 @@ func OrderProses(c echo.Context) error {
 		})
 	}
 
+	w, err := models.GetWargaByID(c, ord.IdWarga)
+	if err != nil {
+		c.Logger().Error(err)
+	}
+
+	reqNotif := utils.RequestSendNotificationToken{
+		To: w.TokenFirebase,
+		Notification: utils.Notification{
+			Title: "Pesananmu sedang diproses",
+			Body:  fmt.Sprintf("Pesanan dengan ID-%s sedang diproses oleh penjual", ord.Id),
+		},
+	}
+	err = utils.SendNotificationToken(c, reqNotif)
+	if err != nil {
+		c.Logger().Error("Notif Error: ", err)
+	}
+
 	return utils.Response(c, utils.JSONResponse{
 		Code:    http.StatusOK,
 		Message: "Berhasil",
@@ -342,6 +384,23 @@ func OrderCancel(c echo.Context) error {
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		})
+	}
+
+	w, err := models.GetWargaByID(c, ord.IdWarga)
+	if err != nil {
+		c.Logger().Error(err)
+	}
+
+	reqNotif := utils.RequestSendNotificationToken{
+		To: w.TokenFirebase,
+		Notification: utils.Notification{
+			Title: "Pesananmu dibatalkan",
+			Body:  fmt.Sprintf("Pesanan dengan ID-%s dibatalkan oleh penjual", ord.Id),
+		},
+	}
+	err = utils.SendNotificationToken(c, reqNotif)
+	if err != nil {
+		c.Logger().Error("Notif Error: ", err)
 	}
 
 	return utils.Response(c, utils.JSONResponse{
@@ -406,6 +465,23 @@ func OrderSelesai(c echo.Context) error {
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		})
+	}
+
+	w, err := models.GetWargaByID(c, ord.IdWarga)
+	if err != nil {
+		c.Logger().Error(err)
+	}
+
+	reqNotif := utils.RequestSendNotificationToken{
+		To: w.TokenFirebase,
+		Notification: utils.Notification{
+			Title: "Pesananmu sudah selesai",
+			Body:  fmt.Sprintf("Pesanan dengan ID-%s sudah selesai", ord.Id),
+		},
+	}
+	err = utils.SendNotificationToken(c, reqNotif)
+	if err != nil {
+		c.Logger().Error("Notif Error: ", err)
 	}
 
 	return utils.Response(c, utils.JSONResponse{

@@ -65,7 +65,6 @@ func GetDompetKeluargaByID(c echo.Context) error {
 	id := c.Param("id")
 	userData := c.Get("user").(*jwt.Token)
 	claims := userData.Claims.(*utils.JWTCustomClaims)
-	c.Logger().Info(claims)
 	if claims.IdKeluarga != "" && claims.User == "warga" {
 		id_keluarga = claims.IdKeluarga
 	} else if id == "" {

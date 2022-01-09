@@ -424,7 +424,6 @@ func ResetPasswordPengurusByKode(c echo.Context) error {
 		})
 	}
 
-	c.Logger().Info(p)
 	return utils.Response(c, utils.JSONResponse{
 		Code:    http.StatusOK,
 		Message: "Berhasil",

@@ -84,6 +84,19 @@ func GetKeluargaByID(c echo.Context, id string) (entity.Keluarga, error) {
 	return k, nil
 }
 
+func GetKeluargaByIDWithWarga(c echo.Context, id string) (entity.Keluarga, error) {
+	var k entity.Keluarga
+	db := db.GetDB(c)
+
+	err := db.Preload("Warga").First(&k, "id = ?", id)
+	if err.Error != nil {
+		c.Logger().Error(err)
+		return entity.Keluarga{}, errors.New("id tidak ditemukan atau tidak valid")
+	}
+
+	return k, nil
+}
+
 func UpdateKeluargaById(c echo.Context, id string, k *entity.Keluarga) (int64, error) {
 	db := db.GetDB(c)
 
