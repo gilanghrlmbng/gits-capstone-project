@@ -186,6 +186,7 @@ func TambahItemKeranjang(c echo.Context) error {
 			Message: err.Error(),
 		})
 	}
+
 	entropys := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
 	itemKeranjang.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropys).String()
 
@@ -195,6 +196,13 @@ func TambahItemKeranjang(c echo.Context) error {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
+		})
+	}
+
+	if produk.IdKeluarga != k.IdKeluargaPenjual {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Item yang dipesan harus dari toko yang sama",
 		})
 	}
 
