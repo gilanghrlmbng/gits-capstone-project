@@ -26,20 +26,26 @@ func CreateProduk(c echo.Context, p *entity.Produk) (entity.Produk, error) {
 	return *p, nil
 }
 
-func GetAllProduk(c echo.Context, idKeluarga, kelLogin, nama, idRT string) (p []entity.Produk, err error) {
+func GetAllProduk(c echo.Context, idKeluarga, kelLogin, nama, idRT, tersedia string) (p []entity.Produk, err error) {
 	var produks []entity.Produk
 	db := db.GetDB(c)
 	var errs *gorm.DB
+
+	var ters string = ""
+	if tersedia != "" {
+		ters = fmt.Sprintf("AND tersedia = '%s'", tersedia)
+	}
+
 	if idKeluarga != "" && nama != "" {
-		errs = db.Where("id_keluarga = ? AND LOWER(nama) LIKE ?", idKeluarga, fmt.Sprintf("%%%s%%", strings.ToLower(nama))).Find(&produks)
+		errs = db.Where(fmt.Sprintf("id_keluarga = ? AND LOWER(nama) LIKE ? %s", ters), idKeluarga, fmt.Sprintf("%%%s%%", strings.ToLower(nama))).Find(&produks)
 	} else if idKeluarga != "" {
-		errs = db.Where("id_keluarga = ?", idKeluarga).Find(&produks)
+		errs = db.Where(fmt.Sprintf("id_keluarga = ? %s", ters), idKeluarga).Find(&produks)
 	} else if kelLogin != "" && nama != "" {
-		errs = db.Where("id_keluarga <> ? AND id_rt = ? AND LOWER(nama) LIKE ?", kelLogin, idRT, fmt.Sprintf("%%%s%%", strings.ToLower(nama))).Find(&produks)
+		errs = db.Where(fmt.Sprintf("id_keluarga <> ? AND id_rt = ? AND LOWER(nama) LIKE ? %s", ters), kelLogin, idRT, fmt.Sprintf("%%%s%%", strings.ToLower(nama))).Find(&produks)
 	} else if kelLogin != "" {
-		errs = db.Where("id_keluarga <> ? AND id_rt = ?", kelLogin, idRT).Find(&produks)
+		errs = db.Where(fmt.Sprintf("id_keluarga <> ? AND id_rt = ? %s", ters), kelLogin, idRT).Find(&produks)
 	} else if nama != "" {
-		errs = db.Where("LOWER(nama) LIKE ? AND id_rt = ?", nama, idRT).Find(&produks)
+		errs = db.Where(fmt.Sprintf("LOWER(nama) LIKE ? AND id_rt = ? %s", ters), nama, idRT).Find(&produks)
 	} else {
 		errs = db.Find(&produks)
 	}

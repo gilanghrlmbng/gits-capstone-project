@@ -29,7 +29,7 @@ type Order struct {
 }
 
 func (Order) TableName() string {
-	return "orders"
+	return "order"
 }
 
 func (ord Order) ValidateCreate() utils.Error {

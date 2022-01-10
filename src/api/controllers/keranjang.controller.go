@@ -187,6 +187,46 @@ func TambahItemKeranjang(c echo.Context) error {
 		})
 	}
 
+	var sama bool = false
+	var hargaSatuan int64 = 0
+	for _, item := range k.ItemKeranjang {
+		if item.IdProduk == itemKeranjang.IdProduk {
+			hargaSatuan = item.HargaTotal / item.Jumlah
+			item.Jumlah = item.Jumlah + 1
+			item.HargaTotal = item.Jumlah * hargaSatuan
+			item.UpdatedAt = time.Now()
+			_, err := models.UpdateItemKeranjangByID(c, item.Id, item)
+			if err != nil {
+				c.Logger().Error(err)
+				return utils.ResponseError(c, utils.Error{
+					Code:    http.StatusInternalServerError,
+					Message: err.Error(),
+				})
+			}
+			sama = true
+			break
+		}
+	}
+
+	if sama {
+		k.Harga_total += hargaSatuan
+
+		_, err = models.UpdateKeranjangById(c, k.Id, &k)
+		if err != nil {
+			c.Logger().Error(err)
+			return utils.ResponseError(c, utils.Error{
+				Code:    http.StatusInternalServerError,
+				Message: err.Error(),
+			})
+		}
+
+		c.Logger().Info("Masuk nambah")
+		return utils.ResponseDataKeranjang(c, utils.JSONResponseDataKeranjang{
+			Code:    http.StatusOK,
+			Message: "Berhasil",
+		})
+	}
+
 	entropys := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
 	itemKeranjang.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropys).String()
 
@@ -232,6 +272,140 @@ func TambahItemKeranjang(c echo.Context) error {
 		})
 	}
 
+	return utils.ResponseDataKeranjang(c, utils.JSONResponseDataKeranjang{
+		Code:    http.StatusOK,
+		Message: "Berhasil",
+	})
+}
+
+func TambahQuantityItemKeranjang(c echo.Context) error {
+	userData := c.Get("user").(*jwt.Token)
+	claims := userData.Claims.(*utils.JWTCustomClaims)
+	if claims.User == "pengurus" {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Maaf anda tidak memiliki akses ini",
+		})
+	}
+
+	k, err := models.GetKeranjangByIDWarga(c, claims.UserId)
+	if err != nil {
+		c.Logger().Error(err)
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+
+	var itemKeranjang entity.ItemKeranjang
+
+	if err := c.Bind(&itemKeranjang); err != nil {
+		c.Logger().Error(err)
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+
+	var hargaSatuan int64 = 0
+	for _, item := range k.ItemKeranjang {
+		if item.IdProduk == c.Param("id") {
+			hargaSatuan = item.HargaTotal / item.Jumlah
+			item.Jumlah += item.Jumlah
+			item.HargaTotal = item.Jumlah * hargaSatuan
+			item.UpdatedAt = time.Now()
+			_, err := models.UpdateItemKeranjangByID(c, item.Id, item)
+			if err != nil {
+				c.Logger().Error(err)
+				return utils.ResponseError(c, utils.Error{
+					Code:    http.StatusInternalServerError,
+					Message: err.Error(),
+				})
+			}
+			break
+		}
+	}
+
+	k.Harga_total += hargaSatuan
+
+	_, err = models.UpdateKeranjangById(c, k.Id, &k)
+	if err != nil {
+		c.Logger().Error(err)
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+	c.Logger().Info("Masuk nambah")
+	return utils.ResponseDataKeranjang(c, utils.JSONResponseDataKeranjang{
+		Code:    http.StatusOK,
+		Message: "Berhasil",
+	})
+}
+
+func KurangQuantityItemKeranjang(c echo.Context) error {
+	userData := c.Get("user").(*jwt.Token)
+	claims := userData.Claims.(*utils.JWTCustomClaims)
+	if claims.User == "pengurus" {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Maaf anda tidak memiliki akses ini",
+		})
+	}
+
+	k, err := models.GetKeranjangByIDWarga(c, claims.UserId)
+	if err != nil {
+		c.Logger().Error(err)
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+
+	var itemKeranjang entity.ItemKeranjang
+
+	if err := c.Bind(&itemKeranjang); err != nil {
+		c.Logger().Error(err)
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+
+	var hargaSatuan int64 = 0
+	for _, item := range k.ItemKeranjang {
+		if item.IdProduk == c.Param("id") {
+			if item.Jumlah == 1 {
+
+			} else {
+				hargaSatuan = item.HargaTotal / item.Jumlah
+				item.Jumlah -= 1
+				item.HargaTotal = item.Jumlah * hargaSatuan
+				item.UpdatedAt = time.Now()
+				_, err := models.UpdateItemKeranjangByID(c, item.Id, item)
+				if err != nil {
+					c.Logger().Error(err)
+					return utils.ResponseError(c, utils.Error{
+						Code:    http.StatusInternalServerError,
+						Message: err.Error(),
+					})
+				}
+			}
+			break
+		}
+	}
+
+	k.Harga_total -= hargaSatuan
+
+	_, err = models.UpdateKeranjangById(c, k.Id, &k)
+	if err != nil {
+		c.Logger().Error(err)
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+	c.Logger().Info("Masuk kurang")
 	return utils.ResponseDataKeranjang(c, utils.JSONResponseDataKeranjang{
 		Code:    http.StatusOK,
 		Message: "Berhasil",

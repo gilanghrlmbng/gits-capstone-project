@@ -32,7 +32,8 @@ func CreateProduk(c echo.Context) error {
 		})
 	}
 	p.IdKeluarga = claims.IdKeluarga
-	p.Tersedia = "false"
+	p.IdRT = claims.IdRT
+	p.Tersedia = "true"
 
 	if err := p.ValidateCreate(); err.Code > 0 {
 		c.Logger().Error(err)
@@ -70,7 +71,7 @@ func GetAllProduk(c echo.Context) error {
 		})
 	}
 
-	allProduk, err := models.GetAllProduk(c, c.QueryParam("id_keluarga"), claims.IdKeluarga, c.QueryParam("nama"), claims.IdRT)
+	allProduk, err := models.GetAllProduk(c, c.QueryParam("id_keluarga"), claims.IdKeluarga, c.QueryParam("nama"), claims.IdRT, "true")
 	if err != nil {
 		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
@@ -96,7 +97,7 @@ func GetAllProdukByKeluarga(c echo.Context) error {
 		})
 	}
 
-	allProduk, err := models.GetAllProduk(c, claims.IdKeluarga, "", c.QueryParam("nama"), claims.IdRT)
+	allProduk, err := models.GetAllProduk(c, claims.IdKeluarga, "", c.QueryParam("nama"), claims.IdRT, "")
 	if err != nil {
 		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{

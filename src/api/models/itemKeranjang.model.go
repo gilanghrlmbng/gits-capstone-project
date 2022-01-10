@@ -76,6 +76,19 @@ func GetItemKeranjangByIDKeranjang(c echo.Context, id_order string) ([]entity.It
 	return item, nil
 }
 
+func UpdateItemKeranjangByID(c echo.Context, id string, item entity.ItemKeranjang) (int64, error) {
+	db := db.GetDB(c)
+
+	err := db.Model(&entity.ItemKeranjang{}).Where("id = ?", id).Updates(item)
+
+	if err.Error != nil {
+		c.Logger().Error(err)
+		return 0, err.Error
+	}
+
+	return err.RowsAffected, nil
+}
+
 func HardDeleteItemKeranjang(c echo.Context, id_order string) error {
 	item := entity.ItemKeranjang{
 		Id: id_order,
