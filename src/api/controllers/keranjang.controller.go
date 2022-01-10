@@ -199,7 +199,9 @@ func TambahItemKeranjang(c echo.Context) error {
 		})
 	}
 
-	if produk.IdKeluarga != k.IdKeluargaPenjual {
+	if k.IdKeluargaPenjual == "" {
+		k.IdKeluargaPenjual = produk.IdKeluarga
+	} else if produk.IdKeluarga != k.IdKeluargaPenjual {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: "Item yang dipesan harus dari toko yang sama",
