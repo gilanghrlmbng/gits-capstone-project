@@ -27,7 +27,7 @@ func Init(e *echo.Echo) {
 		config.Database.Password,
 		config.Database.Name)
 	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
-		SkipDefaultTransaction: true,
+		FullSaveAssociations: true,
 		// DisableForeignKeyConstraintWhenMigrating: true,
 	})
 	if err != nil {
