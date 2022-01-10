@@ -124,6 +124,67 @@ func GetPersuratanByID(c echo.Context) error {
 	})
 }
 
+func SelesaiPersuratanById(c echo.Context) error {
+	id := c.Param("id")
+	if id == "" {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Id tidak valid",
+		})
+	}
+
+	userData := c.Get("user").(*jwt.Token)
+	claims := userData.Claims.(*utils.JWTCustomClaims)
+	if claims.User != "pengurus" {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Maaf anda tidak memiliki akses ini",
+		})
+	}
+
+	Surat, err := models.GetPersuratanByID(c, id)
+	if err != nil {
+		c.Logger().Error(err)
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	if Surat.Status == entity.StatusPersuratanSelesai {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: "Maaf surat sudah selesai, data tidak bisa diubah lagi",
+		})
+	}
+
+	s := new(entity.Persuratan)
+
+	if err := c.Bind(s); err != nil {
+		c.Logger().Error(err)
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+
+	s.UpdatedAt = time.Now()
+	s.Status = entity.StatusPersuratanSelesai
+
+	_, err = models.UpdatePersuratanById(c, id, s)
+	if err != nil {
+		c.Logger().Error(err)
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+	return utils.Response(c, utils.JSONResponse{
+		Code:    http.StatusOK,
+		Message: "Berhasil",
+	})
+}
+
 func UpdatePersuratanById(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
