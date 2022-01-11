@@ -16,6 +16,7 @@ func Keranjang(e *echo.Echo, JWTconfig middleware.JWTConfig) *echo.Echo {
 
 	auth.PUT("/item/add/:id", controllers.TambahQuantityItemKeranjang)
 	auth.PUT("/item/min/:id", controllers.KurangQuantityItemKeranjang)
+	auth.PUT("/item/del/:id", controllers.HapusItemKeranjang)
 
 	auth.GET("/cart", controllers.GetKeranjangByIDWarga)
 	auth.GET("/cart/:id", controllers.GetKeranjangByIDWarga)

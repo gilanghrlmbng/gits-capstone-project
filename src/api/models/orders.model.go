@@ -30,15 +30,25 @@ func GetAllOrder(c echo.Context, idPembeli, idPenjual, status string) ([]entity.
 	db := db.GetDB(c)
 	var err *gorm.DB
 	if idPembeli != "" && status != "" {
-		err = db.Preload("ItemOrder").Preload("Pembayaran").Order("id desc").Where("id_warga = ? AND status = ?", idPembeli, status).Find(&ord)
+		err = db.Preload("ItemOrder", func(db *gorm.DB) *gorm.DB {
+			return db.Order("item_order.id ASC")
+		}).Preload("Pembayaran").Order("id desc").Where("id_warga = ? AND status = ?", idPembeli, status).Find(&ord)
 	} else if idPembeli != "" {
-		err = db.Preload("ItemOrder").Preload("Pembayaran").Order("id desc").Where("id_warga = ?", idPembeli).Find(&ord)
+		err = db.Preload("ItemOrder", func(db *gorm.DB) *gorm.DB {
+			return db.Order("item_order.id ASC")
+		}).Preload("Pembayaran").Order("id desc").Where("id_warga = ?", idPembeli).Find(&ord)
 	} else if idPenjual != "" && status != "" {
-		err = db.Preload("ItemOrder").Preload("Pembayaran").Order("id desc").Where("id_keluarga_penjual = ? AND status = ?", idPenjual, status).Find(&ord)
+		err = db.Preload("ItemOrder", func(db *gorm.DB) *gorm.DB {
+			return db.Order("item_order.id ASC")
+		}).Preload("Pembayaran").Order("id desc").Where("id_keluarga_penjual = ? AND status = ?", idPenjual, status).Find(&ord)
 	} else if idPenjual != "" {
-		err = db.Preload("ItemOrder").Preload("Pembayaran").Order("id desc").Where("id_keluarga_penjual = ?", idPenjual).Find(&ord)
+		err = db.Preload("ItemOrder", func(db *gorm.DB) *gorm.DB {
+			return db.Order("item_order.id ASC")
+		}).Preload("Pembayaran").Order("id desc").Where("id_keluarga_penjual = ?", idPenjual).Find(&ord)
 	} else {
-		err = db.Preload("ItemOrder").Preload("Pembayaran").Order("id desc").Find(&ord)
+		err = db.Preload("ItemOrder", func(db *gorm.DB) *gorm.DB {
+			return db.Order("item_order.id ASC")
+		}).Preload("Pembayaran").Order("id desc").Find(&ord)
 	}
 	if err.Error != nil {
 		c.Logger().Error(err)
@@ -51,7 +61,9 @@ func GetOrderByID(c echo.Context, id string) (entity.Order, error) {
 	var ord entity.Order
 	db := db.GetDB(c)
 
-	err := db.Preload("ItemOrder").Preload("Pembayaran").First(&ord, "id = ?", id)
+	err := db.Preload("ItemOrder", func(db *gorm.DB) *gorm.DB {
+		return db.Order("item_order.id ASC")
+	}).Preload("Pembayaran").First(&ord, "id = ?", id)
 	if err.Error != nil {
 		c.Logger().Error(err)
 		return entity.Order{}, errors.New("id tidak ditemukan")
@@ -63,7 +75,9 @@ func GetOrderByIDWarga(c echo.Context, id_warga string) (entity.Order, error) {
 	var ord entity.Order
 	db := db.GetDB(c)
 
-	err := db.Preload("ItemOrder").Preload("Pembayaran").Order("id desc").First(&ord, "id_warga = ?", id_warga)
+	err := db.Preload("ItemOrder", func(db *gorm.DB) *gorm.DB {
+		return db.Order("item_order.id ASC")
+	}).Preload("Pembayaran").Order("id desc").First(&ord, "id_warga = ?", id_warga)
 	if err.Error != nil {
 		c.Logger().Error(err)
 		return ord, errors.New("id tidak ditemukan")

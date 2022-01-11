@@ -30,11 +30,17 @@ func GetAllKeranjang(c echo.Context, idPembeli, idPenjual string) ([]entity.Kera
 	db := db.GetDB(c)
 	var err *gorm.DB
 	if idPembeli != "" {
-		err = db.Preload("ItemKeranjang").Order("id desc").Where("id_warga = ?", idPembeli).Find(&ord)
+		err = db.Preload("ItemKeranjang", func(db *gorm.DB) *gorm.DB {
+			return db.Order("item_keranjang.id ASC")
+		}).Order("id desc").Where("id_warga = ?", idPembeli).Find(&ord)
 	} else if idPenjual != "" {
-		err = db.Preload("ItemKeranjang").Order("id desc").Where("id_keluarga_penjual = ?", idPenjual).Find(&ord)
+		err = db.Preload("ItemKeranjang", func(db *gorm.DB) *gorm.DB {
+			return db.Order("item_keranjang.id ASC")
+		}).Order("id desc").Where("id_keluarga_penjual = ?", idPenjual).Find(&ord)
 	} else {
-		err = db.Preload("ItemKeranjang").Order("id desc").Find(&ord)
+		err = db.Preload("ItemKeranjang", func(db *gorm.DB) *gorm.DB {
+			return db.Order("item_keranjang.id ASC")
+		}).Order("id desc").Find(&ord)
 	}
 	if err.Error != nil {
 		c.Logger().Error(err)
@@ -47,7 +53,9 @@ func GetKeranjangByID(c echo.Context, id string) (entity.Keranjang, error) {
 	var ord entity.Keranjang
 	db := db.GetDB(c)
 
-	err := db.Preload("ItemKeranjang").First(&ord, "id = ?", id)
+	err := db.Preload("ItemKeranjang", func(db *gorm.DB) *gorm.DB {
+		return db.Order("item_keranjang.id ASC")
+	}).First(&ord, "id = ?", id)
 	if err.Error != nil {
 		c.Logger().Error(err)
 		return entity.Keranjang{}, errors.New("id tidak ditemukan")
@@ -59,7 +67,9 @@ func GetKeranjangByIDWarga(c echo.Context, id_warga string) (entity.Keranjang, e
 	var ord entity.Keranjang
 	db := db.GetDB(c)
 
-	err := db.Preload("ItemKeranjang").Order("id desc").First(&ord, "id_warga = ?", id_warga)
+	err := db.Preload("ItemKeranjang", func(db *gorm.DB) *gorm.DB {
+		return db.Order("item_keranjang.id ASC")
+	}).Order("id desc").First(&ord, "id_warga = ?", id_warga)
 	if err.Error != nil {
 		c.Logger().Error(err)
 		return ord, errors.New("id tidak ditemukan")
@@ -70,7 +80,16 @@ func GetKeranjangByIDWarga(c echo.Context, id_warga string) (entity.Keranjang, e
 func UpdateKeranjangById(c echo.Context, id string, order *entity.Keranjang) (int64, error) {
 	db := db.GetDB(c)
 
-	err := db.Model(&entity.Keranjang{}).Where("id = ?", id).Updates(order)
+	var err *gorm.DB
+	if order.Harga_total == 0 && order.IdKeluargaPenjual != "" {
+		err = db.Model(&entity.Keranjang{}).Where("id = ?", id).Select("Harga_total", "IdKeluargaPenjual").Updates(order)
+	} else if order.Harga_total == 0 && order.IdKeluargaPenjual == "" {
+		err = db.Model(&entity.Keranjang{}).Where("id = ?", id).Select("Harga_total", "IdKeluargaPenjual").Updates(order)
+	} else if order.Harga_total == 0 {
+		err = db.Model(&entity.Keranjang{}).Where("id = ?", id).Select("Harga_total").Updates(order)
+	} else {
+		err = db.Model(&entity.Keranjang{}).Where("id = ?", id).Updates(order)
+	}
 
 	if err.Error != nil {
 		c.Logger().Error(err)

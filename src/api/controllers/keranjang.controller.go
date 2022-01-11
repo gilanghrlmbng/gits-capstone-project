@@ -220,7 +220,6 @@ func TambahItemKeranjang(c echo.Context) error {
 			})
 		}
 
-		c.Logger().Info("Masuk nambah")
 		return utils.ResponseDataKeranjang(c, utils.JSONResponseDataKeranjang{
 			Code:    http.StatusOK,
 			Message: "Berhasil",
@@ -297,21 +296,11 @@ func TambahQuantityItemKeranjang(c echo.Context) error {
 		})
 	}
 
-	var itemKeranjang entity.ItemKeranjang
-
-	if err := c.Bind(&itemKeranjang); err != nil {
-		c.Logger().Error(err)
-		return utils.ResponseError(c, utils.Error{
-			Code:    http.StatusBadRequest,
-			Message: err.Error(),
-		})
-	}
-
 	var hargaSatuan int64 = 0
 	for _, item := range k.ItemKeranjang {
 		if item.IdProduk == c.Param("id") {
 			hargaSatuan = item.HargaTotal / item.Jumlah
-			item.Jumlah += item.Jumlah
+			item.Jumlah += 1
 			item.HargaTotal = item.Jumlah * hargaSatuan
 			item.UpdatedAt = time.Now()
 			_, err := models.UpdateItemKeranjangByID(c, item.Id, item)
@@ -336,7 +325,7 @@ func TambahQuantityItemKeranjang(c echo.Context) error {
 			Message: err.Error(),
 		})
 	}
-	c.Logger().Info("Masuk nambah")
+
 	return utils.ResponseDataKeranjang(c, utils.JSONResponseDataKeranjang{
 		Code:    http.StatusOK,
 		Message: "Berhasil",
@@ -362,21 +351,19 @@ func KurangQuantityItemKeranjang(c echo.Context) error {
 		})
 	}
 
-	var itemKeranjang entity.ItemKeranjang
-
-	if err := c.Bind(&itemKeranjang); err != nil {
-		c.Logger().Error(err)
-		return utils.ResponseError(c, utils.Error{
-			Code:    http.StatusBadRequest,
-			Message: err.Error(),
-		})
-	}
-
 	var hargaSatuan int64 = 0
 	for _, item := range k.ItemKeranjang {
 		if item.IdProduk == c.Param("id") {
 			if item.Jumlah == 1 {
-
+				hargaSatuan = item.HargaTotal
+				err = models.HardDeleteItemKeranjang(c, item.Id)
+				if err != nil {
+					c.Logger().Error(err)
+					return utils.ResponseError(c, utils.Error{
+						Code:    http.StatusInternalServerError,
+						Message: err.Error(),
+					})
+				}
 			} else {
 				hargaSatuan = item.HargaTotal / item.Jumlah
 				item.Jumlah -= 1
@@ -395,6 +382,11 @@ func KurangQuantityItemKeranjang(c echo.Context) error {
 		}
 	}
 
+	if len(k.ItemKeranjang) == 1 {
+		c.Logger().Info("Emang satu doang jadi hapus id penjual")
+		k.IdKeluargaPenjual = ""
+	}
+
 	k.Harga_total -= hargaSatuan
 
 	_, err = models.UpdateKeranjangById(c, k.Id, &k)
@@ -405,7 +397,61 @@ func KurangQuantityItemKeranjang(c echo.Context) error {
 			Message: err.Error(),
 		})
 	}
-	c.Logger().Info("Masuk kurang")
+
+	return utils.ResponseDataKeranjang(c, utils.JSONResponseDataKeranjang{
+		Code:    http.StatusOK,
+		Message: "Berhasil",
+	})
+}
+
+func HapusItemKeranjang(c echo.Context) error {
+	userData := c.Get("user").(*jwt.Token)
+	claims := userData.Claims.(*utils.JWTCustomClaims)
+	if claims.User == "pengurus" {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Maaf anda tidak memiliki akses ini",
+		})
+	}
+
+	k, err := models.GetKeranjangByIDWarga(c, claims.UserId)
+	if err != nil {
+		c.Logger().Error(err)
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+
+	for _, item := range k.ItemKeranjang {
+		if item.IdProduk == c.Param("id") {
+			k.Harga_total -= item.HargaTotal
+			err = models.HardDeleteItemKeranjang(c, item.Id)
+			if err != nil {
+				c.Logger().Error(err)
+				return utils.ResponseError(c, utils.Error{
+					Code:    http.StatusInternalServerError,
+					Message: err.Error(),
+				})
+			}
+			break
+		}
+	}
+
+	if len(k.ItemKeranjang) == 1 {
+		c.Logger().Info("Emang satu doang jadi hapus id penjual")
+		k.IdKeluargaPenjual = ""
+	}
+
+	_, err = models.UpdateKeranjangById(c, k.Id, &k)
+	if err != nil {
+		c.Logger().Error(err)
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
 	return utils.ResponseDataKeranjang(c, utils.JSONResponseDataKeranjang{
 		Code:    http.StatusOK,
 		Message: "Berhasil",
