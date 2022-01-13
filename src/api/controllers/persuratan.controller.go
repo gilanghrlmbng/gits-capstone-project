@@ -77,6 +77,8 @@ func GetAllPersuratan(c echo.Context) error {
 		status = entity.StatusPersuratanDiproses
 	} else if c.QueryParam("status") == "3" {
 		status = entity.StatusPersuratanSelesai
+	} else if c.QueryParam("status") == "4" {
+		status = "Kombinasi"
 	}
 
 	if claims.User == "pengurus" {
@@ -216,6 +218,16 @@ func TolakPersuratanById(c echo.Context) error {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: "Maaf surat sudah selesai, data tidak bisa diubah lagi",
+		})
+	}
+
+	s := new(entity.Persuratan)
+
+	if err := c.Bind(s); err != nil {
+		c.Logger().Error(err)
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
 		})
 	}
 

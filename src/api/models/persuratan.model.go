@@ -30,11 +30,19 @@ func GetAllPersuratan(c echo.Context, idRT, id_warga, status string) (persuratan
 
 	var errs *gorm.DB
 	if idRT != "" && status != "" {
-		errs = db.Where("id_rt = ? AND status = ?", idRT, status).Find(&persuratans)
+		if status == "Kombinasi" {
+			errs = db.Where("id_rt = ? AND (status = ? OR status = ?)", idRT, entity.StatusPersuratanSelesai, entity.StatusPersuratanTolak).Find(&persuratans)
+		} else {
+			errs = db.Where("id_rt = ? AND status = ?", idRT, status).Find(&persuratans)
+		}
 	} else if idRT != "" {
 		errs = db.Where("id_rt = ?", idRT).Find(&persuratans)
 	} else if id_warga != "" && status != "" {
-		errs = db.Where("id_warga = ? AND status = ?", id_warga, status).Find(&persuratans)
+		if status == "Kombinasi" {
+			errs = db.Where("id_warga = ? AND (status = ? OR status = ?)", id_warga, entity.StatusPersuratanSelesai, entity.StatusPersuratanTolak).Find(&persuratans)
+		} else {
+			errs = db.Where("id_warga = ? AND status = ?", id_warga, status).Find(&persuratans)
+		}
 	} else if id_warga != "" {
 		errs = db.Where("id_warga = ?", id_warga).Find(&persuratans)
 	} else {

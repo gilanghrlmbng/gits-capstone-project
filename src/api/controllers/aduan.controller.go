@@ -116,7 +116,6 @@ func AduanDiterima(c echo.Context) error {
 }
 
 func GetAllAduan(c echo.Context) error {
-
 	userData := c.Get("user").(*jwt.Token)
 	claims := userData.Claims.(*utils.JWTCustomClaims)
 
@@ -125,6 +124,37 @@ func GetAllAduan(c echo.Context) error {
 	if claims.User == "warga" {
 		allAduan, err = models.GetAllAduan(c, claims.UserId, "")
 	} else if claims.User == "pengurus" {
+		allAduan, err = models.GetAllAduan(c, "", claims.IdRT)
+	} else {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: "Anda siapa",
+		})
+	}
+
+	if err != nil {
+		c.Logger().Error(err)
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	return utils.ResponseDataAduan(c, utils.JSONResponseDataAduan{
+		Code:        http.StatusOK,
+		GetAllAduan: allAduan,
+		Message:     "Berhasil",
+	})
+}
+
+func GetAllAduans(c echo.Context) error {
+
+	userData := c.Get("user").(*jwt.Token)
+	claims := userData.Claims.(*utils.JWTCustomClaims)
+
+	var allAduan []entity.Aduan
+	var err error
+	if claims.IdRT != "" {
 		allAduan, err = models.GetAllAduan(c, "", claims.IdRT)
 	} else {
 		return utils.ResponseError(c, utils.Error{
