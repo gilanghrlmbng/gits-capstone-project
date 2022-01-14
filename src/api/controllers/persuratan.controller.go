@@ -231,10 +231,10 @@ func TolakPersuratanById(c echo.Context) error {
 		})
 	}
 
-	Surat.UpdatedAt = time.Now()
-	Surat.Status = entity.StatusPersuratanTolak
+	s.UpdatedAt = time.Now()
+	s.Status = entity.StatusPersuratanTolak
 
-	_, err = models.UpdatePersuratanById(c, id, &Surat)
+	_, err = models.UpdatePersuratanById(c, id, s)
 	if err != nil {
 		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
