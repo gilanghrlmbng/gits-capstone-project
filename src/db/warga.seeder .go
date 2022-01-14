@@ -34,13 +34,13 @@ func SeedWarga(db *gorm.DB, listKeluarga []string) []string {
 	Id2 := ulid.MustNew(ulid.Timestamp(time.Now()), entropy2).String()
 	data2 := entity.Warga{
 		Id:          Id2,
-		IdKeluarga:  listKeluarga[0],
+		IdKeluarga:  listKeluarga[1],
 		Nama:        "Asep",
 		Email:       "warga2@gmail.com",
 		Gender:      "laki-laki",
 		NoHandphone: "08123123123123",
-		Gambar:      "Agustina_2021_12-27_19_38_25",
-		Password:    "PasswordWargaSaya",
+		Gambar:      "Agoy Kasworo Betina_2021_12-31_00_18_22",
+		Password:    "aaaaaa",
 		CreatedAt:   time.Now(),
 	}
 	data2.Password = utils.HashPassword(data2.Password, data2.Id)
