@@ -2,7 +2,7 @@ version: "3.3"
 services:
   app:
     image: alifnaufalyasin/gits-capstone-project:latest
-    pull_policy: always
+    # pull_policy: always
     container_name: smart-server
     ports:
       - "2001:2001"
